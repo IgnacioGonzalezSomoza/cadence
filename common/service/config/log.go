@@ -21,25 +21,23 @@
 package config
 
 import (
-	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 const fileMode = os.FileMode(0644)
 
-// NewZapLogger builds and returns a new zap
-// logger for this logging configuration
+// NewZapLogger builds and returns a new 
+// Zap logger for this logging configuration
 func (cfg *Logger) NewZapLogger() (*zap.Logger, error) {
 	levelKey := cfg.LevelKey
 	if levelKey == "" {
 		levelKey = "level"
 	}
+
 	encodeConfig := zapcore.EncoderConfig{
 		TimeKey:        "ts",
 		LevelKey:       levelKey,
@@ -71,28 +69,7 @@ func (cfg *Logger) NewZapLogger() (*zap.Logger, error) {
 		OutputPaths:      []string{outputPath},
 		ErrorOutputPaths: []string{outputPath},
 	}
-	logger, _ := config.Build()
-	return logger
-}
-
-func getFormatter() logrus.Formatter {
-	formatter := &logrus.TextFormatter{}
-	formatter.FullTimestamp = true
-	return formatter
-}
-
-func createLogFile(path string) *os.File {
-	dir := filepath.Dir(path)
-	if len(dir) > 0 && dir != "." {
-		if err := os.MkdirAll(dir, fileMode); err != nil {
-			log.Fatalf("error creating log directory %v, err=%v", dir, err)
-		}
-	}
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, fileMode)
-	if err != nil {
-		log.Fatalf("error creating log file %v, err=%v", path, err)
-	}
-	return file
+	return config.Build()
 }
 
 func parseZapLevel(level string) zapcore.Level {
