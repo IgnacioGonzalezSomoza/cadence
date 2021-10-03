@@ -24,3 +24,4 @@ test_eventsV2_xdc.log
 
 # Executables produced by cadence repo
 /cadence*
+.project
