@@ -33,10 +33,10 @@ import (
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/client"
 	"github.com/uber/cadence/common/cluster"
+	"github.com/uber/cadence/common/config"
+	"github.com/uber/cadence/common/dynamicconfig"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/resource"
-	"github.com/uber/cadence/common/service/config"
-	"github.com/uber/cadence/common/service/dynamicconfig"
 	"github.com/uber/cadence/common/types"
 )
 
@@ -834,6 +834,29 @@ func (s *dcRedirectionHandlerSuite) TestListTaskListPartitions() {
 	err = callFn(s.currentClusterName)
 	s.Nil(err)
 	s.mockRemoteFrontendClient.EXPECT().ListTaskListPartitions(gomock.Any(), req).Return(&types.ListTaskListPartitionsResponse{}, nil).Times(1)
+	err = callFn(s.alternativeClusterName)
+	s.Nil(err)
+}
+
+func (s *dcRedirectionHandlerSuite) TestGetTaskListsByDomain() {
+	apiName := "GetTaskListsByDomain"
+
+	s.mockDCRedirectionPolicy.On("WithDomainNameRedirect",
+		s.domainName, apiName, mock.Anything).Return(nil).Times(1)
+
+	req := &types.GetTaskListsByDomainRequest{
+		Domain: s.domainName,
+	}
+	resp, err := s.handler.GetTaskListsByDomain(context.Background(), req)
+	s.Nil(err)
+	// the resp is initialized to nil, since inner function is not called
+	s.Nil(resp)
+
+	callFn := s.mockDCRedirectionPolicy.Calls[0].Arguments[2].(func(string) error)
+	s.mockFrontendHandler.EXPECT().GetTaskListsByDomain(gomock.Any(), req).Return(&types.GetTaskListsByDomainResponse{}, nil).Times(1)
+	err = callFn(s.currentClusterName)
+	s.Nil(err)
+	s.mockRemoteFrontendClient.EXPECT().GetTaskListsByDomain(gomock.Any(), req).Return(&types.GetTaskListsByDomainResponse{}, nil).Times(1)
 	err = callFn(s.alternativeClusterName)
 	s.Nil(err)
 }

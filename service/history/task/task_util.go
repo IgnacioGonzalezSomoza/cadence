@@ -184,6 +184,23 @@ func GetTimerTaskMetricScope(
 	}
 }
 
+// GetCrossClusterTaskMetricsScope returns the metrics scope index for cross cluster task
+// TODO: define separate scope for source and target tasks
+func GetCrossClusterTaskMetricsScope(
+	taskType int,
+) int {
+	switch taskType {
+	case persistence.CrossClusterTaskTypeStartChildExecution:
+		return metrics.CrossClusterTaskStartChildExecutionScope
+	case persistence.CrossClusterTaskTypeCancelExecution:
+		return metrics.CrossClusterTaskCancelExecutionScope
+	case persistence.CrossClusterTaskTypeSignalExecution:
+		return metrics.CrossClusterTaskTypeSignalExecutionScope
+	default:
+		return metrics.CrossClusterQueueProcessorScope
+	}
+}
+
 // verifyTaskVersion, will return true if failover version check is successful
 func verifyTaskVersion(
 	shard shard.Context,
@@ -251,8 +268,10 @@ func loadMutableStateForTimerTask(
 		}
 		// after refresh, still mutable state's next event ID <= task ID
 		if timerTask.EventID >= msBuilder.GetNextEventID() {
-			metricsClient.IncCounter(metrics.TimerQueueProcessorScope, metrics.DataInconsistentCounter)
+			domainName := msBuilder.GetDomainEntry().GetInfo().Name
+			metricsClient.Scope(metrics.TimerQueueProcessorScope, metrics.DomainTag(domainName)).IncCounter(metrics.DataInconsistentCounter)
 			logger.Error("Timer Task Processor: task event ID >= MS NextEventID, skip.",
+				tag.WorkflowDomainName(domainName),
 				tag.WorkflowDomainID(timerTask.DomainID),
 				tag.WorkflowID(timerTask.WorkflowID),
 				tag.WorkflowRunID(timerTask.RunID),
@@ -304,14 +323,64 @@ func loadMutableStateForTransferTask(
 		}
 		// after refresh, still mutable state's next event ID <= task ID
 		if transferTask.ScheduleID >= msBuilder.GetNextEventID() {
-			metricsClient.IncCounter(metrics.TransferQueueProcessorScope, metrics.DataInconsistentCounter)
+			domainName := msBuilder.GetDomainEntry().GetInfo().Name
+			metricsClient.Scope(metrics.TransferQueueProcessorScope, metrics.DomainTag(domainName)).IncCounter(metrics.DataInconsistentCounter)
 			logger.Error("Transfer Task Processor: task event ID >= MS NextEventID, skip.",
+				tag.WorkflowDomainName(domainName),
 				tag.WorkflowDomainID(transferTask.DomainID),
 				tag.WorkflowID(transferTask.WorkflowID),
 				tag.WorkflowRunID(transferTask.RunID),
 				tag.TaskType(transferTask.TaskType),
 				tag.TaskID(transferTask.TaskID),
 				tag.WorkflowScheduleID(transferTask.ScheduleID),
+				tag.WorkflowNextEventID(msBuilder.GetNextEventID()),
+			)
+			return nil, nil
+		}
+	}
+	return msBuilder, nil
+}
+
+// load mutable state, if mutable state's next event ID <= task ID, will attempt to refresh
+// if still mutable state's next event ID <= task ID, will return nil, nil
+// TODO: refactor loadMutableStateForXXXTask function implementation to avoid duplication
+func loadMutableStateForCrossClusterTask(
+	ctx context.Context,
+	wfContext execution.Context,
+	crossClusterTask *persistence.CrossClusterTaskInfo,
+	metricsClient metrics.Client,
+	logger log.Logger,
+) (execution.MutableState, error) {
+
+	msBuilder, err := wfContext.LoadWorkflowExecution(ctx)
+	if err != nil {
+		if _, ok := err.(*types.EntityNotExistsError); ok {
+			// this could happen if this is a duplicate processing of the task, and the execution has already completed.
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	if crossClusterTask.ScheduleID >= msBuilder.GetNextEventID() {
+		metricsClient.IncCounter(metrics.CrossClusterQueueProcessorScope, metrics.StaleMutableStateCounter)
+		wfContext.Clear()
+
+		msBuilder, err = wfContext.LoadWorkflowExecution(ctx)
+		if err != nil {
+			return nil, err
+		}
+		// after refresh, still mutable state's next event ID <= task ID
+		if crossClusterTask.ScheduleID >= msBuilder.GetNextEventID() {
+			domainName := msBuilder.GetDomainEntry().GetInfo().Name
+			metricsClient.Scope(metrics.CrossClusterQueueProcessorScope, metrics.DomainTag(domainName)).IncCounter(metrics.DataInconsistentCounter)
+			logger.Error("Cross Cluster Task Processor: task event ID >= MS NextEventID, skip.",
+				tag.WorkflowDomainName(domainName),
+				tag.WorkflowDomainID(crossClusterTask.DomainID),
+				tag.WorkflowID(crossClusterTask.WorkflowID),
+				tag.WorkflowRunID(crossClusterTask.RunID),
+				tag.TaskType(crossClusterTask.TaskType),
+				tag.TaskID(crossClusterTask.TaskID),
+				tag.WorkflowScheduleID(crossClusterTask.ScheduleID),
 				tag.WorkflowNextEventID(msBuilder.GetNextEventID()),
 			)
 			return nil, nil

@@ -75,6 +75,22 @@ func (c *clientImpl) AddSearchAttribute(
 	return client.AddSearchAttribute(ctx, request, opts...)
 }
 
+func (c *clientImpl) DescribeShardDistribution(
+	ctx context.Context,
+	request *types.DescribeShardDistributionRequest,
+	opts ...yarpc.CallOption,
+) (*types.DescribeShardDistributionResponse, error) {
+
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := c.createContext(ctx)
+	defer cancel()
+	return client.DescribeShardDistribution(ctx, request, opts...)
+}
+
 func (c *clientImpl) DescribeHistoryHost(
 	ctx context.Context,
 	request *types.DescribeHistoryHostRequest,
@@ -341,6 +357,81 @@ func (c *clientImpl) ResendReplicationTasks(
 	ctx, cancel := c.createContext(ctx)
 	defer cancel()
 	return client.ResendReplicationTasks(ctx, request, opts...)
+}
+
+func (c *clientImpl) GetCrossClusterTasks(
+	ctx context.Context,
+	request *types.GetCrossClusterTasksRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetCrossClusterTasksResponse, error) {
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := c.createContextWithLargeTimeout(ctx)
+	defer cancel()
+	return client.GetCrossClusterTasks(ctx, request, opts...)
+}
+
+func (c *clientImpl) GetDynamicConfig(
+	ctx context.Context,
+	request *types.GetDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetDynamicConfigResponse, error) {
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := c.createContext(ctx)
+	defer cancel()
+	return client.GetDynamicConfig(ctx, request, opts...)
+}
+
+func (c *clientImpl) UpdateDynamicConfig(
+	ctx context.Context,
+	request *types.UpdateDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) error {
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return err
+	}
+	ctx, cancel := c.createContext(ctx)
+	defer cancel()
+	return client.UpdateDynamicConfig(ctx, request, opts...)
+}
+
+func (c *clientImpl) RestoreDynamicConfig(
+	ctx context.Context,
+	request *types.RestoreDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) error {
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return err
+	}
+	ctx, cancel := c.createContext(ctx)
+	defer cancel()
+	return client.RestoreDynamicConfig(ctx, request, opts...)
+}
+
+func (c *clientImpl) ListDynamicConfig(
+	ctx context.Context,
+	request *types.ListDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) (*types.ListDynamicConfigResponse, error) {
+	opts = common.AggregateYarpcOptions(ctx, opts...)
+	client, err := c.getRandomClient()
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := c.createContext(ctx)
+	defer cancel()
+	return client.ListDynamicConfig(ctx, request, opts...)
 }
 
 func (c *clientImpl) createContext(parent context.Context) (context.Context, context.CancelFunc) {

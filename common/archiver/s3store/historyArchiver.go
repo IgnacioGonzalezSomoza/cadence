@@ -40,10 +40,10 @@ import (
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/archiver"
 	"github.com/uber/cadence/common/backoff"
+	"github.com/uber/cadence/common/config"
 	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/persistence"
-	"github.com/uber/cadence/common/service/config"
 	"github.com/uber/cadence/common/types"
 )
 
@@ -159,6 +159,15 @@ func (h *historyArchiver) Archive(
 	for historyIterator.HasNext() {
 		historyBlob, err := getNextHistoryBlob(ctx, historyIterator)
 		if err != nil {
+			if common.IsEntityNotExistsError(err) {
+				// workflow history no longer exists, may due to duplicated archival signal
+				// this may happen even in the middle of iterating history as two archival signals
+				// can be processed concurrently.
+				logger.Info(archiver.ArchiveSkippedInfoMsg)
+				scope.IncCounter(metrics.HistoryArchiverDuplicateArchivalsCount)
+				return nil
+			}
+
 			logger := logger.WithTags(tag.ArchivalArchiveFailReason(archiver.ErrReasonReadHistory), tag.Error(err))
 			if persistence.IsTransientError(err) {
 				logger.Error(archiver.ArchiveTransientErrorMsg)

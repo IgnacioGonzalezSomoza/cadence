@@ -36,11 +36,12 @@ import (
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/backoff"
 	"github.com/uber/cadence/common/cluster"
+	"github.com/uber/cadence/common/config"
+	"github.com/uber/cadence/common/dynamicconfig"
 	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/resource"
-	"github.com/uber/cadence/common/service/config"
-	"github.com/uber/cadence/common/service/dynamicconfig"
 	"github.com/uber/cadence/service/worker/scanner/shardscanner"
+	"github.com/uber/cadence/service/worker/scanner/tasklist"
 )
 
 const (
@@ -56,12 +57,14 @@ type (
 		// ScannerPersistenceMaxQPS the max rate of calls to persistence
 		// Right now is being used by historyScanner to determine the rate of persistence API calls
 		ScannerPersistenceMaxQPS dynamicconfig.IntPropertyFn
+		// TaskListScannerEnabled indicates if taskList scanner should be started as part of scanner
+		TaskListScannerEnabled dynamicconfig.BoolPropertyFn
+		// TaskListScannerOptions contains options for TaskListScanner
+		TaskListScannerOptions tasklist.Options
 		// Persistence contains the persistence configuration
 		Persistence *config.Persistence
 		// ClusterMetadata contains the metadata for this cluster
 		ClusterMetadata cluster.Metadata
-		// TaskListScannerEnabled indicates if taskList scanner should be started as part of scanner
-		TaskListScannerEnabled dynamicconfig.BoolPropertyFn
 		// HistoryScannerEnabled indicates if history scanner should be started as part of scanner
 		HistoryScannerEnabled dynamicconfig.BoolPropertyFn
 		// ShardScanners is a list of shard scanner configs
@@ -131,8 +134,7 @@ func (s *Scanner) Start() error {
 		workerTaskListNames = append(workerTaskListNames, wtl...)
 	}
 
-	switch s.context.cfg.Persistence.DefaultStoreType() {
-	case config.StoreTypeSQL:
+	if s.context.cfg.Persistence.DefaultStoreType() == config.StoreTypeSQL {
 		if s.context.cfg.TaskListScannerEnabled() {
 			ctx = s.startScanner(
 				ctx,
@@ -140,14 +142,13 @@ func (s *Scanner) Start() error {
 				tlScannerWFTypeName)
 			workerTaskListNames = append(workerTaskListNames, tlScannerTaskListName)
 		}
-	case config.StoreTypeCassandra:
-		if s.context.cfg.HistoryScannerEnabled() {
-			ctx = s.startScanner(
-				ctx,
-				historyScannerWFStartOptions,
-				historyScannerWFTypeName)
-			workerTaskListNames = append(workerTaskListNames, historyScannerTaskListName)
-		}
+	}
+	if s.context.cfg.HistoryScannerEnabled() {
+		ctx = s.startScanner(
+			ctx,
+			historyScannerWFStartOptions,
+			historyScannerWFTypeName)
+		workerTaskListNames = append(workerTaskListNames, historyScannerTaskListName)
 	}
 
 	workerOpts := worker.Options{
@@ -276,9 +277,9 @@ func NewScannerContext(ctx context.Context, workflowName string, scannerContext 
 	return context.WithValue(ctx, contextKey(workflowName), scannerContext)
 }
 
-// GetScannerContext extracts scanner context from activity context
+// getScannerContext extracts scanner context from activity context
 // it uses typed, private key to reduce access scope
-func GetScannerContext(ctx context.Context) (scannerContext, error) {
+func getScannerContext(ctx context.Context) (scannerContext, error) {
 	info := activity.GetInfo(ctx)
 	if info.WorkflowType == nil {
 		return scannerContext{}, fmt.Errorf("workflowType is nil")

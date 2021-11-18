@@ -34,8 +34,8 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/uber/cadence/common"
-	"github.com/uber/cadence/common/service/config"
-	"github.com/uber/cadence/common/service/dynamicconfig"
+	"github.com/uber/cadence/common/config"
+	"github.com/uber/cadence/common/dynamicconfig"
 	"github.com/uber/cadence/environment"
 	"github.com/uber/cadence/tools/sql"
 )
@@ -139,7 +139,7 @@ func (s *VersionTestSuite) TestCheckCompatibleVersion() {
 		{"2.0", "1.0", "version mismatch", false},
 		{"1.0", "1.0", "", false},
 		{"1.0", "2.0", "", false},
-		{"1.0", "abc", "unable to read cassandra schema version", false},
+		{"1.0", "abc", "unable to read schema version keyspace/database", false},
 	}
 	for _, flag := range flags {
 		s.runCheckCompatibleVersion(flag.expectedVersion, flag.actualVersion, flag.errStr, flag.expectedFail)

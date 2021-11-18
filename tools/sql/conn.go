@@ -21,9 +21,9 @@
 package sql
 
 import (
+	"github.com/uber/cadence/common/config"
 	"github.com/uber/cadence/common/persistence/sql"
 	"github.com/uber/cadence/common/persistence/sql/sqlplugin"
-	"github.com/uber/cadence/common/service/config"
 	"github.com/uber/cadence/tools/common/schema"
 )
 
@@ -44,9 +44,15 @@ func NewConnection(cfg *config.SQL) (*Connection, error) {
 		return nil, err
 	}
 
+	dbName := cfg.DatabaseName
+	if cfg.UseMultipleDatabases {
+		// TODO: we should validate schemas on all shards(SQL databases) to be safe
+		// https://github.com/uber/cadence/issues/4509 This must be done before announcing the feature is ready
+		dbName = cfg.MultipleDatabasesConfig[sqlplugin.DbDefaultShard].DatabaseName
+	}
 	return &Connection{
 		adminDb: db,
-		dbName:  cfg.DatabaseName,
+		dbName:  dbName,
 	}, nil
 }
 

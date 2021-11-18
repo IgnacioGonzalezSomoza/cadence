@@ -21,10 +21,10 @@
 package cluster
 
 import (
-	"github.com/uber/cadence/common"
+	"github.com/uber/cadence/common/config"
+	"github.com/uber/cadence/common/dynamicconfig"
 	"github.com/uber/cadence/common/log/loggerimpl"
-	"github.com/uber/cadence/common/service/config"
-	"github.com/uber/cadence/common/service/dynamicconfig"
+	"github.com/uber/cadence/common/service"
 )
 
 const (
@@ -32,12 +32,16 @@ const (
 	TestCurrentClusterInitialFailoverVersion = int64(0)
 	// TestAlternativeClusterInitialFailoverVersion is initial failover version for alternative cluster
 	TestAlternativeClusterInitialFailoverVersion = int64(1)
+	// TestDisabledClusterInitialFailoverVersion is initial failover version for disabled cluster
+	TestDisabledClusterInitialFailoverVersion = int64(2)
 	// TestFailoverVersionIncrement is failover version increment used for test
 	TestFailoverVersionIncrement = int64(10)
 	// TestCurrentClusterName is current cluster used for test
 	TestCurrentClusterName = "active"
 	// TestAlternativeClusterName is alternative cluster used for test
 	TestAlternativeClusterName = "standby"
+	// TestDisabledClusterName is disabled cluster used for test
+	TestDisabledClusterName = "disabled"
 	// TestCurrentClusterFrontendAddress is the ip port address of current cluster
 	TestCurrentClusterFrontendAddress = "127.0.0.1:7104"
 	// TestAlternativeClusterFrontendAddress is the ip port address of alternative cluster
@@ -49,17 +53,21 @@ var (
 	TestAllClusterNames = []string{TestCurrentClusterName, TestAlternativeClusterName}
 	// TestAllClusterInfo is the same as above, just convenient for test mocking
 	TestAllClusterInfo = map[string]config.ClusterInformation{
-		TestCurrentClusterName: config.ClusterInformation{
+		TestCurrentClusterName: {
 			Enabled:                true,
 			InitialFailoverVersion: TestCurrentClusterInitialFailoverVersion,
-			RPCName:                common.FrontendServiceName,
+			RPCName:                service.Frontend,
 			RPCAddress:             TestCurrentClusterFrontendAddress,
 		},
-		TestAlternativeClusterName: config.ClusterInformation{
+		TestAlternativeClusterName: {
 			Enabled:                true,
 			InitialFailoverVersion: TestAlternativeClusterInitialFailoverVersion,
-			RPCName:                common.FrontendServiceName,
+			RPCName:                service.Frontend,
 			RPCAddress:             TestAlternativeClusterFrontendAddress,
+		},
+		TestDisabledClusterName: {
+			Enabled:                false,
+			InitialFailoverVersion: TestDisabledClusterInitialFailoverVersion,
 		},
 	}
 
@@ -67,20 +75,20 @@ var (
 	TestSingleDCAllClusterNames = []string{TestCurrentClusterName}
 	// TestSingleDCClusterInfo is the same as above, just convenient for test mocking
 	TestSingleDCClusterInfo = map[string]config.ClusterInformation{
-		TestCurrentClusterName: config.ClusterInformation{
+		TestCurrentClusterName: {
 			Enabled:                true,
 			InitialFailoverVersion: TestCurrentClusterInitialFailoverVersion,
-			RPCName:                common.FrontendServiceName,
+			RPCName:                service.Frontend,
 			RPCAddress:             TestCurrentClusterFrontendAddress,
 		},
 	}
 )
 
 // GetTestClusterMetadata return an cluster metadata instance, which is initialized
-func GetTestClusterMetadata(enableGlobalDomain bool, isMasterCluster bool) Metadata {
-	masterClusterName := TestCurrentClusterName
-	if !isMasterCluster {
-		masterClusterName = TestAlternativeClusterName
+func GetTestClusterMetadata(enableGlobalDomain bool, isPrimaryCluster bool) Metadata {
+	primaryClusterName := TestCurrentClusterName
+	if !isPrimaryCluster {
+		primaryClusterName = TestAlternativeClusterName
 	}
 
 	if enableGlobalDomain {
@@ -88,7 +96,7 @@ func GetTestClusterMetadata(enableGlobalDomain bool, isMasterCluster bool) Metad
 			loggerimpl.NewNopLogger(),
 			dynamicconfig.GetBoolPropertyFn(true),
 			TestFailoverVersionIncrement,
-			masterClusterName,
+			primaryClusterName,
 			TestCurrentClusterName,
 			TestAllClusterInfo,
 		)

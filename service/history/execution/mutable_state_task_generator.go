@@ -23,13 +23,14 @@
 package execution
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
 	"time"
 
 	"github.com/uber/cadence/common/cache"
-	"github.com/uber/cadence/common/clock"
+	"github.com/uber/cadence/common/cluster"
 	"github.com/uber/cadence/common/log"
 	"github.com/uber/cadence/common/persistence"
 	"github.com/uber/cadence/common/types"
@@ -38,67 +39,70 @@ import (
 type (
 	// MutableStateTaskGenerator generates workflow transfer and timer tasks
 	MutableStateTaskGenerator interface {
+		// for workflow reset startTime should be the reset time instead of
+		// the startEvent time, so that workflow timeout timestamp can be
+		// re-calculated.
 		GenerateWorkflowStartTasks(
-			now time.Time,
+			startTime time.Time,
 			startEvent *types.HistoryEvent,
 		) error
 		GenerateWorkflowCloseTasks(
-			now time.Time,
+			closeEvent *types.HistoryEvent,
 		) error
 		GenerateRecordWorkflowStartedTasks(
-			now time.Time,
 			startEvent *types.HistoryEvent,
 		) error
 		GenerateDelayedDecisionTasks(
-			now time.Time,
 			startEvent *types.HistoryEvent,
 		) error
 		GenerateDecisionScheduleTasks(
-			now time.Time,
 			decisionScheduleID int64,
 		) error
 		GenerateDecisionStartTasks(
-			now time.Time,
 			decisionScheduleID int64,
 		) error
 		GenerateActivityTransferTasks(
-			now time.Time,
 			event *types.HistoryEvent,
 		) error
 		GenerateActivityRetryTasks(
 			activityScheduleID int64,
 		) error
 		GenerateChildWorkflowTasks(
-			now time.Time,
 			event *types.HistoryEvent,
 		) error
 		GenerateRequestCancelExternalTasks(
-			now time.Time,
 			event *types.HistoryEvent,
 		) error
 		GenerateSignalExternalTasks(
-			now time.Time,
 			event *types.HistoryEvent,
 		) error
-		GenerateWorkflowSearchAttrTasks(
-			now time.Time,
+		GenerateWorkflowSearchAttrTasks() error
+		GenerateWorkflowResetTasks() error
+		GenerateCrossClusterTaskFromTransferTask(
+			transferTask *persistence.TransferTaskInfo,
+			targetCluster string,
 		) error
-		GenerateWorkflowResetTasks(
-			now time.Time,
+		// TODO: Consider merging below with GenerateCrossClusterTaskFromTransferTask.
+		// Close event generates both recordChildCompletion and ApplyParentPolicy
+		// tasks. That's why we currently have a separate function for applying
+		// parent policy
+		GenerateCrossClusterApplyParentClosePolicyTask(
+			transferTask *persistence.TransferTaskInfo,
+			targetCluster string,
+		) error
+		GenerateFromCrossClusterTask(
+			crossClusterTask *persistence.CrossClusterTaskInfo,
 		) error
 
 		// these 2 APIs should only be called when mutable state transaction is being closed
-		GenerateActivityTimerTasks(
-			now time.Time,
-		) error
-		GenerateUserTimerTasks(
-			now time.Time,
-		) error
+		GenerateActivityTimerTasks() error
+		GenerateUserTimerTasks() error
 	}
 
 	mutableStateTaskGeneratorImpl struct {
-		domainCache cache.DomainCache
-		logger      log.Logger
+		clusterMetadata cluster.Metadata
+		domainCache     cache.DomainCache
+		logger          log.Logger
 
 		mutableState MutableState
 	}
@@ -115,24 +119,25 @@ var _ MutableStateTaskGenerator = (*mutableStateTaskGeneratorImpl)(nil)
 
 // NewMutableStateTaskGenerator creates a new task generator for mutable state
 func NewMutableStateTaskGenerator(
+	clusterMetadata cluster.Metadata,
 	domainCache cache.DomainCache,
 	logger log.Logger,
 	mutableState MutableState,
 ) MutableStateTaskGenerator {
 
 	return &mutableStateTaskGeneratorImpl{
-		domainCache: domainCache,
-		logger:      logger,
+		clusterMetadata: clusterMetadata,
+		domainCache:     domainCache,
+		logger:          logger,
 
 		mutableState: mutableState,
 	}
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowStartTasks(
-	now time.Time,
+	startTime time.Time,
 	startEvent *types.HistoryEvent,
 ) error {
-
 	attr := startEvent.WorkflowExecutionStartedEventAttributes
 	firstDecisionDelayDuration := time.Duration(attr.GetFirstDecisionTaskBackoffSeconds()) * time.Second
 
@@ -140,9 +145,9 @@ func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowStartTasks(
 	startVersion := startEvent.GetVersion()
 
 	workflowTimeoutDuration := time.Duration(executionInfo.WorkflowTimeout) * time.Second
-	workflowTimeoutDuration = workflowTimeoutDuration + firstDecisionDelayDuration
-	workflowTimeoutTimestamp := now.Add(workflowTimeoutDuration)
-	if !executionInfo.ExpirationTime.IsZero() && workflowTimeoutTimestamp.After(executionInfo.ExpirationTime) {
+	workflowTimeoutTimestamp := startTime.Add(workflowTimeoutDuration + firstDecisionDelayDuration)
+	// ensure that the first attempt does not time out early based on retry policy timeout
+	if attr.Attempt > 0 && !executionInfo.ExpirationTime.IsZero() && workflowTimeoutTimestamp.After(executionInfo.ExpirationTime) {
 		workflowTimeoutTimestamp = executionInfo.ExpirationTime
 	}
 	r.mutableState.AddTimerTasks(&persistence.WorkflowTimeoutTask{
@@ -155,15 +160,13 @@ func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowStartTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowCloseTasks(
-	now time.Time,
+	closeEvent *types.HistoryEvent,
 ) error {
 
-	currentVersion := r.mutableState.GetCurrentVersion()
 	executionInfo := r.mutableState.GetExecutionInfo()
-
 	r.mutableState.AddTransferTasks(&persistence.CloseExecutionTask{
 		// TaskID and VisibilityTimestamp are set by shard context
-		Version: currentVersion,
+		Version: closeEvent.GetVersion(),
 	})
 
 	retentionInDays := defaultWorkflowRetentionInDays
@@ -177,26 +180,26 @@ func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowCloseTasks(
 		return err
 	}
 
+	closeTimestamp := time.Unix(0, closeEvent.GetTimestamp())
 	retentionDuration := time.Duration(retentionInDays) * time.Hour * 24
 	r.mutableState.AddTimerTasks(&persistence.DeleteHistoryEventTask{
 		// TaskID is set by shard
-		VisibilityTimestamp: now.Add(retentionDuration),
-		Version:             currentVersion,
+		VisibilityTimestamp: closeTimestamp.Add(retentionDuration),
+		Version:             closeEvent.GetVersion(),
 	})
 
 	return nil
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateDelayedDecisionTasks(
-	now time.Time,
 	startEvent *types.HistoryEvent,
 ) error {
 
 	startVersion := startEvent.GetVersion()
-
+	startTimestamp := time.Unix(0, startEvent.GetTimestamp())
 	startAttr := startEvent.WorkflowExecutionStartedEventAttributes
 	decisionBackoffDuration := time.Duration(startAttr.GetFirstDecisionTaskBackoffSeconds()) * time.Second
-	executionTimestamp := now.Add(decisionBackoffDuration)
+	executionTimestamp := startTimestamp.Add(decisionBackoffDuration)
 
 	// noParentWorkflow case
 	firstDecisionDelayType := persistence.WorkflowBackoffTimeoutTypeCron
@@ -230,7 +233,6 @@ func (r *mutableStateTaskGeneratorImpl) GenerateDelayedDecisionTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateRecordWorkflowStartedTasks(
-	now time.Time,
 	startEvent *types.HistoryEvent,
 ) error {
 
@@ -245,7 +247,6 @@ func (r *mutableStateTaskGeneratorImpl) GenerateRecordWorkflowStartedTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateDecisionScheduleTasks(
-	now time.Time,
 	decisionScheduleID int64,
 ) error {
 
@@ -287,7 +288,6 @@ func (r *mutableStateTaskGeneratorImpl) GenerateDecisionScheduleTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateDecisionStartTasks(
-	now time.Time,
 	decisionScheduleID int64,
 ) error {
 
@@ -326,7 +326,6 @@ func (r *mutableStateTaskGeneratorImpl) GenerateDecisionStartTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateActivityTransferTasks(
-	now time.Time,
 	event *types.HistoryEvent,
 ) error {
 
@@ -388,7 +387,6 @@ func (r *mutableStateTaskGeneratorImpl) GenerateActivityRetryTasks(
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateChildWorkflowTasks(
-	now time.Time,
 	event *types.HistoryEvent,
 ) error {
 
@@ -408,19 +406,32 @@ func (r *mutableStateTaskGeneratorImpl) GenerateChildWorkflowTasks(
 		return err
 	}
 
-	r.mutableState.AddTransferTasks(&persistence.StartChildExecutionTask{
+	targetCluster, isCrossClusterTask, err := r.isCrossClusterTask(targetDomainID)
+	if err != nil {
+		return err
+	}
+
+	startChildExecutionTask := &persistence.StartChildExecutionTask{
 		// TaskID and VisibilityTimestamp are set by shard context
 		TargetDomainID:   targetDomainID,
 		TargetWorkflowID: childWorkflowInfo.StartedWorkflowID,
 		InitiatedID:      childWorkflowInfo.InitiatedID,
 		Version:          childWorkflowInfo.Version,
-	})
+	}
+
+	if !isCrossClusterTask {
+		r.mutableState.AddTransferTasks(startChildExecutionTask)
+	} else {
+		r.mutableState.AddCrossClusterTasks(&persistence.CrossClusterStartChildExecutionTask{
+			TargetCluster:           targetCluster,
+			StartChildExecutionTask: *startChildExecutionTask,
+		})
+	}
 
 	return nil
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateRequestCancelExternalTasks(
-	now time.Time,
 	event *types.HistoryEvent,
 ) error {
 
@@ -444,7 +455,12 @@ func (r *mutableStateTaskGeneratorImpl) GenerateRequestCancelExternalTasks(
 		return err
 	}
 
-	r.mutableState.AddTransferTasks(&persistence.CancelExecutionTask{
+	targetCluster, isCrossClusterTask, err := r.isCrossClusterTask(targetDomainID)
+	if err != nil {
+		return err
+	}
+
+	cancelExecutionTask := &persistence.CancelExecutionTask{
 		// TaskID and VisibilityTimestamp are set by shard context
 		TargetDomainID:          targetDomainID,
 		TargetWorkflowID:        targetWorkflowID,
@@ -452,13 +468,21 @@ func (r *mutableStateTaskGeneratorImpl) GenerateRequestCancelExternalTasks(
 		TargetChildWorkflowOnly: targetChildOnly,
 		InitiatedID:             scheduleID,
 		Version:                 version,
-	})
+	}
+
+	if !isCrossClusterTask {
+		r.mutableState.AddTransferTasks(cancelExecutionTask)
+	} else {
+		r.mutableState.AddCrossClusterTasks(&persistence.CrossClusterCancelExecutionTask{
+			TargetCluster:       targetCluster,
+			CancelExecutionTask: *cancelExecutionTask,
+		})
+	}
 
 	return nil
 }
 
 func (r *mutableStateTaskGeneratorImpl) GenerateSignalExternalTasks(
-	now time.Time,
 	event *types.HistoryEvent,
 ) error {
 
@@ -482,7 +506,12 @@ func (r *mutableStateTaskGeneratorImpl) GenerateSignalExternalTasks(
 		return err
 	}
 
-	r.mutableState.AddTransferTasks(&persistence.SignalExecutionTask{
+	targetCluster, isCrossClusterTask, err := r.isCrossClusterTask(targetDomainID)
+	if err != nil {
+		return err
+	}
+
+	signalExecutionTask := &persistence.SignalExecutionTask{
 		// TaskID and VisibilityTimestamp are set by shard context
 		TargetDomainID:          targetDomainID,
 		TargetWorkflowID:        targetWorkflowID,
@@ -490,14 +519,21 @@ func (r *mutableStateTaskGeneratorImpl) GenerateSignalExternalTasks(
 		TargetChildWorkflowOnly: targetChildOnly,
 		InitiatedID:             scheduleID,
 		Version:                 version,
-	})
+	}
+
+	if !isCrossClusterTask {
+		r.mutableState.AddTransferTasks(signalExecutionTask)
+	} else {
+		r.mutableState.AddCrossClusterTasks(&persistence.CrossClusterSignalExecutionTask{
+			TargetCluster:       targetCluster,
+			SignalExecutionTask: *signalExecutionTask,
+		})
+	}
 
 	return nil
 }
 
-func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowSearchAttrTasks(
-	now time.Time,
-) error {
+func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowSearchAttrTasks() error {
 
 	currentVersion := r.mutableState.GetCurrentVersion()
 
@@ -509,9 +545,7 @@ func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowSearchAttrTasks(
 	return nil
 }
 
-func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowResetTasks(
-	now time.Time,
-) error {
+func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowResetTasks() error {
 
 	currentVersion := r.mutableState.GetCurrentVersion()
 
@@ -523,42 +557,287 @@ func (r *mutableStateTaskGeneratorImpl) GenerateWorkflowResetTasks(
 	return nil
 }
 
-func (r *mutableStateTaskGeneratorImpl) GenerateActivityTimerTasks(
-	now time.Time,
+func (r *mutableStateTaskGeneratorImpl) GenerateCrossClusterApplyParentClosePolicyTask(
+	task *persistence.TransferTaskInfo,
+	targetCluster string,
 ) error {
+	if targetCluster == r.clusterMetadata.GetCurrentClusterName() {
+		// this should not happen
+		return errors.New("unable to create cross-cluster task for current cluster")
+	}
 
-	_, err := r.getTimerSequence(now).CreateNextActivityTimer()
+	crossClusterTask := &persistence.CrossClusterApplyParentClosePolicyTask{
+		TargetCluster: targetCluster,
+		ApplyParentClosePolicyTask: persistence.ApplyParentClosePolicyTask{
+			// TaskID is set by shard context
+			// Domain, workflow and run ids will be collected from mutableState
+			// when processing the apply parent policy tasks.
+			Version:             task.Version,
+			VisibilityTimestamp: task.VisibilityTimestamp,
+		},
+	}
+	r.mutableState.AddCrossClusterTasks(crossClusterTask)
+
+	return nil
+}
+
+func (r *mutableStateTaskGeneratorImpl) GenerateCrossClusterTaskFromTransferTask(
+	task *persistence.TransferTaskInfo,
+	targetCluster string,
+) error {
+	if targetCluster == r.clusterMetadata.GetCurrentClusterName() {
+		// this should not happen
+		return errors.New("unable to create cross-cluster task for current cluster")
+	}
+
+	var crossClusterTask persistence.Task
+	switch task.TaskType {
+	case persistence.TransferTaskTypeCancelExecution:
+		crossClusterTask = &persistence.CrossClusterCancelExecutionTask{
+			TargetCluster: targetCluster,
+			CancelExecutionTask: persistence.CancelExecutionTask{
+				// TaskID is set by shard context
+				TargetDomainID:          task.TargetDomainID,
+				TargetWorkflowID:        task.TargetWorkflowID,
+				TargetRunID:             task.TargetRunID,
+				TargetChildWorkflowOnly: task.TargetChildWorkflowOnly,
+				InitiatedID:             task.ScheduleID,
+				Version:                 task.Version,
+			},
+		}
+	case persistence.TransferTaskTypeSignalExecution:
+		crossClusterTask = &persistence.CrossClusterSignalExecutionTask{
+			TargetCluster: targetCluster,
+			SignalExecutionTask: persistence.SignalExecutionTask{
+				// TaskID is set by shard context
+				TargetDomainID:          task.TargetDomainID,
+				TargetWorkflowID:        task.TargetWorkflowID,
+				TargetRunID:             task.TargetRunID,
+				TargetChildWorkflowOnly: task.TargetChildWorkflowOnly,
+				InitiatedID:             task.ScheduleID,
+				Version:                 task.Version,
+			},
+		}
+	case persistence.TransferTaskTypeStartChildExecution:
+		crossClusterTask = &persistence.CrossClusterStartChildExecutionTask{
+			TargetCluster: targetCluster,
+			StartChildExecutionTask: persistence.StartChildExecutionTask{
+				// TaskID is set by shard context
+				TargetDomainID:   task.TargetDomainID,
+				TargetWorkflowID: task.TargetWorkflowID,
+				InitiatedID:      task.ScheduleID,
+				Version:          task.Version,
+			},
+		}
+	case persistence.TransferTaskTypeCloseExecution:
+		crossClusterTask = &persistence.CrossClusterRecordChildWorkflowExecutionCompleteTask{
+			TargetCluster: targetCluster,
+			RecordWorkflowExecutionCompleteTask: persistence.RecordWorkflowExecutionCompleteTask{
+				// TaskID is set by shard context
+				Version: task.Version,
+			},
+		}
+	default:
+		return fmt.Errorf("unable to convert transfer task of type %v to cross-cluster task", task.TaskType)
+	}
+
+	// set visibility timestamp here so we the metric for task latency
+	// can include the latency for the original transfer task.
+	crossClusterTask.SetVisibilityTimestamp(task.VisibilityTimestamp)
+	r.mutableState.AddCrossClusterTasks(crossClusterTask)
+
+	return nil
+}
+
+func (r *mutableStateTaskGeneratorImpl) GenerateFromCrossClusterTask(
+	task *persistence.CrossClusterTaskInfo,
+) error {
+	generateTransferTask := false
+	var targetCluster string
+
+	sourceDomainEntry := r.mutableState.GetDomainEntry()
+	if !sourceDomainEntry.IsDomainActive() && !sourceDomainEntry.IsDomainPendingActive() {
+		// domain is passive, generate (passive) transfer task
+		generateTransferTask = true
+	}
+
+	if !generateTransferTask {
+		targetDomainEntry, err := r.domainCache.GetDomainByID(task.TargetDomainID)
+		if err != nil {
+			return err
+		}
+		targetCluster = targetDomainEntry.GetReplicationConfig().ActiveClusterName
+		if targetCluster == r.clusterMetadata.GetCurrentClusterName() {
+			generateTransferTask = true
+		}
+	}
+
+	var newTask persistence.Task
+	switch task.GetTaskType() {
+	case persistence.CrossClusterTaskTypeCancelExecution:
+		cancelExecutionTask := &persistence.CancelExecutionTask{
+			// TaskID is set by shard context
+			TargetDomainID:          task.TargetDomainID,
+			TargetWorkflowID:        task.TargetWorkflowID,
+			TargetRunID:             task.TargetRunID,
+			TargetChildWorkflowOnly: task.TargetChildWorkflowOnly,
+			InitiatedID:             task.ScheduleID,
+			Version:                 task.Version,
+		}
+		if generateTransferTask {
+			newTask = cancelExecutionTask
+		} else {
+			newTask = &persistence.CrossClusterCancelExecutionTask{
+				TargetCluster:       targetCluster,
+				CancelExecutionTask: *cancelExecutionTask,
+			}
+		}
+	case persistence.CrossClusterTaskTypeSignalExecution:
+		signalExecutionTask := &persistence.SignalExecutionTask{
+			// TaskID is set by shard context
+			TargetDomainID:          task.TargetDomainID,
+			TargetWorkflowID:        task.TargetWorkflowID,
+			TargetRunID:             task.TargetRunID,
+			TargetChildWorkflowOnly: task.TargetChildWorkflowOnly,
+			InitiatedID:             task.ScheduleID,
+			Version:                 task.Version,
+		}
+		if generateTransferTask {
+			newTask = signalExecutionTask
+		} else {
+			newTask = &persistence.CrossClusterSignalExecutionTask{
+				TargetCluster:       targetCluster,
+				SignalExecutionTask: *signalExecutionTask,
+			}
+		}
+	case persistence.CrossClusterTaskTypeStartChildExecution:
+		startChildExecutionTask := &persistence.StartChildExecutionTask{
+			// TaskID is set by shard context
+			TargetDomainID:   task.TargetDomainID,
+			TargetWorkflowID: task.TargetWorkflowID,
+			InitiatedID:      task.ScheduleID,
+			Version:          task.Version,
+		}
+		if generateTransferTask {
+			newTask = startChildExecutionTask
+		} else {
+			newTask = &persistence.CrossClusterStartChildExecutionTask{
+				TargetCluster:           targetCluster,
+				StartChildExecutionTask: *startChildExecutionTask,
+			}
+		}
+	case persistence.CrossClusterTaskTypeRecordChildWorkflowExeuctionComplete:
+		if generateTransferTask {
+			// We don't have a separate transfer task for record child completion or
+			// apply parent close policy. They are both created through close exuection task.
+			// TODO: closeExecutionTask will be created and added twice when we have both
+			// record child completion and apply parent close policy x-cluster tasks.
+			// Technically, it shouldn't cause issues but better find a way to dedup this...
+			newTask = &persistence.CloseExecutionTask{
+				// TaskID is set by shard context
+				Version: task.Version,
+			}
+		} else {
+			newTask = &persistence.CrossClusterRecordChildWorkflowExecutionCompleteTask{
+				TargetCluster: targetCluster,
+				RecordWorkflowExecutionCompleteTask: persistence.RecordWorkflowExecutionCompleteTask{
+					// TaskID is set by shard context
+					Version: task.Version,
+				},
+			}
+		}
+	case persistence.CrossClusterTaskTypeApplyParentPolicy:
+		if generateTransferTask {
+			// Creating close exeuction task due to the same reason above.
+			// TODO: dedup this request if we also created one through record child complete
+			newTask = &persistence.CloseExecutionTask{
+				// TaskID is set by shard context
+				Version: task.Version,
+			}
+		} else {
+			newTask = &persistence.CrossClusterApplyParentClosePolicyTask{
+				TargetCluster: targetCluster,
+				ApplyParentClosePolicyTask: persistence.ApplyParentClosePolicyTask{
+					// TaskID is set by shard context
+					Version: task.Version,
+				},
+			}
+		}
+	default:
+		return fmt.Errorf("unable to convert cross-cluster task of type %v", task.TaskType)
+	}
+
+	// set visibility timestamp here so we the metric for task latency
+	// can include the latency for the original transfer task.
+	newTask.SetVisibilityTimestamp(task.VisibilityTimestamp)
+	if generateTransferTask {
+		r.mutableState.AddTransferTasks(newTask)
+	} else {
+		r.mutableState.AddCrossClusterTasks(newTask)
+	}
+
+	return nil
+}
+
+func (r *mutableStateTaskGeneratorImpl) GenerateActivityTimerTasks() error {
+
+	_, err := NewTimerSequence(r.mutableState).CreateNextActivityTimer()
 	return err
 }
 
-func (r *mutableStateTaskGeneratorImpl) GenerateUserTimerTasks(
-	now time.Time,
-) error {
+func (r *mutableStateTaskGeneratorImpl) GenerateUserTimerTasks() error {
 
-	_, err := r.getTimerSequence(now).CreateNextUserTimer()
+	_, err := NewTimerSequence(r.mutableState).CreateNextUserTimer()
 	return err
-}
-
-func (r *mutableStateTaskGeneratorImpl) getTimerSequence(now time.Time) TimerSequence {
-	timeSource := clock.NewEventTimeSource()
-	timeSource.Update(now)
-	return NewTimerSequence(timeSource, r.mutableState)
 }
 
 func (r *mutableStateTaskGeneratorImpl) getTargetDomainID(
 	targetDomainName string,
 ) (string, error) {
-
-	targetDomainID := r.mutableState.GetExecutionInfo().DomainID
 	if targetDomainName != "" {
-		targetDomainEntry, err := r.domainCache.GetDomain(targetDomainName)
-		if err != nil {
-			return "", err
-		}
-		targetDomainID = targetDomainEntry.GetInfo().ID
+		return r.domainCache.GetDomainID(targetDomainName)
 	}
 
-	return targetDomainID, nil
+	return r.mutableState.GetExecutionInfo().DomainID, nil
+}
+
+// isCrossClusterTask determines if the task belongs to the cross-cluster queue
+// this is only an best effort check
+// even if the task ended up in the wrong queue, the actual processing logic
+// will detect it and create a new task in the right queue.
+func (r *mutableStateTaskGeneratorImpl) isCrossClusterTask(
+	targetDomainID string,
+) (string, bool, error) {
+	sourceDomainID := r.mutableState.GetExecutionInfo().DomainID
+
+	// case 1: not cross domain task
+	if sourceDomainID == targetDomainID {
+		return "", false, nil
+	}
+
+	sourceDomainEntry, err := r.domainCache.GetDomainByID(sourceDomainID)
+	if err != nil {
+		return "", false, err
+	}
+
+	// case 2: source domain is not active in the current cluster
+	if !sourceDomainEntry.IsDomainActive() {
+		return "", false, nil
+	}
+
+	targetDomainEntry, err := r.domainCache.GetDomainByID(targetDomainID)
+	if err != nil {
+		return "", false, err
+	}
+	targetCluster := targetDomainEntry.GetReplicationConfig().ActiveClusterName
+
+	// case 3: target cluster is the same as source domain active cluster
+	// which is current cluster since source domain is active
+	if targetCluster == r.clusterMetadata.GetCurrentClusterName() {
+		return "", false, nil
+	}
+
+	return targetCluster, true, nil
 }
 
 func getNextDecisionTimeout(attempt int64, defaultStartToCloseTimeout time.Duration) time.Duration {

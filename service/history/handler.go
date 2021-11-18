@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination handler_mock.go -package history github.com/uber/cadence/service/history Handler
+
 package history
 
 import (
@@ -33,6 +35,7 @@ import (
 
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/definition"
+	"github.com/uber/cadence/common/future"
 	"github.com/uber/cadence/common/log"
 	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/metrics"
@@ -49,17 +52,21 @@ import (
 	"github.com/uber/cadence/service/history/task"
 )
 
-//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination handler_mock.go -package history github.com/uber/cadence/service/history Handler
+const shardOwnershipTransferDelay = 5 * time.Second
 
 type (
 	// Handler interface for history service
 	Handler interface {
+		common.Daemon
+
+		PrepareToStop(time.Duration) time.Duration
 		Health(context.Context) (*types.HealthStatus, error)
 		CloseShard(context.Context, *types.CloseShardRequest) error
 		DescribeHistoryHost(context.Context, *types.DescribeHistoryHostRequest) (*types.DescribeHistoryHostResponse, error)
 		DescribeMutableState(context.Context, *types.DescribeMutableStateRequest) (*types.DescribeMutableStateResponse, error)
 		DescribeQueue(context.Context, *types.DescribeQueueRequest) (*types.DescribeQueueResponse, error)
 		DescribeWorkflowExecution(context.Context, *types.HistoryDescribeWorkflowExecutionRequest) (*types.DescribeWorkflowExecutionResponse, error)
+		GetCrossClusterTasks(context.Context, *types.GetCrossClusterTasksRequest) (*types.GetCrossClusterTasksResponse, error)
 		GetDLQReplicationMessages(context.Context, *types.GetDLQReplicationMessagesRequest) (*types.GetDLQReplicationMessagesResponse, error)
 		GetMutableState(context.Context, *types.GetMutableStateRequest) (*types.GetMutableStateResponse, error)
 		GetReplicationMessages(context.Context, *types.GetReplicationMessagesRequest) (*types.GetReplicationMessagesResponse, error)
@@ -85,6 +92,7 @@ type (
 		RespondActivityTaskCanceled(context.Context, *types.HistoryRespondActivityTaskCanceledRequest) error
 		RespondActivityTaskCompleted(context.Context, *types.HistoryRespondActivityTaskCompletedRequest) error
 		RespondActivityTaskFailed(context.Context, *types.HistoryRespondActivityTaskFailedRequest) error
+		RespondCrossClusterTasksCompleted(context.Context, *types.RespondCrossClusterTasksCompletedRequest) (*types.RespondCrossClusterTasksCompletedResponse, error)
 		RespondDecisionTaskCompleted(context.Context, *types.HistoryRespondDecisionTaskCompletedRequest) (*types.HistoryRespondDecisionTaskCompletedResponse, error)
 		RespondDecisionTaskFailed(context.Context, *types.HistoryRespondDecisionTaskFailedRequest) error
 		ScheduleDecisionTask(context.Context, *types.ScheduleDecisionTaskRequest) error
@@ -94,6 +102,7 @@ type (
 		SyncActivity(context.Context, *types.SyncActivityRequest) error
 		SyncShardStatus(context.Context, *types.SyncShardStatusRequest) error
 		TerminateWorkflowExecution(context.Context, *types.HistoryTerminateWorkflowExecutionRequest) error
+		GetFailoverInfo(context.Context, *types.GetFailoverInfoRequest) (*types.GetFailoverInfoResponse, error)
 	}
 
 	// handlerImpl is an implementation for history service independent of wire protocol
@@ -133,7 +142,7 @@ var (
 func NewHandler(
 	resource resource.Resource,
 	config *config.Config,
-) *handlerImpl {
+) Handler {
 	handler := &handlerImpl{
 		Resource:        resource,
 		config:          config,
@@ -192,7 +201,7 @@ func (h *handlerImpl) Start() {
 	h.historyEventNotifier.Start()
 
 	h.failoverCoordinator = failover.NewCoordinator(
-		h.GetMetadataManager(),
+		h.GetDomainManager(),
 		h.GetHistoryClient(),
 		h.GetTimeSource(),
 		h.GetDomainCache(),
@@ -211,7 +220,7 @@ func (h *handlerImpl) Start() {
 
 // Stop stops the handler
 func (h *handlerImpl) Stop() {
-	h.PrepareToStop()
+	h.prepareToShutDown()
 	h.replicationTaskFetchers.Stop()
 	h.queueTaskProcessor.Stop()
 	h.controller.Stop()
@@ -220,7 +229,17 @@ func (h *handlerImpl) Stop() {
 }
 
 // PrepareToStop starts graceful traffic drain in preparation for shutdown
-func (h *handlerImpl) PrepareToStop() {
+func (h *handlerImpl) PrepareToStop(remainingTime time.Duration) time.Duration {
+	h.GetLogger().Info("ShutdownHandler: Initiating shardController shutdown")
+	h.controller.PrepareToStop()
+	h.GetLogger().Info("ShutdownHandler: Waiting for traffic to drain")
+	remainingTime = common.SleepWithMinDuration(shardOwnershipTransferDelay, remainingTime)
+	h.GetLogger().Info("ShutdownHandler: No longer taking rpc requests")
+	h.prepareToShutDown()
+	return remainingTime
+}
+
+func (h *handlerImpl) prepareToShutDown() {
 	atomic.StoreInt32(&h.shuttingDown, 1)
 }
 
@@ -236,7 +255,6 @@ func (h *handlerImpl) CreateEngine(
 		shardContext,
 		h.GetVisibilityManager(),
 		h.GetMatchingClient(),
-		h.GetHistoryClient(),
 		h.GetSDKClient(),
 		h.historyEventNotifier,
 		h.config,
@@ -760,6 +778,11 @@ func (h *handlerImpl) RemoveTask(
 		return executionMgr.CompleteReplicationTask(ctx, &persistence.CompleteReplicationTaskRequest{
 			TaskID: request.GetTaskID(),
 		})
+	case common.TaskTypeCrossCluster:
+		return executionMgr.CompleteCrossClusterTask(ctx, &persistence.CompleteCrossClusterTaskRequest{
+			TargetCluster: request.GetClusterName(),
+			TaskID:        request.GetTaskID(),
+		})
 	default:
 		return errInvalidTaskType
 	}
@@ -796,6 +819,8 @@ func (h *handlerImpl) ResetQueue(
 		err = engine.ResetTransferQueue(ctx, request.GetClusterName())
 	case common.TaskTypeTimer:
 		err = engine.ResetTimerQueue(ctx, request.GetClusterName())
+	case common.TaskTypeCrossCluster:
+		err = engine.ResetCrossClusterQueue(ctx, request.GetClusterName())
 	default:
 		err = errInvalidTaskType
 	}
@@ -828,6 +853,8 @@ func (h *handlerImpl) DescribeQueue(
 		resp, err = engine.DescribeTransferQueue(ctx, request.GetClusterName())
 	case common.TaskTypeTimer:
 		resp, err = engine.DescribeTimerQueue(ctx, request.GetClusterName())
+	case common.TaskTypeCrossCluster:
+		resp, err = engine.DescribeCrossClusterQueue(ctx, request.GetClusterName())
 	default:
 		err = errInvalidTaskType
 	}
@@ -1836,6 +1863,123 @@ func (h *handlerImpl) NotifyFailoverMarkers(
 	return nil
 }
 
+func (h *handlerImpl) GetCrossClusterTasks(
+	ctx context.Context,
+	request *types.GetCrossClusterTasksRequest,
+) (resp *types.GetCrossClusterTasksResponse, retError error) {
+	defer log.CapturePanic(h.GetLogger(), &retError)
+	h.startWG.Wait()
+
+	_, sw := h.startRequestProfile(ctx, metrics.HistoryGetCrossClusterTasksScope)
+	defer sw.Stop()
+
+	if h.isShuttingDown() {
+		return nil, errShuttingDown
+	}
+
+	ctx, cancel := common.CreateChildContext(ctx, 0.05)
+	defer cancel()
+
+	futureByShardID := make(map[int32]future.Future, len(request.ShardIDs))
+	for _, shardID := range request.ShardIDs {
+		future, settable := future.NewFuture()
+		futureByShardID[shardID] = future
+		go func(shardID int32) {
+			logger := h.GetLogger().WithTags(tag.ShardID(int(shardID)))
+			engine, err := h.controller.GetEngineForShard(int(shardID))
+			if err != nil {
+				logger.Error("History engine not found for shard", tag.Error(err))
+				var owner string
+				if info, err := h.GetHistoryServiceResolver().Lookup(strconv.Itoa(int(shardID))); err == nil {
+					owner = info.GetAddress()
+				}
+				settable.Set(nil, shard.CreateShardOwnershipLostError(h.GetHostInfo().GetAddress(), owner))
+				return
+			}
+
+			if tasks, err := engine.GetCrossClusterTasks(ctx, request.TargetCluster); err != nil {
+				logger.Error("Failed to get cross cluster tasks", tag.Error(err))
+				settable.Set(nil, h.convertError(err))
+			} else {
+				settable.Set(tasks, nil)
+			}
+		}(shardID)
+	}
+
+	response := &types.GetCrossClusterTasksResponse{
+		TasksByShard:       make(map[int32][]*types.CrossClusterTaskRequest),
+		FailedCauseByShard: make(map[int32]types.GetTaskFailedCause),
+	}
+	for shardID, future := range futureByShardID {
+		var taskRequests []*types.CrossClusterTaskRequest
+		if futureErr := future.Get(ctx, &taskRequests); futureErr != nil {
+			response.FailedCauseByShard[shardID] = common.ConvertErrToGetTaskFailedCause(futureErr)
+		} else {
+			response.TasksByShard[shardID] = taskRequests
+		}
+	}
+	// not using a waitGroup for created goroutines here
+	// as once all futures are unblocked,
+	// those goroutines will eventually be completed
+
+	return response, nil
+}
+
+func (h *handlerImpl) RespondCrossClusterTasksCompleted(
+	ctx context.Context,
+	request *types.RespondCrossClusterTasksCompletedRequest,
+) (resp *types.RespondCrossClusterTasksCompletedResponse, retError error) {
+	defer log.CapturePanic(h.GetLogger(), &retError)
+	h.startWG.Wait()
+
+	scope, sw := h.startRequestProfile(ctx, metrics.HistoryRespondCrossClusterTasksCompletedScope)
+	defer sw.Stop()
+
+	if h.isShuttingDown() {
+		return nil, errShuttingDown
+	}
+
+	engine, err := h.controller.GetEngineForShard(int(request.GetShardID()))
+	if err != nil {
+		return nil, h.error(err, scope, "", "")
+	}
+
+	err = engine.RespondCrossClusterTasksCompleted(ctx, request.TargetCluster, request.TaskResponses)
+	if err != nil {
+		return nil, h.error(err, scope, "", "")
+	}
+
+	response := &types.RespondCrossClusterTasksCompletedResponse{}
+	if request.FetchNewTasks {
+		response.Tasks, err = engine.GetCrossClusterTasks(ctx, request.TargetCluster)
+		if err != nil {
+			return nil, h.error(err, scope, "", "")
+		}
+	}
+	return response, nil
+}
+
+func (h *handlerImpl) GetFailoverInfo(
+	ctx context.Context,
+	request *types.GetFailoverInfoRequest,
+) (resp *types.GetFailoverInfoResponse, retError error) {
+	defer log.CapturePanic(h.GetLogger(), &retError)
+	h.startWG.Wait()
+
+	scope, sw := h.startRequestProfile(ctx, metrics.HistoryGetFailoverInfoScope)
+	defer sw.Stop()
+
+	if h.isShuttingDown() {
+		return nil, errShuttingDown
+	}
+
+	resp, err := h.failoverCoordinator.GetFailoverInfo(request.GetDomainID())
+	if err != nil {
+		return nil, h.error(err, scope, request.GetDomainID(), "")
+	}
+	return resp, nil
+}
+
 // convertError is a helper method to convert ShardOwnershipLostError from persistence layer returned by various
 // HistoryEngine API calls to ShardOwnershipLost error return by HistoryService for client to be redirected to the
 // correct shard.
@@ -1887,6 +2031,8 @@ func (h *handlerImpl) updateErrorMetric(
 		scope.IncCounter(metrics.CadenceErrExecutionAlreadyStartedCounter)
 	case *types.EntityNotExistsError:
 		scope.IncCounter(metrics.CadenceErrEntityNotExistsCounter)
+	case *types.WorkflowExecutionAlreadyCompletedError:
+		scope.IncCounter(metrics.CadenceErrWorkflowExecutionAlreadyCompletedCounter)
 	case *types.CancellationAlreadyRequestedError:
 		scope.IncCounter(metrics.CadenceErrCancellationAlreadyRequestedCounter)
 	case *types.LimitExceededError:

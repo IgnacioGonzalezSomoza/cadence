@@ -58,6 +58,22 @@ func (c *retryableClient) AddSearchAttribute(
 	return backoff.Retry(op, c.policy, c.isRetryable)
 }
 
+func (c *retryableClient) DescribeShardDistribution(
+	ctx context.Context,
+	request *types.DescribeShardDistributionRequest,
+	opts ...yarpc.CallOption,
+) (*types.DescribeShardDistributionResponse, error) {
+
+	var resp *types.DescribeShardDistributionResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.DescribeShardDistribution(ctx, request, opts...)
+		return err
+	}
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}
+
 func (c *retryableClient) DescribeHistoryHost(
 	ctx context.Context,
 	request *types.DescribeHistoryHostRequest,
@@ -296,4 +312,71 @@ func (c *retryableClient) ResendReplicationTasks(
 		return c.client.ResendReplicationTasks(ctx, request, opts...)
 	}
 	return backoff.Retry(op, c.policy, c.isRetryable)
+}
+
+func (c *retryableClient) GetCrossClusterTasks(
+	ctx context.Context,
+	request *types.GetCrossClusterTasksRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetCrossClusterTasksResponse, error) {
+	var resp *types.GetCrossClusterTasksResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.GetCrossClusterTasks(ctx, request, opts...)
+		return err
+	}
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}
+
+func (c *retryableClient) GetDynamicConfig(
+	ctx context.Context,
+	request *types.GetDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetDynamicConfigResponse, error) {
+	var resp *types.GetDynamicConfigResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.GetDynamicConfig(ctx, request, opts...)
+		return err
+	}
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}
+
+func (c *retryableClient) UpdateDynamicConfig(
+	ctx context.Context,
+	request *types.UpdateDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) error {
+	op := func() error {
+		return c.client.UpdateDynamicConfig(ctx, request, opts...)
+	}
+	return backoff.Retry(op, c.policy, c.isRetryable)
+}
+
+func (c *retryableClient) RestoreDynamicConfig(
+	ctx context.Context,
+	request *types.RestoreDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) error {
+	op := func() error {
+		return c.client.RestoreDynamicConfig(ctx, request, opts...)
+	}
+	return backoff.Retry(op, c.policy, c.isRetryable)
+}
+
+func (c *retryableClient) ListDynamicConfig(
+	ctx context.Context,
+	request *types.ListDynamicConfigRequest,
+	opts ...yarpc.CallOption,
+) (*types.ListDynamicConfigResponse, error) {
+	var resp *types.ListDynamicConfigResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.ListDynamicConfig(ctx, request, opts...)
+		return err
+	}
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
 }

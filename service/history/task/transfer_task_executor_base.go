@@ -30,6 +30,7 @@ import (
 	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/persistence"
+	"github.com/uber/cadence/common/service"
 	"github.com/uber/cadence/common/types"
 	"github.com/uber/cadence/service/history/config"
 	"github.com/uber/cadence/service/history/execution"
@@ -64,7 +65,6 @@ func newTransferTaskExecutorBase(
 	archiverClient archiver.Client,
 	executionCache *execution.Cache,
 	logger log.Logger,
-	metricsClient metrics.Client,
 	config *config.Config,
 ) *transferTaskExecutorBase {
 	return &transferTaskExecutorBase{
@@ -72,7 +72,7 @@ func newTransferTaskExecutorBase(
 		archiverClient: archiverClient,
 		executionCache: executionCache,
 		logger:         logger,
-		metricsClient:  metricsClient,
+		metricsClient:  shard.GetMetricsClient(),
 		matchingClient: shard.GetService().GetMatchingClient(),
 		visibilityMgr:  shard.GetService().GetVisibilityManager(),
 		config:         config,
@@ -142,6 +142,7 @@ func (t *transferTaskExecutorBase) recordWorkflowStarted(
 	workflowTimeout int32,
 	taskID int64,
 	taskList string,
+	isCron bool,
 	visibilityMemo *types.Memo,
 	searchAttributes map[string][]byte,
 ) error {
@@ -175,6 +176,7 @@ func (t *transferTaskExecutorBase) recordWorkflowStarted(
 		TaskID:             taskID,
 		Memo:               visibilityMemo,
 		TaskList:           taskList,
+		IsCron:             isCron,
 		SearchAttributes:   searchAttributes,
 	}
 
@@ -193,6 +195,7 @@ func (t *transferTaskExecutorBase) upsertWorkflowExecution(
 	taskID int64,
 	taskList string,
 	visibilityMemo *types.Memo,
+	isCron bool,
 	searchAttributes map[string][]byte,
 ) error {
 
@@ -218,6 +221,7 @@ func (t *transferTaskExecutorBase) upsertWorkflowExecution(
 		TaskID:             taskID,
 		Memo:               visibilityMemo,
 		TaskList:           taskList,
+		IsCron:             isCron,
 		SearchAttributes:   searchAttributes,
 	}
 
@@ -238,6 +242,7 @@ func (t *transferTaskExecutorBase) recordWorkflowClosed(
 	taskID int64,
 	visibilityMemo *types.Memo,
 	taskList string,
+	isCron bool,
 	searchAttributes map[string][]byte,
 ) error {
 
@@ -286,6 +291,7 @@ func (t *transferTaskExecutorBase) recordWorkflowClosed(
 			Memo:               visibilityMemo,
 			TaskList:           taskList,
 			SearchAttributes:   searchAttributes,
+			IsCron:             isCron,
 		}); err != nil {
 			return err
 		}
@@ -312,7 +318,7 @@ func (t *transferTaskExecutorBase) recordWorkflowClosed(
 				URI:                domainEntry.GetConfig().HistoryArchivalURI,
 				Targets:            []archiver.ArchivalTarget{archiver.ArchiveTargetVisibility},
 			},
-			CallerService:        common.HistoryServiceName,
+			CallerService:        service.History,
 			AttemptArchiveInline: true, // archive visibility inline by default
 		})
 		return err

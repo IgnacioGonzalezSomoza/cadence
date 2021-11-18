@@ -1259,6 +1259,334 @@ func (v *FailoverMarkerToken) IsSetFailoverMarker() bool {
 	return v != nil && v.FailoverMarker != nil
 }
 
+type GetFailoverInfoRequest struct {
+	DomainID *string `json:"domainID,omitempty"`
+}
+
+// ToWire translates a GetFailoverInfoRequest struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *GetFailoverInfoRequest) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.DomainID != nil {
+		w, err = wire.NewValueString(*(v.DomainID)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 10, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a GetFailoverInfoRequest struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a GetFailoverInfoRequest struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v GetFailoverInfoRequest
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *GetFailoverInfoRequest) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 10:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.DomainID = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a GetFailoverInfoRequest
+// struct.
+func (v *GetFailoverInfoRequest) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.DomainID != nil {
+		fields[i] = fmt.Sprintf("DomainID: %v", *(v.DomainID))
+		i++
+	}
+
+	return fmt.Sprintf("GetFailoverInfoRequest{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this GetFailoverInfoRequest match the
+// provided GetFailoverInfoRequest.
+//
+// This function performs a deep comparison.
+func (v *GetFailoverInfoRequest) Equals(rhs *GetFailoverInfoRequest) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !_String_EqualsPtr(v.DomainID, rhs.DomainID) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of GetFailoverInfoRequest.
+func (v *GetFailoverInfoRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.DomainID != nil {
+		enc.AddString("domainID", *v.DomainID)
+	}
+	return err
+}
+
+// GetDomainID returns the value of DomainID if it is set or its
+// zero value if it is unset.
+func (v *GetFailoverInfoRequest) GetDomainID() (o string) {
+	if v != nil && v.DomainID != nil {
+		return *v.DomainID
+	}
+
+	return
+}
+
+// IsSetDomainID returns true if DomainID is not nil.
+func (v *GetFailoverInfoRequest) IsSetDomainID() bool {
+	return v != nil && v.DomainID != nil
+}
+
+type GetFailoverInfoResponse struct {
+	CompletedShardCount *int32  `json:"completedShardCount,omitempty"`
+	PendingShards       []int32 `json:"pendingShards,omitempty"`
+}
+
+// ToWire translates a GetFailoverInfoResponse struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *GetFailoverInfoResponse) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.CompletedShardCount != nil {
+		w, err = wire.NewValueI32(*(v.CompletedShardCount)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 10, Value: w}
+		i++
+	}
+	if v.PendingShards != nil {
+		w, err = wire.NewValueList(_List_I32_ValueList(v.PendingShards)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 20, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a GetFailoverInfoResponse struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a GetFailoverInfoResponse struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v GetFailoverInfoResponse
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *GetFailoverInfoResponse) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 10:
+			if field.Value.Type() == wire.TI32 {
+				var x int32
+				x, err = field.Value.GetI32(), error(nil)
+				v.CompletedShardCount = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 20:
+			if field.Value.Type() == wire.TList {
+				v.PendingShards, err = _List_I32_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a GetFailoverInfoResponse
+// struct.
+func (v *GetFailoverInfoResponse) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [2]string
+	i := 0
+	if v.CompletedShardCount != nil {
+		fields[i] = fmt.Sprintf("CompletedShardCount: %v", *(v.CompletedShardCount))
+		i++
+	}
+	if v.PendingShards != nil {
+		fields[i] = fmt.Sprintf("PendingShards: %v", v.PendingShards)
+		i++
+	}
+
+	return fmt.Sprintf("GetFailoverInfoResponse{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _I32_EqualsPtr(lhs, rhs *int32) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+// Equals returns true if all the fields of this GetFailoverInfoResponse match the
+// provided GetFailoverInfoResponse.
+//
+// This function performs a deep comparison.
+func (v *GetFailoverInfoResponse) Equals(rhs *GetFailoverInfoResponse) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !_I32_EqualsPtr(v.CompletedShardCount, rhs.CompletedShardCount) {
+		return false
+	}
+	if !((v.PendingShards == nil && rhs.PendingShards == nil) || (v.PendingShards != nil && rhs.PendingShards != nil && _List_I32_Equals(v.PendingShards, rhs.PendingShards))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of GetFailoverInfoResponse.
+func (v *GetFailoverInfoResponse) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.CompletedShardCount != nil {
+		enc.AddInt32("completedShardCount", *v.CompletedShardCount)
+	}
+	if v.PendingShards != nil {
+		err = multierr.Append(err, enc.AddArray("pendingShards", (_List_I32_Zapper)(v.PendingShards)))
+	}
+	return err
+}
+
+// GetCompletedShardCount returns the value of CompletedShardCount if it is set or its
+// zero value if it is unset.
+func (v *GetFailoverInfoResponse) GetCompletedShardCount() (o int32) {
+	if v != nil && v.CompletedShardCount != nil {
+		return *v.CompletedShardCount
+	}
+
+	return
+}
+
+// IsSetCompletedShardCount returns true if CompletedShardCount is not nil.
+func (v *GetFailoverInfoResponse) IsSetCompletedShardCount() bool {
+	return v != nil && v.CompletedShardCount != nil
+}
+
+// GetPendingShards returns the value of PendingShards if it is set or its
+// zero value if it is unset.
+func (v *GetFailoverInfoResponse) GetPendingShards() (o []int32) {
+	if v != nil && v.PendingShards != nil {
+		return v.PendingShards
+	}
+
+	return
+}
+
+// IsSetPendingShards returns true if PendingShards is not nil.
+func (v *GetFailoverInfoResponse) IsSetPendingShards() bool {
+	return v != nil && v.PendingShards != nil
+}
+
 type GetMutableStateRequest struct {
 	DomainUUID          *string                   `json:"domainUUID,omitempty"`
 	Execution           *shared.WorkflowExecution `json:"execution,omitempty"`
@@ -2024,16 +2352,6 @@ func (v *GetMutableStateResponse) String() string {
 	}
 
 	return fmt.Sprintf("GetMutableStateResponse{%v}", strings.Join(fields[:i], ", "))
-}
-
-func _I32_EqualsPtr(lhs, rhs *int32) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
 }
 
 // Equals returns true if all the fields of this GetMutableStateResponse match the
@@ -12838,7 +13156,7 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "history",
 	Package:  "github.com/uber/cadence/.gen/go/history",
 	FilePath: "history.thrift",
-	SHA1:     "07f5e84818e0462394d7ebe394645b7fb601443e",
+	SHA1:     "92917991d88d7f032172f4b56b3d57451daf1eb5",
 	Includes: []*thriftreflect.ThriftModule{
 		replicator.ThriftModule,
 		shared.ThriftModule,
@@ -12846,7 +13164,7 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Raw: rawIDL,
 }
 
-const rawIDL = "// Copyright (c) 2017 Uber Technologies, Inc.\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included in\n// all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n// THE SOFTWARE.\n\ninclude \"shared.thrift\"\ninclude \"replicator.thrift\"\n\nnamespace java com.uber.cadence.history\n\nexception EventAlreadyStartedError {\n  1: required string message\n}\n\nexception ShardOwnershipLostError {\n  10: optional string message\n  20: optional string owner\n}\n\nstruct ParentExecutionInfo {\n  10: optional string domainUUID\n  15: optional string domain\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") initiatedId\n}\n\nstruct StartWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.StartWorkflowExecutionRequest startRequest\n  30: optional ParentExecutionInfo parentExecutionInfo\n  40: optional i32 attempt\n  50: optional i64 (js.type = \"Long\") expirationTimestamp\n  55: optional shared.ContinueAsNewInitiator continueAsNewInitiator\n  56: optional string continuedFailureReason\n  57: optional binary continuedFailureDetails\n  58: optional binary lastCompletionResult\n  60: optional i32 firstDecisionTaskBackoffSeconds\n}\n\nstruct DescribeMutableStateRequest{\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n}\n\nstruct DescribeMutableStateResponse{\n  30: optional string mutableStateInCache\n  40: optional string mutableStateInDatabase\n}\n\nstruct GetMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") expectedNextEventId\n  40: optional binary currentBranchToken\n}\n\nstruct GetMutableStateResponse {\n  10: optional shared.WorkflowExecution execution\n  20: optional shared.WorkflowType workflowType\n  30: optional i64 (js.type = \"Long\") NextEventId\n  35: optional i64 (js.type = \"Long\") PreviousStartedEventId\n  40: optional i64 (js.type = \"Long\") LastFirstEventId\n  50: optional shared.TaskList taskList\n  60: optional shared.TaskList stickyTaskList\n  70: optional string clientLibraryVersion\n  80: optional string clientFeatureVersion\n  90: optional string clientImpl\n  //TODO: isWorkflowRunning is deprecating. workflowState is going replace this field\n  100: optional bool isWorkflowRunning\n  110: optional i32 stickyTaskListScheduleToStartTimeout\n  120: optional i32 eventStoreVersion\n  130: optional binary currentBranchToken\n  // TODO: when migrating to gRPC, make this a enum\n  // TODO: when migrating to gRPC, unify internal & external representation\n  // NOTE: workflowState & workflowCloseState are the same as persistence representation\n  150: optional i32 workflowState\n  160: optional i32 workflowCloseState\n  170: optional shared.VersionHistories versionHistories\n  180: optional bool isStickyTaskListEnabled\n}\n\nstruct PollMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") expectedNextEventId\n  40: optional binary currentBranchToken\n}\n\nstruct PollMutableStateResponse {\n  10: optional shared.WorkflowExecution execution\n  20: optional shared.WorkflowType workflowType\n  30: optional i64 (js.type = \"Long\") NextEventId\n  35: optional i64 (js.type = \"Long\") PreviousStartedEventId\n  40: optional i64 (js.type = \"Long\") LastFirstEventId\n  50: optional shared.TaskList taskList\n  60: optional shared.TaskList stickyTaskList\n  70: optional string clientLibraryVersion\n  80: optional string clientFeatureVersion\n  90: optional string clientImpl\n  100: optional i32 stickyTaskListScheduleToStartTimeout\n  110: optional binary currentBranchToken\n  130: optional shared.VersionHistories versionHistories\n  // TODO: when migrating to gRPC, make this a enum\n  // TODO: when migrating to gRPC, unify internal & external representation\n  // NOTE: workflowState & workflowCloseState are the same as persistence representation\n  140: optional i32 workflowState\n  150: optional i32 workflowCloseState\n}\n\nstruct ResetStickyTaskListRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n}\n\nstruct ResetStickyTaskListResponse {\n  // The reason to keep this response is to allow returning\n  // information in the future.\n}\n\nstruct RespondDecisionTaskCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondDecisionTaskCompletedRequest completeRequest\n}\n\nstruct RespondDecisionTaskCompletedResponse {\n  10: optional RecordDecisionTaskStartedResponse startedResponse\n  20: optional map<string,shared.ActivityLocalDispatchInfo> activitiesToDispatchLocally\n}\n\nstruct RespondDecisionTaskFailedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondDecisionTaskFailedRequest failedRequest\n}\n\nstruct RecordActivityTaskHeartbeatRequest {\n  10: optional string domainUUID\n  20: optional shared.RecordActivityTaskHeartbeatRequest heartbeatRequest\n}\n\nstruct RespondActivityTaskCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskCompletedRequest completeRequest\n}\n\nstruct RespondActivityTaskFailedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskFailedRequest failedRequest\n}\n\nstruct RespondActivityTaskCanceledRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskCanceledRequest cancelRequest\n}\n\nstruct RefreshWorkflowTasksRequest {\n  10: optional string domainUIID\n  20: optional shared.RefreshWorkflowTasksRequest request\n}\n\nstruct RecordActivityTaskStartedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") scheduleId\n  40: optional i64 (js.type = \"Long\") taskId\n  45: optional string requestId // Unique id of each poll request. Used to ensure at most once delivery of tasks.\n  50: optional shared.PollForActivityTaskRequest pollRequest\n}\n\nstruct RecordActivityTaskStartedResponse {\n  20: optional shared.HistoryEvent scheduledEvent\n  30: optional i64 (js.type = \"Long\") startedTimestamp\n  40: optional i64 (js.type = \"Long\") attempt\n  50: optional i64 (js.type = \"Long\") scheduledTimestampOfThisAttempt\n  60: optional binary heartbeatDetails\n  70: optional shared.WorkflowType workflowType\n  80: optional string workflowDomain\n}\n\nstruct RecordDecisionTaskStartedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") scheduleId\n  40: optional i64 (js.type = \"Long\") taskId\n  45: optional string requestId // Unique id of each poll request. Used to ensure at most once delivery of tasks.\n  50: optional shared.PollForDecisionTaskRequest pollRequest\n}\n\nstruct RecordDecisionTaskStartedResponse {\n  10: optional shared.WorkflowType workflowType\n  20: optional i64 (js.type = \"Long\") previousStartedEventId\n  30: optional i64 (js.type = \"Long\") scheduledEventId\n  40: optional i64 (js.type = \"Long\") startedEventId\n  50: optional i64 (js.type = \"Long\") nextEventId\n  60: optional i64 (js.type = \"Long\") attempt\n  70: optional bool stickyExecutionEnabled\n  80: optional shared.TransientDecisionInfo decisionInfo\n  90: optional shared.TaskList WorkflowExecutionTaskList\n  100: optional i32 eventStoreVersion\n  110: optional binary branchToken\n  120: optional i64 (js.type = \"Long\") scheduledTimestamp\n  130: optional i64 (js.type = \"Long\") startedTimestamp\n  140: optional map<string, shared.WorkflowQuery> queries\n}\n\nstruct SignalWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.SignalWorkflowExecutionRequest signalRequest\n  30: optional shared.WorkflowExecution externalWorkflowExecution\n  40: optional bool childWorkflowOnly\n}\n\nstruct SignalWithStartWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.SignalWithStartWorkflowExecutionRequest signalWithStartRequest\n}\n\nstruct RemoveSignalMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional string requestId\n}\n\nstruct TerminateWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.TerminateWorkflowExecutionRequest terminateRequest\n}\n\nstruct ResetWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.ResetWorkflowExecutionRequest resetRequest\n}\n\nstruct RequestCancelWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.RequestCancelWorkflowExecutionRequest cancelRequest\n  30: optional i64 (js.type = \"Long\") externalInitiatedEventId\n  40: optional shared.WorkflowExecution externalWorkflowExecution\n  50: optional bool childWorkflowOnly\n}\n\nstruct ScheduleDecisionTaskRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional bool isFirstDecision\n}\n\nstruct DescribeWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.DescribeWorkflowExecutionRequest request\n}\n\n/**\n* RecordChildExecutionCompletedRequest is used for reporting the completion of child execution to parent workflow\n* execution which started it.  When a child execution is completed it creates this request and calls the\n* RecordChildExecutionCompleted API with the workflowExecution of parent.  It also sets the completedExecution of the\n* child as it could potentially be different than the ChildExecutionStartedEvent of parent in the situation when\n* child creates multiple runs through ContinueAsNew before finally completing.\n**/\nstruct RecordChildExecutionCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") initiatedId\n  40: optional shared.WorkflowExecution completedExecution\n  50: optional shared.HistoryEvent completionEvent\n}\n\nstruct ReplicateEventsV2Request {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional list<shared.VersionHistoryItem> versionHistoryItems\n  40: optional shared.DataBlob events\n  // new run events does not need version history since there is no prior events\n  60: optional shared.DataBlob newRunEvents\n}\n\nstruct SyncShardStatusRequest {\n  10: optional string sourceCluster\n  20: optional i64 (js.type = \"Long\") shardId\n  30: optional i64 (js.type = \"Long\") timestamp\n}\n\nstruct SyncActivityRequest {\n  10: optional string domainId\n  20: optional string workflowId\n  30: optional string runId\n  40: optional i64 (js.type = \"Long\") version\n  50: optional i64 (js.type = \"Long\") scheduledId\n  60: optional i64 (js.type = \"Long\") scheduledTime\n  70: optional i64 (js.type = \"Long\") startedId\n  80: optional i64 (js.type = \"Long\") startedTime\n  90: optional i64 (js.type = \"Long\") lastHeartbeatTime\n  100: optional binary details\n  110: optional i32 attempt\n  120: optional string lastFailureReason\n  130: optional string lastWorkerIdentity\n  140: optional binary lastFailureDetails\n  150: optional shared.VersionHistory versionHistory\n}\n\nstruct QueryWorkflowRequest {\n  10: optional string domainUUID\n  20: optional shared.QueryWorkflowRequest request\n}\n\nstruct QueryWorkflowResponse {\n  10: optional shared.QueryWorkflowResponse response\n}\n\nstruct ReapplyEventsRequest {\n  10: optional string domainUUID\n  20: optional shared.ReapplyEventsRequest request\n}\n\nstruct FailoverMarkerToken {\n  10: optional list<i32> shardIDs\n  20: optional replicator.FailoverMarkerAttributes failoverMarker\n}\n\nstruct NotifyFailoverMarkersRequest {\n  10: optional list<FailoverMarkerToken> failoverMarkerTokens\n}\n\nstruct ProcessingQueueStates {\n  10: optional map<string, list<ProcessingQueueState>> statesByCluster\n}\n\nstruct ProcessingQueueState {\n  10: optional i32 level\n  20: optional i64 ackLevel\n  30: optional i64 maxLevel\n  40: optional DomainFilter domainFilter\n}\n\nstruct DomainFilter {\n  10: optional list<string> domainIDs\n  20: optional bool reverseMatch\n}\n\n/**\n* HistoryService provides API to start a new long running workflow instance, as well as query and update the history\n* of workflow instances already created.\n**/\nservice HistoryService {\n  /**\n  * StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n  * 'WorkflowExecutionStarted' event in history and also schedule the first DecisionTask for the worker to make the\n  * first decision for this instance.  It will return 'WorkflowExecutionAlreadyStartedError', if an instance already\n  * exists with same workflowId.\n  **/\n  shared.StartWorkflowExecutionResponse StartWorkflowExecution(1: StartWorkflowExecutionRequest startRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.WorkflowExecutionAlreadyStartedError sessionAlreadyExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * Returns the information from mutable state of workflow execution.\n  * It fails with 'EntityNotExistError' if specified workflow execution in unknown to the service.\n  * It returns CurrentBranchChangedError if the workflow version branch has changed.\n  **/\n  GetMutableStateResponse GetMutableState(1: GetMutableStateRequest getRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.CurrentBranchChangedError currentBranchChangedError,\n    )\n\n  /**\n   * Returns the information from mutable state of workflow execution.\n   * It fails with 'EntityNotExistError' if specified workflow execution in unknown to the service.\n   * It returns CurrentBranchChangedError if the workflow version branch has changed.\n   **/\n   PollMutableStateResponse PollMutableState(1: PollMutableStateRequest pollRequest)\n     throws (\n       1: shared.BadRequestError badRequestError,\n       2: shared.InternalServiceError internalServiceError,\n       3: shared.EntityNotExistsError entityNotExistError,\n       4: ShardOwnershipLostError shardOwnershipLostError,\n       5: shared.LimitExceededError limitExceededError,\n       6: shared.ServiceBusyError serviceBusyError,\n       7: shared.CurrentBranchChangedError currentBranchChangedError,\n     )\n\n  /**\n  * Reset the sticky tasklist related information in mutable state of a given workflow.\n  * Things cleared are:\n  * 1. StickyTaskList\n  * 2. StickyScheduleToStartTimeout\n  * 3. ClientLibraryVersion\n  * 4. ClientFeatureVersion\n  * 5. ClientImpl\n  **/\n  ResetStickyTaskListResponse ResetStickyTaskList(1: ResetStickyTaskListRequest resetRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RecordDecisionTaskStarted is called by the Matchingservice before it hands a decision task to the application worker in response to\n  * a PollForDecisionTask call. It records in the history the event that the decision task has started. It will return 'EventAlreadyStartedError',\n  * if the workflow's execution history already includes a record of the event starting.\n  **/\n  RecordDecisionTaskStartedResponse RecordDecisionTaskStarted(1: RecordDecisionTaskStartedRequest addRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: EventAlreadyStartedError eventAlreadyStartedError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RecordActivityTaskStarted is called by the Matchingservice before it hands a decision task to the application worker in response to\n  * a PollForActivityTask call. It records in the history the event that the decision task has started. It will return 'EventAlreadyStartedError',\n  * if the workflow's execution history already includes a record of the event starting.\n  **/\n  RecordActivityTaskStartedResponse RecordActivityTaskStarted(1: RecordActivityTaskStartedRequest addRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: EventAlreadyStartedError eventAlreadyStartedError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondDecisionTaskCompleted is called by application worker to complete a DecisionTask handed as a result of\n  * 'PollForDecisionTask' API call.  Completing a DecisionTask will result in new events for the workflow execution and\n  * potentially new ActivityTask being created for corresponding decisions.  It will also create a DecisionTaskCompleted\n  * event in the history for that session.  Use the 'taskToken' provided as response of PollForDecisionTask API call\n  * for completing the DecisionTask.\n  **/\n  RespondDecisionTaskCompletedResponse RespondDecisionTaskCompleted(1: RespondDecisionTaskCompletedRequest completeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondDecisionTaskFailed is called by application worker to indicate failure.  This results in\n  * DecisionTaskFailedEvent written to the history and a new DecisionTask created.  This API can be used by client to\n  * either clear sticky tasklist or report ny panics during DecisionTask processing.\n  **/\n  void RespondDecisionTaskFailed(1: RespondDecisionTaskFailedRequest failedRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RecordActivityTaskHeartbeat is called by application worker while it is processing an ActivityTask.  If worker fails\n  * to heartbeat within 'heartbeatTimeoutSeconds' interval for the ActivityTask, then it will be marked as timedout and\n  * 'ActivityTaskTimedOut' event will be written to the workflow history.  Calling 'RecordActivityTaskHeartbeat' will\n  * fail with 'EntityNotExistsError' in such situations.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for heartbeating.\n  **/\n  shared.RecordActivityTaskHeartbeatResponse RecordActivityTaskHeartbeat(1: RecordActivityTaskHeartbeatRequest heartbeatRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondActivityTaskCompleted is called by application worker when it is done processing an ActivityTask.  It will\n  * result in a new 'ActivityTaskCompleted' event being written to the workflow history and a new DecisionTask\n  * created for the workflow so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void  RespondActivityTaskCompleted(1: RespondActivityTaskCompletedRequest completeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondActivityTaskFailed is called by application worker when it is done processing an ActivityTask.  It will\n  * result in a new 'ActivityTaskFailed' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void RespondActivityTaskFailed(1: RespondActivityTaskFailedRequest failRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondActivityTaskCanceled is called by application worker when it is successfully canceled an ActivityTask.  It will\n  * result in a new 'ActivityTaskCanceled' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void RespondActivityTaskCanceled(1: RespondActivityTaskCanceledRequest canceledRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * SignalWorkflowExecution is used to send a signal event to running workflow execution.  This results in\n  * WorkflowExecutionSignaled event recorded in the history and a decision task being created for the execution.\n  **/\n  void SignalWorkflowExecution(1: SignalWorkflowExecutionRequest signalRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.LimitExceededError limitExceededError,\n    )\n\n  /**\n  * SignalWithStartWorkflowExecution is used to ensure sending a signal event to a workflow execution.\n  * If workflow is running, this results in WorkflowExecutionSignaled event recorded in the history\n  * and a decision task being created for the execution.\n  * If workflow is not running or not found, it will first try start workflow with given WorkflowIDResuePolicy,\n  * and record WorkflowExecutionStarted and WorkflowExecutionSignaled event in case of success.\n  * It will return `WorkflowExecutionAlreadyStartedError` if start workflow failed with given policy.\n  **/\n  shared.StartWorkflowExecutionResponse SignalWithStartWorkflowExecution(1: SignalWithStartWorkflowExecutionRequest signalWithStartRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: ShardOwnershipLostError shardOwnershipLostError,\n      4: shared.DomainNotActiveError domainNotActiveError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.WorkflowExecutionAlreadyStartedError workflowAlreadyStartedError,\n    )\n\n  /**\n  * RemoveSignalMutableState is used to remove a signal request ID that was previously recorded.  This is currently\n  * used to clean execution info when signal decision finished.\n  **/\n  void RemoveSignalMutableState(1: RemoveSignalMutableStateRequest removeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * TerminateWorkflowExecution terminates an existing workflow execution by recording WorkflowExecutionTerminated event\n  * in the history and immediately terminating the execution instance.\n  **/\n  void TerminateWorkflowExecution(1: TerminateWorkflowExecutionRequest terminateRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * ResetWorkflowExecution reset an existing workflow execution by a firstEventID of a existing event batch\n  * in the history and immediately terminating the current execution instance.\n  * After reset, the history will grow from nextFirstEventID.\n  **/\n  shared.ResetWorkflowExecutionResponse ResetWorkflowExecution(1: ResetWorkflowExecutionRequest resetRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RequestCancelWorkflowExecution is called by application worker when it wants to request cancellation of a workflow instance.\n  * It will result in a new 'WorkflowExecutionCancelRequested' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made. It fails with 'EntityNotExistsError' if the workflow is not valid\n  * anymore due to completion or doesn't exist.\n  **/\n  void RequestCancelWorkflowExecution(1: RequestCancelWorkflowExecutionRequest cancelRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.CancellationAlreadyRequestedError cancellationAlreadyRequestedError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * ScheduleDecisionTask is used for creating a decision task for already started workflow execution.  This is mainly\n  * used by transfer queue processor during the processing of StartChildWorkflowExecution task, where it first starts\n  * child execution without creating the decision task and then calls this API after updating the mutable state of\n  * parent execution.\n  **/\n  void ScheduleDecisionTask(1: ScheduleDecisionTaskRequest scheduleRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RecordChildExecutionCompleted is used for reporting the completion of child workflow execution to parent.\n  * This is mainly called by transfer queue processor during the processing of DeleteExecution task.\n  **/\n  void RecordChildExecutionCompleted(1: RecordChildExecutionCompletedRequest completionRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * DescribeWorkflowExecution returns information about the specified workflow execution.\n  **/\n  shared.DescribeWorkflowExecutionResponse DescribeWorkflowExecution(1: DescribeWorkflowExecutionRequest describeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n    )\n\n  void ReplicateEventsV2(1: ReplicateEventsV2Request replicateV2Request)\n    throws (\n        1: shared.BadRequestError badRequestError,\n        2: shared.InternalServiceError internalServiceError,\n        3: shared.EntityNotExistsError entityNotExistError,\n        4: ShardOwnershipLostError shardOwnershipLostError,\n        5: shared.LimitExceededError limitExceededError,\n        6: shared.RetryTaskV2Error retryTaskError,\n        7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * SyncShardStatus sync the status between shards\n  **/\n  void SyncShardStatus(1: SyncShardStatusRequest syncShardStatusRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * SyncActivity sync the activity status\n  **/\n  void SyncActivity(1: SyncActivityRequest syncActivityRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.ServiceBusyError serviceBusyError,\n      7: shared.RetryTaskV2Error retryTaskV2Error,\n    )\n\n  /**\n  * DescribeMutableState returns information about the internal states of workflow mutable state.\n  **/\n  DescribeMutableStateResponse DescribeMutableState(1: DescribeMutableStateRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: shared.AccessDeniedError accessDeniedError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.LimitExceededError limitExceededError,\n    )\n\n  /**\n  * DescribeHistoryHost returns information about the internal states of a history host\n  **/\n  shared.DescribeHistoryHostResponse DescribeHistoryHost(1: shared.DescribeHistoryHostRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * CloseShard close the shard\n  **/\n  void CloseShard(1: shared.CloseShardRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * RemoveTask remove task based on type, taskid, shardid\n  **/\n  void RemoveTask(1: shared.RemoveTaskRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * ResetQueue reset processing queue state based on cluster name and type \n  **/\n  void ResetQueue(1: shared.ResetQueueRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * DescribeQueue return queue states based on cluster name and type \n  **/\n  shared.DescribeQueueResponse DescribeQueue(1: shared.DescribeQueueRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * GetReplicationMessages return replication messages based on the read level\n  **/\n  replicator.GetReplicationMessagesResponse GetReplicationMessages(1: replicator.GetReplicationMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.LimitExceededError limitExceededError,\n      4: shared.ServiceBusyError serviceBusyError,\n      5: shared.ClientVersionNotSupportedError clientVersionNotSupportedError,\n    )\n\n  /**\n  * GetDLQReplicationMessages return replication messages based on dlq info\n  **/\n  replicator.GetDLQReplicationMessagesResponse GetDLQReplicationMessages(1: replicator.GetDLQReplicationMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * QueryWorkflow returns query result for a specified workflow execution\n  **/\n  QueryWorkflowResponse QueryWorkflow(1: QueryWorkflowRequest queryRequest)\n\tthrows (\n\t  1: shared.BadRequestError badRequestError,\n\t  2: shared.InternalServiceError internalServiceError,\n\t  3: shared.EntityNotExistsError entityNotExistError,\n\t  4: shared.QueryFailedError queryFailedError,\n\t  5: shared.LimitExceededError limitExceededError,\n\t  6: shared.ServiceBusyError serviceBusyError,\n\t  7: shared.ClientVersionNotSupportedError clientVersionNotSupportedError,\n\t)\n\n  /**\n  * ReapplyEvents applies stale events to the current workflow and current run\n  **/\n  void ReapplyEvents(1: ReapplyEventsRequest reapplyEventsRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.DomainNotActiveError domainNotActiveError,\n      4: shared.LimitExceededError limitExceededError,\n      5: shared.ServiceBusyError serviceBusyError,\n      6: ShardOwnershipLostError shardOwnershipLostError,\n      7: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * RefreshWorkflowTasks refreshes all tasks of a workflow\n  **/\n  void RefreshWorkflowTasks(1: RefreshWorkflowTasksRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.DomainNotActiveError domainNotActiveError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.ServiceBusyError serviceBusyError,\n      6: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * ReadDLQMessages returns messages from DLQ\n  **/\n  replicator.ReadDLQMessagesResponse ReadDLQMessages(1: replicator.ReadDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * PurgeDLQMessages purges messages from DLQ\n  **/\n  void PurgeDLQMessages(1: replicator.PurgeDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * MergeDLQMessages merges messages from DLQ\n  **/\n  replicator.MergeDLQMessagesResponse MergeDLQMessages(1: replicator.MergeDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * NotifyFailoverMarkers sends failover marker to the failover coordinator\n  **/\n  void NotifyFailoverMarkers(1: NotifyFailoverMarkersRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n    )\n}\n"
+const rawIDL = "// Copyright (c) 2017 Uber Technologies, Inc.\n//\n// Permission is hereby granted, free of charge, to any person obtaining a copy\n// of this software and associated documentation files (the \"Software\"), to deal\n// in the Software without restriction, including without limitation the rights\n// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n// copies of the Software, and to permit persons to whom the Software is\n// furnished to do so, subject to the following conditions:\n//\n// The above copyright notice and this permission notice shall be included in\n// all copies or substantial portions of the Software.\n//\n// THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n// THE SOFTWARE.\n\ninclude \"shared.thrift\"\ninclude \"replicator.thrift\"\n\nnamespace java com.uber.cadence.history\n\nexception EventAlreadyStartedError {\n  1: required string message\n}\n\nexception ShardOwnershipLostError {\n  10: optional string message\n  20: optional string owner\n}\n\nstruct ParentExecutionInfo {\n  10: optional string domainUUID\n  15: optional string domain\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") initiatedId\n}\n\nstruct StartWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.StartWorkflowExecutionRequest startRequest\n  30: optional ParentExecutionInfo parentExecutionInfo\n  40: optional i32 attempt\n  50: optional i64 (js.type = \"Long\") expirationTimestamp\n  55: optional shared.ContinueAsNewInitiator continueAsNewInitiator\n  56: optional string continuedFailureReason\n  57: optional binary continuedFailureDetails\n  58: optional binary lastCompletionResult\n  60: optional i32 firstDecisionTaskBackoffSeconds\n}\n\nstruct DescribeMutableStateRequest{\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n}\n\nstruct DescribeMutableStateResponse{\n  30: optional string mutableStateInCache\n  40: optional string mutableStateInDatabase\n}\n\nstruct GetMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") expectedNextEventId\n  40: optional binary currentBranchToken\n}\n\nstruct GetMutableStateResponse {\n  10: optional shared.WorkflowExecution execution\n  20: optional shared.WorkflowType workflowType\n  30: optional i64 (js.type = \"Long\") NextEventId\n  35: optional i64 (js.type = \"Long\") PreviousStartedEventId\n  40: optional i64 (js.type = \"Long\") LastFirstEventId\n  50: optional shared.TaskList taskList\n  60: optional shared.TaskList stickyTaskList\n  70: optional string clientLibraryVersion\n  80: optional string clientFeatureVersion\n  90: optional string clientImpl\n  //TODO: isWorkflowRunning is deprecating. workflowState is going replace this field\n  100: optional bool isWorkflowRunning\n  110: optional i32 stickyTaskListScheduleToStartTimeout\n  120: optional i32 eventStoreVersion\n  130: optional binary currentBranchToken\n  // TODO: when migrating to gRPC, make this a enum\n  // TODO: when migrating to gRPC, unify internal & external representation\n  // NOTE: workflowState & workflowCloseState are the same as persistence representation\n  150: optional i32 workflowState\n  160: optional i32 workflowCloseState\n  170: optional shared.VersionHistories versionHistories\n  180: optional bool isStickyTaskListEnabled\n}\n\nstruct PollMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n  30: optional i64 (js.type = \"Long\") expectedNextEventId\n  40: optional binary currentBranchToken\n}\n\nstruct PollMutableStateResponse {\n  10: optional shared.WorkflowExecution execution\n  20: optional shared.WorkflowType workflowType\n  30: optional i64 (js.type = \"Long\") NextEventId\n  35: optional i64 (js.type = \"Long\") PreviousStartedEventId\n  40: optional i64 (js.type = \"Long\") LastFirstEventId\n  50: optional shared.TaskList taskList\n  60: optional shared.TaskList stickyTaskList\n  70: optional string clientLibraryVersion\n  80: optional string clientFeatureVersion\n  90: optional string clientImpl\n  100: optional i32 stickyTaskListScheduleToStartTimeout\n  110: optional binary currentBranchToken\n  130: optional shared.VersionHistories versionHistories\n  // TODO: when migrating to gRPC, make this a enum\n  // TODO: when migrating to gRPC, unify internal & external representation\n  // NOTE: workflowState & workflowCloseState are the same as persistence representation\n  140: optional i32 workflowState\n  150: optional i32 workflowCloseState\n}\n\nstruct ResetStickyTaskListRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution execution\n}\n\nstruct ResetStickyTaskListResponse {\n  // The reason to keep this response is to allow returning\n  // information in the future.\n}\n\nstruct RespondDecisionTaskCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondDecisionTaskCompletedRequest completeRequest\n}\n\nstruct RespondDecisionTaskCompletedResponse {\n  10: optional RecordDecisionTaskStartedResponse startedResponse\n  20: optional map<string,shared.ActivityLocalDispatchInfo> activitiesToDispatchLocally\n}\n\nstruct RespondDecisionTaskFailedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondDecisionTaskFailedRequest failedRequest\n}\n\nstruct RecordActivityTaskHeartbeatRequest {\n  10: optional string domainUUID\n  20: optional shared.RecordActivityTaskHeartbeatRequest heartbeatRequest\n}\n\nstruct RespondActivityTaskCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskCompletedRequest completeRequest\n}\n\nstruct RespondActivityTaskFailedRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskFailedRequest failedRequest\n}\n\nstruct RespondActivityTaskCanceledRequest {\n  10: optional string domainUUID\n  20: optional shared.RespondActivityTaskCanceledRequest cancelRequest\n}\n\nstruct RefreshWorkflowTasksRequest {\n  10: optional string domainUIID\n  20: optional shared.RefreshWorkflowTasksRequest request\n}\n\nstruct RecordActivityTaskStartedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") scheduleId\n  40: optional i64 (js.type = \"Long\") taskId\n  45: optional string requestId // Unique id of each poll request. Used to ensure at most once delivery of tasks.\n  50: optional shared.PollForActivityTaskRequest pollRequest\n}\n\nstruct RecordActivityTaskStartedResponse {\n  20: optional shared.HistoryEvent scheduledEvent\n  30: optional i64 (js.type = \"Long\") startedTimestamp\n  40: optional i64 (js.type = \"Long\") attempt\n  50: optional i64 (js.type = \"Long\") scheduledTimestampOfThisAttempt\n  60: optional binary heartbeatDetails\n  70: optional shared.WorkflowType workflowType\n  80: optional string workflowDomain\n}\n\nstruct RecordDecisionTaskStartedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") scheduleId\n  40: optional i64 (js.type = \"Long\") taskId\n  45: optional string requestId // Unique id of each poll request. Used to ensure at most once delivery of tasks.\n  50: optional shared.PollForDecisionTaskRequest pollRequest\n}\n\nstruct RecordDecisionTaskStartedResponse {\n  10: optional shared.WorkflowType workflowType\n  20: optional i64 (js.type = \"Long\") previousStartedEventId\n  30: optional i64 (js.type = \"Long\") scheduledEventId\n  40: optional i64 (js.type = \"Long\") startedEventId\n  50: optional i64 (js.type = \"Long\") nextEventId\n  60: optional i64 (js.type = \"Long\") attempt\n  70: optional bool stickyExecutionEnabled\n  80: optional shared.TransientDecisionInfo decisionInfo\n  90: optional shared.TaskList WorkflowExecutionTaskList\n  100: optional i32 eventStoreVersion\n  110: optional binary branchToken\n  120: optional i64 (js.type = \"Long\") scheduledTimestamp\n  130: optional i64 (js.type = \"Long\") startedTimestamp\n  140: optional map<string, shared.WorkflowQuery> queries\n}\n\nstruct SignalWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.SignalWorkflowExecutionRequest signalRequest\n  30: optional shared.WorkflowExecution externalWorkflowExecution\n  40: optional bool childWorkflowOnly\n}\n\nstruct SignalWithStartWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.SignalWithStartWorkflowExecutionRequest signalWithStartRequest\n}\n\nstruct RemoveSignalMutableStateRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional string requestId\n}\n\nstruct TerminateWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.TerminateWorkflowExecutionRequest terminateRequest\n}\n\nstruct ResetWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.ResetWorkflowExecutionRequest resetRequest\n}\n\nstruct RequestCancelWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.RequestCancelWorkflowExecutionRequest cancelRequest\n  30: optional i64 (js.type = \"Long\") externalInitiatedEventId\n  40: optional shared.WorkflowExecution externalWorkflowExecution\n  50: optional bool childWorkflowOnly\n}\n\nstruct ScheduleDecisionTaskRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional bool isFirstDecision\n}\n\nstruct DescribeWorkflowExecutionRequest {\n  10: optional string domainUUID\n  20: optional shared.DescribeWorkflowExecutionRequest request\n}\n\n/**\n* RecordChildExecutionCompletedRequest is used for reporting the completion of child execution to parent workflow\n* execution which started it.  When a child execution is completed it creates this request and calls the\n* RecordChildExecutionCompleted API with the workflowExecution of parent.  It also sets the completedExecution of the\n* child as it could potentially be different than the ChildExecutionStartedEvent of parent in the situation when\n* child creates multiple runs through ContinueAsNew before finally completing.\n**/\nstruct RecordChildExecutionCompletedRequest {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional i64 (js.type = \"Long\") initiatedId\n  40: optional shared.WorkflowExecution completedExecution\n  50: optional shared.HistoryEvent completionEvent\n}\n\nstruct ReplicateEventsV2Request {\n  10: optional string domainUUID\n  20: optional shared.WorkflowExecution workflowExecution\n  30: optional list<shared.VersionHistoryItem> versionHistoryItems\n  40: optional shared.DataBlob events\n  // new run events does not need version history since there is no prior events\n  60: optional shared.DataBlob newRunEvents\n}\n\nstruct SyncShardStatusRequest {\n  10: optional string sourceCluster\n  20: optional i64 (js.type = \"Long\") shardId\n  30: optional i64 (js.type = \"Long\") timestamp\n}\n\nstruct SyncActivityRequest {\n  10: optional string domainId\n  20: optional string workflowId\n  30: optional string runId\n  40: optional i64 (js.type = \"Long\") version\n  50: optional i64 (js.type = \"Long\") scheduledId\n  60: optional i64 (js.type = \"Long\") scheduledTime\n  70: optional i64 (js.type = \"Long\") startedId\n  80: optional i64 (js.type = \"Long\") startedTime\n  90: optional i64 (js.type = \"Long\") lastHeartbeatTime\n  100: optional binary details\n  110: optional i32 attempt\n  120: optional string lastFailureReason\n  130: optional string lastWorkerIdentity\n  140: optional binary lastFailureDetails\n  150: optional shared.VersionHistory versionHistory\n}\n\nstruct QueryWorkflowRequest {\n  10: optional string domainUUID\n  20: optional shared.QueryWorkflowRequest request\n}\n\nstruct QueryWorkflowResponse {\n  10: optional shared.QueryWorkflowResponse response\n}\n\nstruct ReapplyEventsRequest {\n  10: optional string domainUUID\n  20: optional shared.ReapplyEventsRequest request\n}\n\nstruct FailoverMarkerToken {\n  10: optional list<i32> shardIDs\n  20: optional replicator.FailoverMarkerAttributes failoverMarker\n}\n\nstruct NotifyFailoverMarkersRequest {\n  10: optional list<FailoverMarkerToken> failoverMarkerTokens\n}\n\nstruct ProcessingQueueStates {\n  10: optional map<string, list<ProcessingQueueState>> statesByCluster\n}\n\nstruct ProcessingQueueState {\n  10: optional i32 level\n  20: optional i64 ackLevel\n  30: optional i64 maxLevel\n  40: optional DomainFilter domainFilter\n}\n\nstruct DomainFilter {\n  10: optional list<string> domainIDs\n  20: optional bool reverseMatch\n}\n\nstruct GetFailoverInfoRequest {\n  10: optional string domainID\n}\n\nstruct GetFailoverInfoResponse {\n  10: optional i32 completedShardCount\n  20: optional list<i32> pendingShards\n}\n\n/**\n* HistoryService provides API to start a new long running workflow instance, as well as query and update the history\n* of workflow instances already created.\n**/\nservice HistoryService {\n  /**\n  * StartWorkflowExecution starts a new long running workflow instance.  It will create the instance with\n  * 'WorkflowExecutionStarted' event in history and also schedule the first DecisionTask for the worker to make the\n  * first decision for this instance.  It will return 'WorkflowExecutionAlreadyStartedError', if an instance already\n  * exists with same workflowId.\n  **/\n  shared.StartWorkflowExecutionResponse StartWorkflowExecution(1: StartWorkflowExecutionRequest startRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.WorkflowExecutionAlreadyStartedError sessionAlreadyExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * Returns the information from mutable state of workflow execution.\n  * It fails with 'EntityNotExistError' if specified workflow execution in unknown to the service.\n  * It returns CurrentBranchChangedError if the workflow version branch has changed.\n  **/\n  GetMutableStateResponse GetMutableState(1: GetMutableStateRequest getRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.CurrentBranchChangedError currentBranchChangedError,\n    )\n\n  /**\n   * Returns the information from mutable state of workflow execution.\n   * It fails with 'EntityNotExistError' if specified workflow execution in unknown to the service.\n   * It returns CurrentBranchChangedError if the workflow version branch has changed.\n   **/\n   PollMutableStateResponse PollMutableState(1: PollMutableStateRequest pollRequest)\n     throws (\n       1: shared.BadRequestError badRequestError,\n       2: shared.InternalServiceError internalServiceError,\n       3: shared.EntityNotExistsError entityNotExistError,\n       4: ShardOwnershipLostError shardOwnershipLostError,\n       5: shared.LimitExceededError limitExceededError,\n       6: shared.ServiceBusyError serviceBusyError,\n       7: shared.CurrentBranchChangedError currentBranchChangedError,\n     )\n\n  /**\n  * Reset the sticky tasklist related information in mutable state of a given workflow.\n  * Things cleared are:\n  * 1. StickyTaskList\n  * 2. StickyScheduleToStartTimeout\n  * 3. ClientLibraryVersion\n  * 4. ClientFeatureVersion\n  * 5. ClientImpl\n  **/\n  ResetStickyTaskListResponse ResetStickyTaskList(1: ResetStickyTaskListRequest resetRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RecordDecisionTaskStarted is called by the Matchingservice before it hands a decision task to the application worker in response to\n  * a PollForDecisionTask call. It records in the history the event that the decision task has started. It will return 'EventAlreadyStartedError',\n  * if the workflow's execution history already includes a record of the event starting.\n  **/\n  RecordDecisionTaskStartedResponse RecordDecisionTaskStarted(1: RecordDecisionTaskStartedRequest addRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: EventAlreadyStartedError eventAlreadyStartedError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n      9: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RecordActivityTaskStarted is called by the Matchingservice before it hands a decision task to the application worker in response to\n  * a PollForActivityTask call. It records in the history the event that the decision task has started. It will return 'EventAlreadyStartedError',\n  * if the workflow's execution history already includes a record of the event starting.\n  **/\n  RecordActivityTaskStartedResponse RecordActivityTaskStarted(1: RecordActivityTaskStartedRequest addRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: EventAlreadyStartedError eventAlreadyStartedError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n      9: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RespondDecisionTaskCompleted is called by application worker to complete a DecisionTask handed as a result of\n  * 'PollForDecisionTask' API call.  Completing a DecisionTask will result in new events for the workflow execution and\n  * potentially new ActivityTask being created for corresponding decisions.  It will also create a DecisionTaskCompleted\n  * event in the history for that session.  Use the 'taskToken' provided as response of PollForDecisionTask API call\n  * for completing the DecisionTask.\n  **/\n  RespondDecisionTaskCompletedResponse RespondDecisionTaskCompleted(1: RespondDecisionTaskCompletedRequest completeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RespondDecisionTaskFailed is called by application worker to indicate failure.  This results in\n  * DecisionTaskFailedEvent written to the history and a new DecisionTask created.  This API can be used by client to\n  * either clear sticky tasklist or report ny panics during DecisionTask processing.\n  **/\n  void RespondDecisionTaskFailed(1: RespondDecisionTaskFailedRequest failedRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RecordActivityTaskHeartbeat is called by application worker while it is processing an ActivityTask.  If worker fails\n  * to heartbeat within 'heartbeatTimeoutSeconds' interval for the ActivityTask, then it will be marked as timedout and\n  * 'ActivityTaskTimedOut' event will be written to the workflow history.  Calling 'RecordActivityTaskHeartbeat' will\n  * fail with 'EntityNotExistsError' in such situations.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for heartbeating.\n  **/\n  shared.RecordActivityTaskHeartbeatResponse RecordActivityTaskHeartbeat(1: RecordActivityTaskHeartbeatRequest heartbeatRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RespondActivityTaskCompleted is called by application worker when it is done processing an ActivityTask.  It will\n  * result in a new 'ActivityTaskCompleted' event being written to the workflow history and a new DecisionTask\n  * created for the workflow so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void  RespondActivityTaskCompleted(1: RespondActivityTaskCompletedRequest completeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RespondActivityTaskFailed is called by application worker when it is done processing an ActivityTask.  It will\n  * result in a new 'ActivityTaskFailed' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void RespondActivityTaskFailed(1: RespondActivityTaskFailedRequest failRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RespondActivityTaskCanceled is called by application worker when it is successfully canceled an ActivityTask.  It will\n  * result in a new 'ActivityTaskCanceled' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made.  Use the 'taskToken' provided as response of\n  * PollForActivityTask API call for completion. It fails with 'EntityNotExistsError' if the taskToken is not valid\n  * anymore due to activity timeout.\n  **/\n  void RespondActivityTaskCanceled(1: RespondActivityTaskCanceledRequest canceledRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * SignalWorkflowExecution is used to send a signal event to running workflow execution.  This results in\n  * WorkflowExecutionSignaled event recorded in the history and a decision task being created for the execution.\n  **/\n  void SignalWorkflowExecution(1: SignalWorkflowExecutionRequest signalRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * SignalWithStartWorkflowExecution is used to ensure sending a signal event to a workflow execution.\n  * If workflow is running, this results in WorkflowExecutionSignaled event recorded in the history\n  * and a decision task being created for the execution.\n  * If workflow is not running or not found, it will first try start workflow with given WorkflowIDResuePolicy,\n  * and record WorkflowExecutionStarted and WorkflowExecutionSignaled event in case of success.\n  * It will return `WorkflowExecutionAlreadyStartedError` if start workflow failed with given policy.\n  **/\n  shared.StartWorkflowExecutionResponse SignalWithStartWorkflowExecution(1: SignalWithStartWorkflowExecutionRequest signalWithStartRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: ShardOwnershipLostError shardOwnershipLostError,\n      4: shared.DomainNotActiveError domainNotActiveError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n      7: shared.WorkflowExecutionAlreadyStartedError workflowAlreadyStartedError,\n    )\n\n  /**\n  * RemoveSignalMutableState is used to remove a signal request ID that was previously recorded.  This is currently\n  * used to clean execution info when signal decision finished.\n  **/\n  void RemoveSignalMutableState(1: RemoveSignalMutableStateRequest removeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * TerminateWorkflowExecution terminates an existing workflow execution by recording WorkflowExecutionTerminated event\n  * in the history and immediately terminating the execution instance.\n  **/\n  void TerminateWorkflowExecution(1: TerminateWorkflowExecutionRequest terminateRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * ResetWorkflowExecution reset an existing workflow execution by a firstEventID of a existing event batch\n  * in the history and immediately terminating the current execution instance.\n  * After reset, the history will grow from nextFirstEventID.\n  **/\n  shared.ResetWorkflowExecutionResponse ResetWorkflowExecution(1: ResetWorkflowExecutionRequest resetRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RequestCancelWorkflowExecution is called by application worker when it wants to request cancellation of a workflow instance.\n  * It will result in a new 'WorkflowExecutionCancelRequested' event being written to the workflow history and a new DecisionTask\n  * created for the workflow instance so new decisions could be made. It fails with\n  * 'WorkflowExecutionAlreadyCompletedError' if the workflow is not valid\n  * anymore due to completion or with 'EntityNotExistsError' if worfklow doesn't exist.\n  **/\n  void RequestCancelWorkflowExecution(1: RequestCancelWorkflowExecutionRequest cancelRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.CancellationAlreadyRequestedError cancellationAlreadyRequestedError,\n      6: shared.DomainNotActiveError domainNotActiveError,\n      7: shared.LimitExceededError limitExceededError,\n      8: shared.ServiceBusyError serviceBusyError,\n      10: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * ScheduleDecisionTask is used for creating a decision task for already started workflow execution.  This is mainly\n  * used by transfer queue processor during the processing of StartChildWorkflowExecution task, where it first starts\n  * child execution without creating the decision task and then calls this API after updating the mutable state of\n  * parent execution.\n  **/\n  void ScheduleDecisionTask(1: ScheduleDecisionTaskRequest scheduleRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * RecordChildExecutionCompleted is used for reporting the completion of child workflow execution to parent.\n  * This is mainly called by transfer queue processor during the processing of DeleteExecution task.\n  **/\n  void RecordChildExecutionCompleted(1: RecordChildExecutionCompletedRequest completionRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.DomainNotActiveError domainNotActiveError,\n      6: shared.LimitExceededError limitExceededError,\n      7: shared.ServiceBusyError serviceBusyError,\n      8: shared.WorkflowExecutionAlreadyCompletedError workflowExecutionAlreadyCompletedError,\n    )\n\n  /**\n  * DescribeWorkflowExecution returns information about the specified workflow execution.\n  **/\n  shared.DescribeWorkflowExecutionResponse DescribeWorkflowExecution(1: DescribeWorkflowExecutionRequest describeRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n    )\n\n  void ReplicateEventsV2(1: ReplicateEventsV2Request replicateV2Request)\n    throws (\n        1: shared.BadRequestError badRequestError,\n        2: shared.InternalServiceError internalServiceError,\n        3: shared.EntityNotExistsError entityNotExistError,\n        4: ShardOwnershipLostError shardOwnershipLostError,\n        5: shared.LimitExceededError limitExceededError,\n        6: shared.RetryTaskV2Error retryTaskError,\n        7: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * SyncShardStatus sync the status between shards\n  **/\n  void SyncShardStatus(1: SyncShardStatusRequest syncShardStatusRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.LimitExceededError limitExceededError,\n      6: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * SyncActivity sync the activity status\n  **/\n  void SyncActivity(1: SyncActivityRequest syncActivityRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.ServiceBusyError serviceBusyError,\n      7: shared.RetryTaskV2Error retryTaskV2Error,\n    )\n\n  /**\n  * DescribeMutableState returns information about the internal states of workflow mutable state.\n  **/\n  DescribeMutableStateResponse DescribeMutableState(1: DescribeMutableStateRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.EntityNotExistsError entityNotExistError,\n      4: shared.AccessDeniedError accessDeniedError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n      6: shared.LimitExceededError limitExceededError,\n    )\n\n  /**\n  * DescribeHistoryHost returns information about the internal states of a history host\n  **/\n  shared.DescribeHistoryHostResponse DescribeHistoryHost(1: shared.DescribeHistoryHostRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * CloseShard close the shard\n  **/\n  void CloseShard(1: shared.CloseShardRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * RemoveTask remove task based on type, taskid, shardid\n  **/\n  void RemoveTask(1: shared.RemoveTaskRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * ResetQueue reset processing queue state based on cluster name and type\n  **/\n  void ResetQueue(1: shared.ResetQueueRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * DescribeQueue return queue states based on cluster name and type\n  **/\n  shared.DescribeQueueResponse DescribeQueue(1: shared.DescribeQueueRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.AccessDeniedError accessDeniedError,\n    )\n\n  /**\n  * GetReplicationMessages return replication messages based on the read level\n  **/\n  replicator.GetReplicationMessagesResponse GetReplicationMessages(1: replicator.GetReplicationMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.LimitExceededError limitExceededError,\n      4: shared.ServiceBusyError serviceBusyError,\n      5: shared.ClientVersionNotSupportedError clientVersionNotSupportedError,\n    )\n\n  /**\n  * GetDLQReplicationMessages return replication messages based on dlq info\n  **/\n  replicator.GetDLQReplicationMessagesResponse GetDLQReplicationMessages(1: replicator.GetDLQReplicationMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * QueryWorkflow returns query result for a specified workflow execution\n  **/\n  QueryWorkflowResponse QueryWorkflow(1: QueryWorkflowRequest queryRequest)\n\tthrows (\n\t  1: shared.BadRequestError badRequestError,\n\t  2: shared.InternalServiceError internalServiceError,\n\t  3: shared.EntityNotExistsError entityNotExistError,\n\t  4: shared.QueryFailedError queryFailedError,\n\t  5: shared.LimitExceededError limitExceededError,\n\t  6: shared.ServiceBusyError serviceBusyError,\n\t  7: shared.ClientVersionNotSupportedError clientVersionNotSupportedError,\n\t)\n\n  /**\n  * ReapplyEvents applies stale events to the current workflow and current run\n  **/\n  void ReapplyEvents(1: ReapplyEventsRequest reapplyEventsRequest)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.DomainNotActiveError domainNotActiveError,\n      4: shared.LimitExceededError limitExceededError,\n      5: shared.ServiceBusyError serviceBusyError,\n      6: ShardOwnershipLostError shardOwnershipLostError,\n      7: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * RefreshWorkflowTasks refreshes all tasks of a workflow\n  **/\n  void RefreshWorkflowTasks(1: RefreshWorkflowTasksRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.DomainNotActiveError domainNotActiveError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n      5: shared.ServiceBusyError serviceBusyError,\n      6: shared.EntityNotExistsError entityNotExistError,\n    )\n\n  /**\n  * ReadDLQMessages returns messages from DLQ\n  **/\n  replicator.ReadDLQMessagesResponse ReadDLQMessages(1: replicator.ReadDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * PurgeDLQMessages purges messages from DLQ\n  **/\n  void PurgeDLQMessages(1: replicator.PurgeDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * MergeDLQMessages merges messages from DLQ\n  **/\n  replicator.MergeDLQMessagesResponse MergeDLQMessages(1: replicator.MergeDLQMessagesRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: shared.EntityNotExistsError entityNotExistError,\n      5: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * NotifyFailoverMarkers sends failover marker to the failover coordinator\n  **/\n  void NotifyFailoverMarkers(1: NotifyFailoverMarkersRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * GetCrossClusterTasks fetches cross cluster tasks\n  **/\n  shared.GetCrossClusterTasksResponse GetCrossClusterTasks(1: shared.GetCrossClusterTasksRequest request)\n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n    )\n\n  /**\n  * RespondCrossClusterTasksCompleted responds the result of processing cross cluster tasks\n  **/\n  shared.RespondCrossClusterTasksCompletedResponse RespondCrossClusterTasksCompleted(1: shared.RespondCrossClusterTasksCompletedRequest request) \n    throws (\n      1: shared.BadRequestError badRequestError,\n      2: shared.InternalServiceError internalServiceError,\n      3: shared.ServiceBusyError serviceBusyError,\n      4: ShardOwnershipLostError shardOwnershipLostError,\n    )\n\n  /**\n  * GetFailoverInfo responds the failover info about an on-going graceful failover\n  **/\n  GetFailoverInfoResponse GetFailoverInfo(1: GetFailoverInfoRequest request)\n    throws (\n      1: shared.InternalServiceError internalServiceError,\n      2: shared.ServiceBusyError serviceBusyError,\n      3: ShardOwnershipLostError shardOwnershipLostError,\n      4: shared.EntityNotExistsError entityNotExistError,\n    )\n}\n"
 
 // HistoryService_CloseShard_Args represents the arguments for the HistoryService.CloseShard function.
 //
@@ -16101,6 +16419,593 @@ func (v *HistoryService_DescribeWorkflowExecution_Result) EnvelopeType() wire.En
 	return wire.Reply
 }
 
+// HistoryService_GetCrossClusterTasks_Args represents the arguments for the HistoryService.GetCrossClusterTasks function.
+//
+// The arguments for GetCrossClusterTasks are sent and received over the wire as this struct.
+type HistoryService_GetCrossClusterTasks_Args struct {
+	Request *shared.GetCrossClusterTasksRequest `json:"request,omitempty"`
+}
+
+// ToWire translates a HistoryService_GetCrossClusterTasks_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_GetCrossClusterTasks_Args) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Request != nil {
+		w, err = v.Request.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _GetCrossClusterTasksRequest_Read(w wire.Value) (*shared.GetCrossClusterTasksRequest, error) {
+	var v shared.GetCrossClusterTasksRequest
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_GetCrossClusterTasks_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_GetCrossClusterTasks_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_GetCrossClusterTasks_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_GetCrossClusterTasks_Args) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.Request, err = _GetCrossClusterTasksRequest_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_GetCrossClusterTasks_Args
+// struct.
+func (v *HistoryService_GetCrossClusterTasks_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.Request != nil {
+		fields[i] = fmt.Sprintf("Request: %v", v.Request)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_GetCrossClusterTasks_Args{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_GetCrossClusterTasks_Args match the
+// provided HistoryService_GetCrossClusterTasks_Args.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_GetCrossClusterTasks_Args) Equals(rhs *HistoryService_GetCrossClusterTasks_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_GetCrossClusterTasks_Args.
+func (v *HistoryService_GetCrossClusterTasks_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Request != nil {
+		err = multierr.Append(err, enc.AddObject("request", v.Request))
+	}
+	return err
+}
+
+// GetRequest returns the value of Request if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetCrossClusterTasks_Args) GetRequest() (o *shared.GetCrossClusterTasksRequest) {
+	if v != nil && v.Request != nil {
+		return v.Request
+	}
+
+	return
+}
+
+// IsSetRequest returns true if Request is not nil.
+func (v *HistoryService_GetCrossClusterTasks_Args) IsSetRequest() bool {
+	return v != nil && v.Request != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "GetCrossClusterTasks" for this struct.
+func (v *HistoryService_GetCrossClusterTasks_Args) MethodName() string {
+	return "GetCrossClusterTasks"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
+func (v *HistoryService_GetCrossClusterTasks_Args) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
+// HistoryService_GetCrossClusterTasks_Helper provides functions that aid in handling the
+// parameters and return values of the HistoryService.GetCrossClusterTasks
+// function.
+var HistoryService_GetCrossClusterTasks_Helper = struct {
+	// Args accepts the parameters of GetCrossClusterTasks in-order and returns
+	// the arguments struct for the function.
+	Args func(
+		request *shared.GetCrossClusterTasksRequest,
+	) *HistoryService_GetCrossClusterTasks_Args
+
+	// IsException returns true if the given error can be thrown
+	// by GetCrossClusterTasks.
+	//
+	// An error can be thrown by GetCrossClusterTasks only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
+	IsException func(error) bool
+
+	// WrapResponse returns the result struct for GetCrossClusterTasks
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// GetCrossClusterTasks into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by GetCrossClusterTasks
+	//
+	//   value, err := GetCrossClusterTasks(args)
+	//   result, err := HistoryService_GetCrossClusterTasks_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from GetCrossClusterTasks: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*shared.GetCrossClusterTasksResponse, error) (*HistoryService_GetCrossClusterTasks_Result, error)
+
+	// UnwrapResponse takes the result struct for GetCrossClusterTasks
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if GetCrossClusterTasks threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := HistoryService_GetCrossClusterTasks_Helper.UnwrapResponse(result)
+	UnwrapResponse func(*HistoryService_GetCrossClusterTasks_Result) (*shared.GetCrossClusterTasksResponse, error)
+}{}
+
+func init() {
+	HistoryService_GetCrossClusterTasks_Helper.Args = func(
+		request *shared.GetCrossClusterTasksRequest,
+	) *HistoryService_GetCrossClusterTasks_Args {
+		return &HistoryService_GetCrossClusterTasks_Args{
+			Request: request,
+		}
+	}
+
+	HistoryService_GetCrossClusterTasks_Helper.IsException = func(err error) bool {
+		switch err.(type) {
+		case *shared.BadRequestError:
+			return true
+		case *shared.InternalServiceError:
+			return true
+		case *shared.ServiceBusyError:
+			return true
+		default:
+			return false
+		}
+	}
+
+	HistoryService_GetCrossClusterTasks_Helper.WrapResponse = func(success *shared.GetCrossClusterTasksResponse, err error) (*HistoryService_GetCrossClusterTasks_Result, error) {
+		if err == nil {
+			return &HistoryService_GetCrossClusterTasks_Result{Success: success}, nil
+		}
+
+		switch e := err.(type) {
+		case *shared.BadRequestError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetCrossClusterTasks_Result.BadRequestError")
+			}
+			return &HistoryService_GetCrossClusterTasks_Result{BadRequestError: e}, nil
+		case *shared.InternalServiceError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetCrossClusterTasks_Result.InternalServiceError")
+			}
+			return &HistoryService_GetCrossClusterTasks_Result{InternalServiceError: e}, nil
+		case *shared.ServiceBusyError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetCrossClusterTasks_Result.ServiceBusyError")
+			}
+			return &HistoryService_GetCrossClusterTasks_Result{ServiceBusyError: e}, nil
+		}
+
+		return nil, err
+	}
+	HistoryService_GetCrossClusterTasks_Helper.UnwrapResponse = func(result *HistoryService_GetCrossClusterTasks_Result) (success *shared.GetCrossClusterTasksResponse, err error) {
+		if result.BadRequestError != nil {
+			err = result.BadRequestError
+			return
+		}
+		if result.InternalServiceError != nil {
+			err = result.InternalServiceError
+			return
+		}
+		if result.ServiceBusyError != nil {
+			err = result.ServiceBusyError
+			return
+		}
+
+		if result.Success != nil {
+			success = result.Success
+			return
+		}
+
+		err = errors.New("expected a non-void result")
+		return
+	}
+
+}
+
+// HistoryService_GetCrossClusterTasks_Result represents the result of a HistoryService.GetCrossClusterTasks function call.
+//
+// The result of a GetCrossClusterTasks execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
+type HistoryService_GetCrossClusterTasks_Result struct {
+	// Value returned by GetCrossClusterTasks after a successful execution.
+	Success              *shared.GetCrossClusterTasksResponse `json:"success,omitempty"`
+	BadRequestError      *shared.BadRequestError              `json:"badRequestError,omitempty"`
+	InternalServiceError *shared.InternalServiceError         `json:"internalServiceError,omitempty"`
+	ServiceBusyError     *shared.ServiceBusyError             `json:"serviceBusyError,omitempty"`
+}
+
+// ToWire translates a HistoryService_GetCrossClusterTasks_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_GetCrossClusterTasks_Result) ToWire() (wire.Value, error) {
+	var (
+		fields [4]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Success != nil {
+		w, err = v.Success.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
+		i++
+	}
+	if v.BadRequestError != nil {
+		w, err = v.BadRequestError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.InternalServiceError != nil {
+		w, err = v.InternalServiceError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		w, err = v.ServiceBusyError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("HistoryService_GetCrossClusterTasks_Result should have exactly one field: got %v fields", i)
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _GetCrossClusterTasksResponse_Read(w wire.Value) (*shared.GetCrossClusterTasksResponse, error) {
+	var v shared.GetCrossClusterTasksResponse
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_GetCrossClusterTasks_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_GetCrossClusterTasks_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_GetCrossClusterTasks_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_GetCrossClusterTasks_Result) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 0:
+			if field.Value.Type() == wire.TStruct {
+				v.Success, err = _GetCrossClusterTasksResponse_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.BadRequestError, err = _BadRequestError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if field.Value.Type() == wire.TStruct {
+				v.InternalServiceError, err = _InternalServiceError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if field.Value.Type() == wire.TStruct {
+				v.ServiceBusyError, err = _ServiceBusyError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.BadRequestError != nil {
+		count++
+	}
+	if v.InternalServiceError != nil {
+		count++
+	}
+	if v.ServiceBusyError != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("HistoryService_GetCrossClusterTasks_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_GetCrossClusterTasks_Result
+// struct.
+func (v *HistoryService_GetCrossClusterTasks_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [4]string
+	i := 0
+	if v.Success != nil {
+		fields[i] = fmt.Sprintf("Success: %v", v.Success)
+		i++
+	}
+	if v.BadRequestError != nil {
+		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
+		i++
+	}
+	if v.InternalServiceError != nil {
+		fields[i] = fmt.Sprintf("InternalServiceError: %v", v.InternalServiceError)
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_GetCrossClusterTasks_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_GetCrossClusterTasks_Result match the
+// provided HistoryService_GetCrossClusterTasks_Result.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_GetCrossClusterTasks_Result) Equals(rhs *HistoryService_GetCrossClusterTasks_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
+		return false
+	}
+	if !((v.BadRequestError == nil && rhs.BadRequestError == nil) || (v.BadRequestError != nil && rhs.BadRequestError != nil && v.BadRequestError.Equals(rhs.BadRequestError))) {
+		return false
+	}
+	if !((v.InternalServiceError == nil && rhs.InternalServiceError == nil) || (v.InternalServiceError != nil && rhs.InternalServiceError != nil && v.InternalServiceError.Equals(rhs.InternalServiceError))) {
+		return false
+	}
+	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_GetCrossClusterTasks_Result.
+func (v *HistoryService_GetCrossClusterTasks_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Success != nil {
+		err = multierr.Append(err, enc.AddObject("success", v.Success))
+	}
+	if v.BadRequestError != nil {
+		err = multierr.Append(err, enc.AddObject("badRequestError", v.BadRequestError))
+	}
+	if v.InternalServiceError != nil {
+		err = multierr.Append(err, enc.AddObject("internalServiceError", v.InternalServiceError))
+	}
+	if v.ServiceBusyError != nil {
+		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	return err
+}
+
+// GetSuccess returns the value of Success if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetCrossClusterTasks_Result) GetSuccess() (o *shared.GetCrossClusterTasksResponse) {
+	if v != nil && v.Success != nil {
+		return v.Success
+	}
+
+	return
+}
+
+// IsSetSuccess returns true if Success is not nil.
+func (v *HistoryService_GetCrossClusterTasks_Result) IsSetSuccess() bool {
+	return v != nil && v.Success != nil
+}
+
+// GetBadRequestError returns the value of BadRequestError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetCrossClusterTasks_Result) GetBadRequestError() (o *shared.BadRequestError) {
+	if v != nil && v.BadRequestError != nil {
+		return v.BadRequestError
+	}
+
+	return
+}
+
+// IsSetBadRequestError returns true if BadRequestError is not nil.
+func (v *HistoryService_GetCrossClusterTasks_Result) IsSetBadRequestError() bool {
+	return v != nil && v.BadRequestError != nil
+}
+
+// GetInternalServiceError returns the value of InternalServiceError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetCrossClusterTasks_Result) GetInternalServiceError() (o *shared.InternalServiceError) {
+	if v != nil && v.InternalServiceError != nil {
+		return v.InternalServiceError
+	}
+
+	return
+}
+
+// IsSetInternalServiceError returns true if InternalServiceError is not nil.
+func (v *HistoryService_GetCrossClusterTasks_Result) IsSetInternalServiceError() bool {
+	return v != nil && v.InternalServiceError != nil
+}
+
+// GetServiceBusyError returns the value of ServiceBusyError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetCrossClusterTasks_Result) GetServiceBusyError() (o *shared.ServiceBusyError) {
+	if v != nil && v.ServiceBusyError != nil {
+		return v.ServiceBusyError
+	}
+
+	return
+}
+
+// IsSetServiceBusyError returns true if ServiceBusyError is not nil.
+func (v *HistoryService_GetCrossClusterTasks_Result) IsSetServiceBusyError() bool {
+	return v != nil && v.ServiceBusyError != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "GetCrossClusterTasks" for this struct.
+func (v *HistoryService_GetCrossClusterTasks_Result) MethodName() string {
+	return "GetCrossClusterTasks"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
+func (v *HistoryService_GetCrossClusterTasks_Result) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
+}
+
 // HistoryService_GetDLQReplicationMessages_Args represents the arguments for the HistoryService.GetDLQReplicationMessages function.
 //
 // The arguments for GetDLQReplicationMessages are sent and received over the wire as this struct.
@@ -16741,6 +17646,649 @@ func (v *HistoryService_GetDLQReplicationMessages_Result) MethodName() string {
 //
 // This will always be Reply for this struct.
 func (v *HistoryService_GetDLQReplicationMessages_Result) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
+}
+
+// HistoryService_GetFailoverInfo_Args represents the arguments for the HistoryService.GetFailoverInfo function.
+//
+// The arguments for GetFailoverInfo are sent and received over the wire as this struct.
+type HistoryService_GetFailoverInfo_Args struct {
+	Request *GetFailoverInfoRequest `json:"request,omitempty"`
+}
+
+// ToWire translates a HistoryService_GetFailoverInfo_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_GetFailoverInfo_Args) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Request != nil {
+		w, err = v.Request.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _GetFailoverInfoRequest_Read(w wire.Value) (*GetFailoverInfoRequest, error) {
+	var v GetFailoverInfoRequest
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_GetFailoverInfo_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_GetFailoverInfo_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_GetFailoverInfo_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_GetFailoverInfo_Args) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.Request, err = _GetFailoverInfoRequest_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_GetFailoverInfo_Args
+// struct.
+func (v *HistoryService_GetFailoverInfo_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.Request != nil {
+		fields[i] = fmt.Sprintf("Request: %v", v.Request)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_GetFailoverInfo_Args{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_GetFailoverInfo_Args match the
+// provided HistoryService_GetFailoverInfo_Args.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_GetFailoverInfo_Args) Equals(rhs *HistoryService_GetFailoverInfo_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_GetFailoverInfo_Args.
+func (v *HistoryService_GetFailoverInfo_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Request != nil {
+		err = multierr.Append(err, enc.AddObject("request", v.Request))
+	}
+	return err
+}
+
+// GetRequest returns the value of Request if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Args) GetRequest() (o *GetFailoverInfoRequest) {
+	if v != nil && v.Request != nil {
+		return v.Request
+	}
+
+	return
+}
+
+// IsSetRequest returns true if Request is not nil.
+func (v *HistoryService_GetFailoverInfo_Args) IsSetRequest() bool {
+	return v != nil && v.Request != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "GetFailoverInfo" for this struct.
+func (v *HistoryService_GetFailoverInfo_Args) MethodName() string {
+	return "GetFailoverInfo"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
+func (v *HistoryService_GetFailoverInfo_Args) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
+// HistoryService_GetFailoverInfo_Helper provides functions that aid in handling the
+// parameters and return values of the HistoryService.GetFailoverInfo
+// function.
+var HistoryService_GetFailoverInfo_Helper = struct {
+	// Args accepts the parameters of GetFailoverInfo in-order and returns
+	// the arguments struct for the function.
+	Args func(
+		request *GetFailoverInfoRequest,
+	) *HistoryService_GetFailoverInfo_Args
+
+	// IsException returns true if the given error can be thrown
+	// by GetFailoverInfo.
+	//
+	// An error can be thrown by GetFailoverInfo only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
+	IsException func(error) bool
+
+	// WrapResponse returns the result struct for GetFailoverInfo
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// GetFailoverInfo into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by GetFailoverInfo
+	//
+	//   value, err := GetFailoverInfo(args)
+	//   result, err := HistoryService_GetFailoverInfo_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from GetFailoverInfo: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*GetFailoverInfoResponse, error) (*HistoryService_GetFailoverInfo_Result, error)
+
+	// UnwrapResponse takes the result struct for GetFailoverInfo
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if GetFailoverInfo threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := HistoryService_GetFailoverInfo_Helper.UnwrapResponse(result)
+	UnwrapResponse func(*HistoryService_GetFailoverInfo_Result) (*GetFailoverInfoResponse, error)
+}{}
+
+func init() {
+	HistoryService_GetFailoverInfo_Helper.Args = func(
+		request *GetFailoverInfoRequest,
+	) *HistoryService_GetFailoverInfo_Args {
+		return &HistoryService_GetFailoverInfo_Args{
+			Request: request,
+		}
+	}
+
+	HistoryService_GetFailoverInfo_Helper.IsException = func(err error) bool {
+		switch err.(type) {
+		case *shared.InternalServiceError:
+			return true
+		case *shared.ServiceBusyError:
+			return true
+		case *ShardOwnershipLostError:
+			return true
+		case *shared.EntityNotExistsError:
+			return true
+		default:
+			return false
+		}
+	}
+
+	HistoryService_GetFailoverInfo_Helper.WrapResponse = func(success *GetFailoverInfoResponse, err error) (*HistoryService_GetFailoverInfo_Result, error) {
+		if err == nil {
+			return &HistoryService_GetFailoverInfo_Result{Success: success}, nil
+		}
+
+		switch e := err.(type) {
+		case *shared.InternalServiceError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetFailoverInfo_Result.InternalServiceError")
+			}
+			return &HistoryService_GetFailoverInfo_Result{InternalServiceError: e}, nil
+		case *shared.ServiceBusyError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetFailoverInfo_Result.ServiceBusyError")
+			}
+			return &HistoryService_GetFailoverInfo_Result{ServiceBusyError: e}, nil
+		case *ShardOwnershipLostError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetFailoverInfo_Result.ShardOwnershipLostError")
+			}
+			return &HistoryService_GetFailoverInfo_Result{ShardOwnershipLostError: e}, nil
+		case *shared.EntityNotExistsError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_GetFailoverInfo_Result.EntityNotExistError")
+			}
+			return &HistoryService_GetFailoverInfo_Result{EntityNotExistError: e}, nil
+		}
+
+		return nil, err
+	}
+	HistoryService_GetFailoverInfo_Helper.UnwrapResponse = func(result *HistoryService_GetFailoverInfo_Result) (success *GetFailoverInfoResponse, err error) {
+		if result.InternalServiceError != nil {
+			err = result.InternalServiceError
+			return
+		}
+		if result.ServiceBusyError != nil {
+			err = result.ServiceBusyError
+			return
+		}
+		if result.ShardOwnershipLostError != nil {
+			err = result.ShardOwnershipLostError
+			return
+		}
+		if result.EntityNotExistError != nil {
+			err = result.EntityNotExistError
+			return
+		}
+
+		if result.Success != nil {
+			success = result.Success
+			return
+		}
+
+		err = errors.New("expected a non-void result")
+		return
+	}
+
+}
+
+// HistoryService_GetFailoverInfo_Result represents the result of a HistoryService.GetFailoverInfo function call.
+//
+// The result of a GetFailoverInfo execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
+type HistoryService_GetFailoverInfo_Result struct {
+	// Value returned by GetFailoverInfo after a successful execution.
+	Success                 *GetFailoverInfoResponse     `json:"success,omitempty"`
+	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
+	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
+	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
+}
+
+// ToWire translates a HistoryService_GetFailoverInfo_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_GetFailoverInfo_Result) ToWire() (wire.Value, error) {
+	var (
+		fields [5]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Success != nil {
+		w, err = v.Success.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
+		i++
+	}
+	if v.InternalServiceError != nil {
+		w, err = v.InternalServiceError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		w, err = v.ServiceBusyError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.ShardOwnershipLostError != nil {
+		w, err = v.ShardOwnershipLostError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
+	if v.EntityNotExistError != nil {
+		w, err = v.EntityNotExistError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("HistoryService_GetFailoverInfo_Result should have exactly one field: got %v fields", i)
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _GetFailoverInfoResponse_Read(w wire.Value) (*GetFailoverInfoResponse, error) {
+	var v GetFailoverInfoResponse
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_GetFailoverInfo_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_GetFailoverInfo_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_GetFailoverInfo_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_GetFailoverInfo_Result) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 0:
+			if field.Value.Type() == wire.TStruct {
+				v.Success, err = _GetFailoverInfoResponse_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.InternalServiceError, err = _InternalServiceError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if field.Value.Type() == wire.TStruct {
+				v.ServiceBusyError, err = _ServiceBusyError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if field.Value.Type() == wire.TStruct {
+				v.ShardOwnershipLostError, err = _ShardOwnershipLostError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if field.Value.Type() == wire.TStruct {
+				v.EntityNotExistError, err = _EntityNotExistsError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.InternalServiceError != nil {
+		count++
+	}
+	if v.ServiceBusyError != nil {
+		count++
+	}
+	if v.ShardOwnershipLostError != nil {
+		count++
+	}
+	if v.EntityNotExistError != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("HistoryService_GetFailoverInfo_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_GetFailoverInfo_Result
+// struct.
+func (v *HistoryService_GetFailoverInfo_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [5]string
+	i := 0
+	if v.Success != nil {
+		fields[i] = fmt.Sprintf("Success: %v", v.Success)
+		i++
+	}
+	if v.InternalServiceError != nil {
+		fields[i] = fmt.Sprintf("InternalServiceError: %v", v.InternalServiceError)
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.ShardOwnershipLostError != nil {
+		fields[i] = fmt.Sprintf("ShardOwnershipLostError: %v", v.ShardOwnershipLostError)
+		i++
+	}
+	if v.EntityNotExistError != nil {
+		fields[i] = fmt.Sprintf("EntityNotExistError: %v", v.EntityNotExistError)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_GetFailoverInfo_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_GetFailoverInfo_Result match the
+// provided HistoryService_GetFailoverInfo_Result.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_GetFailoverInfo_Result) Equals(rhs *HistoryService_GetFailoverInfo_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
+		return false
+	}
+	if !((v.InternalServiceError == nil && rhs.InternalServiceError == nil) || (v.InternalServiceError != nil && rhs.InternalServiceError != nil && v.InternalServiceError.Equals(rhs.InternalServiceError))) {
+		return false
+	}
+	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
+		return false
+	}
+	if !((v.ShardOwnershipLostError == nil && rhs.ShardOwnershipLostError == nil) || (v.ShardOwnershipLostError != nil && rhs.ShardOwnershipLostError != nil && v.ShardOwnershipLostError.Equals(rhs.ShardOwnershipLostError))) {
+		return false
+	}
+	if !((v.EntityNotExistError == nil && rhs.EntityNotExistError == nil) || (v.EntityNotExistError != nil && rhs.EntityNotExistError != nil && v.EntityNotExistError.Equals(rhs.EntityNotExistError))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_GetFailoverInfo_Result.
+func (v *HistoryService_GetFailoverInfo_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Success != nil {
+		err = multierr.Append(err, enc.AddObject("success", v.Success))
+	}
+	if v.InternalServiceError != nil {
+		err = multierr.Append(err, enc.AddObject("internalServiceError", v.InternalServiceError))
+	}
+	if v.ServiceBusyError != nil {
+		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.ShardOwnershipLostError != nil {
+		err = multierr.Append(err, enc.AddObject("shardOwnershipLostError", v.ShardOwnershipLostError))
+	}
+	if v.EntityNotExistError != nil {
+		err = multierr.Append(err, enc.AddObject("entityNotExistError", v.EntityNotExistError))
+	}
+	return err
+}
+
+// GetSuccess returns the value of Success if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Result) GetSuccess() (o *GetFailoverInfoResponse) {
+	if v != nil && v.Success != nil {
+		return v.Success
+	}
+
+	return
+}
+
+// IsSetSuccess returns true if Success is not nil.
+func (v *HistoryService_GetFailoverInfo_Result) IsSetSuccess() bool {
+	return v != nil && v.Success != nil
+}
+
+// GetInternalServiceError returns the value of InternalServiceError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Result) GetInternalServiceError() (o *shared.InternalServiceError) {
+	if v != nil && v.InternalServiceError != nil {
+		return v.InternalServiceError
+	}
+
+	return
+}
+
+// IsSetInternalServiceError returns true if InternalServiceError is not nil.
+func (v *HistoryService_GetFailoverInfo_Result) IsSetInternalServiceError() bool {
+	return v != nil && v.InternalServiceError != nil
+}
+
+// GetServiceBusyError returns the value of ServiceBusyError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Result) GetServiceBusyError() (o *shared.ServiceBusyError) {
+	if v != nil && v.ServiceBusyError != nil {
+		return v.ServiceBusyError
+	}
+
+	return
+}
+
+// IsSetServiceBusyError returns true if ServiceBusyError is not nil.
+func (v *HistoryService_GetFailoverInfo_Result) IsSetServiceBusyError() bool {
+	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetShardOwnershipLostError returns the value of ShardOwnershipLostError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Result) GetShardOwnershipLostError() (o *ShardOwnershipLostError) {
+	if v != nil && v.ShardOwnershipLostError != nil {
+		return v.ShardOwnershipLostError
+	}
+
+	return
+}
+
+// IsSetShardOwnershipLostError returns true if ShardOwnershipLostError is not nil.
+func (v *HistoryService_GetFailoverInfo_Result) IsSetShardOwnershipLostError() bool {
+	return v != nil && v.ShardOwnershipLostError != nil
+}
+
+// GetEntityNotExistError returns the value of EntityNotExistError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_GetFailoverInfo_Result) GetEntityNotExistError() (o *shared.EntityNotExistsError) {
+	if v != nil && v.EntityNotExistError != nil {
+		return v.EntityNotExistError
+	}
+
+	return
+}
+
+// IsSetEntityNotExistError returns true if EntityNotExistError is not nil.
+func (v *HistoryService_GetFailoverInfo_Result) IsSetEntityNotExistError() bool {
+	return v != nil && v.EntityNotExistError != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "GetFailoverInfo" for this struct.
+func (v *HistoryService_GetFailoverInfo_Result) MethodName() string {
+	return "GetFailoverInfo"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
+func (v *HistoryService_GetFailoverInfo_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }
 
@@ -23445,6 +24993,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -23491,6 +25041,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordActivityTaskHeartbeat_Result.ServiceBusyError")
 			}
 			return &HistoryService_RecordActivityTaskHeartbeat_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordActivityTaskHeartbeat_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RecordActivityTaskHeartbeat_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -23524,6 +25079,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 
 		if result.Success != nil {
 			success = result.Success
@@ -23543,14 +25102,15 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type HistoryService_RecordActivityTaskHeartbeat_Result struct {
 	// Value returned by RecordActivityTaskHeartbeat after a successful execution.
-	Success                 *shared.RecordActivityTaskHeartbeatResponse `json:"success,omitempty"`
-	BadRequestError         *shared.BadRequestError                     `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError                `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError                `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError                    `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError                `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError                  `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError                    `json:"serviceBusyError,omitempty"`
+	Success                                *shared.RecordActivityTaskHeartbeatResponse    `json:"success,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RecordActivityTaskHeartbeat_Result struct into a Thrift-level intermediate
@@ -23570,7 +25130,7 @@ type HistoryService_RecordActivityTaskHeartbeat_Result struct {
 //   }
 func (v *HistoryService_RecordActivityTaskHeartbeat_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [8]wire.Field
+		fields [9]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -23640,6 +25200,14 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) ToWire() (wire.Value
 		fields[i] = wire.Field{ID: 7, Value: w}
 		i++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
 
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("HistoryService_RecordActivityTaskHeartbeat_Result should have exactly one field: got %v fields", i)
@@ -23650,6 +25218,12 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) ToWire() (wire.Value
 
 func _RecordActivityTaskHeartbeatResponse_Read(w wire.Value) (*shared.RecordActivityTaskHeartbeatResponse, error) {
 	var v shared.RecordActivityTaskHeartbeatResponse
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _WorkflowExecutionAlreadyCompletedError_Read(w wire.Value) (*shared.WorkflowExecutionAlreadyCompletedError, error) {
+	var v shared.WorkflowExecutionAlreadyCompletedError
 	err := v.FromWire(w)
 	return &v, err
 }
@@ -23740,6 +25314,14 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) FromWire(w wire.Valu
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -23768,6 +25350,9 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) FromWire(w wire.Valu
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count != 1 {
 		return fmt.Errorf("HistoryService_RecordActivityTaskHeartbeat_Result should have exactly one field: got %v fields", count)
 	}
@@ -23782,7 +25367,7 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [8]string
+	var fields [9]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
@@ -23814,6 +25399,10 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -23854,6 +25443,9 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) Equals(rhs *HistoryS
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -23887,6 +25479,9 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) MarshalLogObject(enc
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -24009,6 +25604,21 @@ func (v *HistoryService_RecordActivityTaskHeartbeat_Result) GetServiceBusyError(
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RecordActivityTaskHeartbeat_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RecordActivityTaskHeartbeat_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RecordActivityTaskHeartbeat_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -24258,6 +25868,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -24309,6 +25921,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordActivityTaskStarted_Result.ServiceBusyError")
 			}
 			return &HistoryService_RecordActivityTaskStarted_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordActivityTaskStarted_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RecordActivityTaskStarted_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -24346,6 +25963,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 
 		if result.Success != nil {
 			success = result.Success
@@ -24365,15 +25986,16 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type HistoryService_RecordActivityTaskStarted_Result struct {
 	// Value returned by RecordActivityTaskStarted after a successful execution.
-	Success                  *RecordActivityTaskStartedResponse `json:"success,omitempty"`
-	BadRequestError          *shared.BadRequestError            `json:"badRequestError,omitempty"`
-	InternalServiceError     *shared.InternalServiceError       `json:"internalServiceError,omitempty"`
-	EventAlreadyStartedError *EventAlreadyStartedError          `json:"eventAlreadyStartedError,omitempty"`
-	EntityNotExistError      *shared.EntityNotExistsError       `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError  *ShardOwnershipLostError           `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError     *shared.DomainNotActiveError       `json:"domainNotActiveError,omitempty"`
-	LimitExceededError       *shared.LimitExceededError         `json:"limitExceededError,omitempty"`
-	ServiceBusyError         *shared.ServiceBusyError           `json:"serviceBusyError,omitempty"`
+	Success                                *RecordActivityTaskStartedResponse             `json:"success,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EventAlreadyStartedError               *EventAlreadyStartedError                      `json:"eventAlreadyStartedError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RecordActivityTaskStarted_Result struct into a Thrift-level intermediate
@@ -24393,7 +26015,7 @@ type HistoryService_RecordActivityTaskStarted_Result struct {
 //   }
 func (v *HistoryService_RecordActivityTaskStarted_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [9]wire.Field
+		fields [10]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -24469,6 +26091,14 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) ToWire() (wire.Value, 
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 9, Value: w}
 		i++
 	}
 
@@ -24585,6 +26215,14 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) FromWire(w wire.Value)
 				}
 
 			}
+		case 9:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -24616,6 +26254,9 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) FromWire(w wire.Value)
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count != 1 {
 		return fmt.Errorf("HistoryService_RecordActivityTaskStarted_Result should have exactly one field: got %v fields", count)
 	}
@@ -24630,7 +26271,7 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [9]string
+	var fields [10]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
@@ -24666,6 +26307,10 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -24709,6 +26354,9 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) Equals(rhs *HistorySer
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -24745,6 +26393,9 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) MarshalLogObject(enc z
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -24882,6 +26533,21 @@ func (v *HistoryService_RecordActivityTaskStarted_Result) GetServiceBusyError() 
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RecordActivityTaskStarted_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RecordActivityTaskStarted_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RecordActivityTaskStarted_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -25130,6 +26796,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -25176,6 +26844,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordChildExecutionCompleted_Result.ServiceBusyError")
 			}
 			return &HistoryService_RecordChildExecutionCompleted_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordChildExecutionCompleted_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RecordChildExecutionCompleted_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -25209,6 +26882,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -25218,13 +26895,14 @@ func init() {
 //
 // The result of a RecordChildExecutionCompleted execution is sent and received over the wire as this struct.
 type HistoryService_RecordChildExecutionCompleted_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RecordChildExecutionCompleted_Result struct into a Thrift-level intermediate
@@ -25244,7 +26922,7 @@ type HistoryService_RecordChildExecutionCompleted_Result struct {
 //   }
 func (v *HistoryService_RecordChildExecutionCompleted_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -25304,6 +26982,14 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) ToWire() (wire.Val
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -25392,6 +27078,14 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) FromWire(w wire.Va
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -25417,6 +27111,9 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) FromWire(w wire.Va
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RecordChildExecutionCompleted_Result should have at most one field: got %v fields", count)
 	}
@@ -25431,7 +27128,7 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -25459,6 +27156,10 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -25496,6 +27197,9 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) Equals(rhs *Histor
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -25526,6 +27230,9 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) MarshalLogObject(e
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -25633,6 +27340,21 @@ func (v *HistoryService_RecordChildExecutionCompleted_Result) GetServiceBusyErro
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RecordChildExecutionCompleted_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RecordChildExecutionCompleted_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RecordChildExecutionCompleted_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -25882,6 +27604,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -25933,6 +27657,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordDecisionTaskStarted_Result.ServiceBusyError")
 			}
 			return &HistoryService_RecordDecisionTaskStarted_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RecordDecisionTaskStarted_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RecordDecisionTaskStarted_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -25970,6 +27699,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 
 		if result.Success != nil {
 			success = result.Success
@@ -25989,15 +27722,16 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type HistoryService_RecordDecisionTaskStarted_Result struct {
 	// Value returned by RecordDecisionTaskStarted after a successful execution.
-	Success                  *RecordDecisionTaskStartedResponse `json:"success,omitempty"`
-	BadRequestError          *shared.BadRequestError            `json:"badRequestError,omitempty"`
-	InternalServiceError     *shared.InternalServiceError       `json:"internalServiceError,omitempty"`
-	EventAlreadyStartedError *EventAlreadyStartedError          `json:"eventAlreadyStartedError,omitempty"`
-	EntityNotExistError      *shared.EntityNotExistsError       `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError  *ShardOwnershipLostError           `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError     *shared.DomainNotActiveError       `json:"domainNotActiveError,omitempty"`
-	LimitExceededError       *shared.LimitExceededError         `json:"limitExceededError,omitempty"`
-	ServiceBusyError         *shared.ServiceBusyError           `json:"serviceBusyError,omitempty"`
+	Success                                *RecordDecisionTaskStartedResponse             `json:"success,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EventAlreadyStartedError               *EventAlreadyStartedError                      `json:"eventAlreadyStartedError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RecordDecisionTaskStarted_Result struct into a Thrift-level intermediate
@@ -26017,7 +27751,7 @@ type HistoryService_RecordDecisionTaskStarted_Result struct {
 //   }
 func (v *HistoryService_RecordDecisionTaskStarted_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [9]wire.Field
+		fields [10]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -26093,6 +27827,14 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) ToWire() (wire.Value, 
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 9, Value: w}
 		i++
 	}
 
@@ -26197,6 +27939,14 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) FromWire(w wire.Value)
 				}
 
 			}
+		case 9:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -26228,6 +27978,9 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) FromWire(w wire.Value)
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count != 1 {
 		return fmt.Errorf("HistoryService_RecordDecisionTaskStarted_Result should have exactly one field: got %v fields", count)
 	}
@@ -26242,7 +27995,7 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [9]string
+	var fields [10]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
@@ -26278,6 +28031,10 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -26321,6 +28078,9 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) Equals(rhs *HistorySer
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -26357,6 +28117,9 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) MarshalLogObject(enc z
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -26494,6 +28257,21 @@ func (v *HistoryService_RecordDecisionTaskStarted_Result) GetServiceBusyError() 
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RecordDecisionTaskStarted_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RecordDecisionTaskStarted_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RecordDecisionTaskStarted_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -27437,6 +29215,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -27483,6 +29263,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RemoveSignalMutableState_Result.ServiceBusyError")
 			}
 			return &HistoryService_RemoveSignalMutableState_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RemoveSignalMutableState_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RemoveSignalMutableState_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -27516,6 +29301,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -27525,13 +29314,14 @@ func init() {
 //
 // The result of a RemoveSignalMutableState execution is sent and received over the wire as this struct.
 type HistoryService_RemoveSignalMutableState_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RemoveSignalMutableState_Result struct into a Thrift-level intermediate
@@ -27551,7 +29341,7 @@ type HistoryService_RemoveSignalMutableState_Result struct {
 //   }
 func (v *HistoryService_RemoveSignalMutableState_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -27611,6 +29401,14 @@ func (v *HistoryService_RemoveSignalMutableState_Result) ToWire() (wire.Value, e
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -27699,6 +29497,14 @@ func (v *HistoryService_RemoveSignalMutableState_Result) FromWire(w wire.Value) 
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -27724,6 +29530,9 @@ func (v *HistoryService_RemoveSignalMutableState_Result) FromWire(w wire.Value) 
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RemoveSignalMutableState_Result should have at most one field: got %v fields", count)
 	}
@@ -27738,7 +29547,7 @@ func (v *HistoryService_RemoveSignalMutableState_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -27766,6 +29575,10 @@ func (v *HistoryService_RemoveSignalMutableState_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -27803,6 +29616,9 @@ func (v *HistoryService_RemoveSignalMutableState_Result) Equals(rhs *HistoryServ
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -27833,6 +29649,9 @@ func (v *HistoryService_RemoveSignalMutableState_Result) MarshalLogObject(enc za
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -27940,6 +29759,21 @@ func (v *HistoryService_RemoveSignalMutableState_Result) GetServiceBusyError() (
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RemoveSignalMutableState_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RemoveSignalMutableState_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RemoveSignalMutableState_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -29474,6 +31308,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -29525,6 +31361,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RequestCancelWorkflowExecution_Result.ServiceBusyError")
 			}
 			return &HistoryService_RequestCancelWorkflowExecution_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RequestCancelWorkflowExecution_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RequestCancelWorkflowExecution_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -29562,6 +31403,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -29571,14 +31416,15 @@ func init() {
 //
 // The result of a RequestCancelWorkflowExecution execution is sent and received over the wire as this struct.
 type HistoryService_RequestCancelWorkflowExecution_Result struct {
-	BadRequestError                   *shared.BadRequestError                   `json:"badRequestError,omitempty"`
-	InternalServiceError              *shared.InternalServiceError              `json:"internalServiceError,omitempty"`
-	EntityNotExistError               *shared.EntityNotExistsError              `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError           *ShardOwnershipLostError                  `json:"shardOwnershipLostError,omitempty"`
-	CancellationAlreadyRequestedError *shared.CancellationAlreadyRequestedError `json:"cancellationAlreadyRequestedError,omitempty"`
-	DomainNotActiveError              *shared.DomainNotActiveError              `json:"domainNotActiveError,omitempty"`
-	LimitExceededError                *shared.LimitExceededError                `json:"limitExceededError,omitempty"`
-	ServiceBusyError                  *shared.ServiceBusyError                  `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	CancellationAlreadyRequestedError      *shared.CancellationAlreadyRequestedError      `json:"cancellationAlreadyRequestedError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RequestCancelWorkflowExecution_Result struct into a Thrift-level intermediate
@@ -29598,7 +31444,7 @@ type HistoryService_RequestCancelWorkflowExecution_Result struct {
 //   }
 func (v *HistoryService_RequestCancelWorkflowExecution_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [8]wire.Field
+		fields [9]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -29666,6 +31512,14 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) ToWire() (wire.Va
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 10, Value: w}
 		i++
 	}
 
@@ -29768,6 +31622,14 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) FromWire(w wire.V
 				}
 
 			}
+		case 10:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -29796,6 +31658,9 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) FromWire(w wire.V
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RequestCancelWorkflowExecution_Result should have at most one field: got %v fields", count)
 	}
@@ -29810,7 +31675,7 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [8]string
+	var fields [9]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -29842,6 +31707,10 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -29882,6 +31751,9 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) Equals(rhs *Histo
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -29915,6 +31787,9 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) MarshalLogObject(
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -30037,6 +31912,21 @@ func (v *HistoryService_RequestCancelWorkflowExecution_Result) GetServiceBusyErr
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RequestCancelWorkflowExecution_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RequestCancelWorkflowExecution_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RequestCancelWorkflowExecution_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -30809,6 +32699,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -30850,6 +32742,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_ResetStickyTaskList_Result.ServiceBusyError")
 			}
 			return &HistoryService_ResetStickyTaskList_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_ResetStickyTaskList_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_ResetStickyTaskList_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -30879,6 +32776,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 
 		if result.Success != nil {
 			success = result.Success
@@ -30898,13 +32799,14 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type HistoryService_ResetStickyTaskList_Result struct {
 	// Value returned by ResetStickyTaskList after a successful execution.
-	Success                 *ResetStickyTaskListResponse `json:"success,omitempty"`
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	Success                                *ResetStickyTaskListResponse                   `json:"success,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_ResetStickyTaskList_Result struct into a Thrift-level intermediate
@@ -30924,7 +32826,7 @@ type HistoryService_ResetStickyTaskList_Result struct {
 //   }
 func (v *HistoryService_ResetStickyTaskList_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -30984,6 +32886,14 @@ func (v *HistoryService_ResetStickyTaskList_Result) ToWire() (wire.Value, error)
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 6, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 7, Value: w}
 		i++
 	}
 
@@ -31078,6 +32988,14 @@ func (v *HistoryService_ResetStickyTaskList_Result) FromWire(w wire.Value) error
 				}
 
 			}
+		case 7:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -31103,6 +33021,9 @@ func (v *HistoryService_ResetStickyTaskList_Result) FromWire(w wire.Value) error
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count != 1 {
 		return fmt.Errorf("HistoryService_ResetStickyTaskList_Result should have exactly one field: got %v fields", count)
 	}
@@ -31117,7 +33038,7 @@ func (v *HistoryService_ResetStickyTaskList_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
@@ -31145,6 +33066,10 @@ func (v *HistoryService_ResetStickyTaskList_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -31182,6 +33107,9 @@ func (v *HistoryService_ResetStickyTaskList_Result) Equals(rhs *HistoryService_R
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -31212,6 +33140,9 @@ func (v *HistoryService_ResetStickyTaskList_Result) MarshalLogObject(enc zapcore
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -31319,6 +33250,21 @@ func (v *HistoryService_ResetStickyTaskList_Result) GetServiceBusyError() (o *sh
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_ResetStickyTaskList_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_ResetStickyTaskList_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_ResetStickyTaskList_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -32378,6 +34324,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -32424,6 +34372,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskCanceled_Result.ServiceBusyError")
 			}
 			return &HistoryService_RespondActivityTaskCanceled_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskCanceled_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RespondActivityTaskCanceled_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -32457,6 +34410,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -32466,13 +34423,14 @@ func init() {
 //
 // The result of a RespondActivityTaskCanceled execution is sent and received over the wire as this struct.
 type HistoryService_RespondActivityTaskCanceled_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RespondActivityTaskCanceled_Result struct into a Thrift-level intermediate
@@ -32492,7 +34450,7 @@ type HistoryService_RespondActivityTaskCanceled_Result struct {
 //   }
 func (v *HistoryService_RespondActivityTaskCanceled_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -32552,6 +34510,14 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) ToWire() (wire.Value
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -32640,6 +34606,14 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) FromWire(w wire.Valu
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -32665,6 +34639,9 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) FromWire(w wire.Valu
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RespondActivityTaskCanceled_Result should have at most one field: got %v fields", count)
 	}
@@ -32679,7 +34656,7 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -32707,6 +34684,10 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -32744,6 +34725,9 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) Equals(rhs *HistoryS
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -32774,6 +34758,9 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) MarshalLogObject(enc
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -32881,6 +34868,21 @@ func (v *HistoryService_RespondActivityTaskCanceled_Result) GetServiceBusyError(
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RespondActivityTaskCanceled_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondActivityTaskCanceled_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RespondActivityTaskCanceled_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -33129,6 +35131,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -33175,6 +35179,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskCompleted_Result.ServiceBusyError")
 			}
 			return &HistoryService_RespondActivityTaskCompleted_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskCompleted_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RespondActivityTaskCompleted_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -33208,6 +35217,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -33217,13 +35230,14 @@ func init() {
 //
 // The result of a RespondActivityTaskCompleted execution is sent and received over the wire as this struct.
 type HistoryService_RespondActivityTaskCompleted_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RespondActivityTaskCompleted_Result struct into a Thrift-level intermediate
@@ -33243,7 +35257,7 @@ type HistoryService_RespondActivityTaskCompleted_Result struct {
 //   }
 func (v *HistoryService_RespondActivityTaskCompleted_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -33303,6 +35317,14 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) ToWire() (wire.Valu
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -33391,6 +35413,14 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) FromWire(w wire.Val
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -33416,6 +35446,9 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) FromWire(w wire.Val
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RespondActivityTaskCompleted_Result should have at most one field: got %v fields", count)
 	}
@@ -33430,7 +35463,7 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -33458,6 +35491,10 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -33495,6 +35532,9 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) Equals(rhs *History
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -33525,6 +35565,9 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) MarshalLogObject(en
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -33632,6 +35675,21 @@ func (v *HistoryService_RespondActivityTaskCompleted_Result) GetServiceBusyError
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RespondActivityTaskCompleted_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondActivityTaskCompleted_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RespondActivityTaskCompleted_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -33880,6 +35938,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -33926,6 +35986,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskFailed_Result.ServiceBusyError")
 			}
 			return &HistoryService_RespondActivityTaskFailed_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondActivityTaskFailed_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RespondActivityTaskFailed_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -33959,6 +36024,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -33968,13 +36037,14 @@ func init() {
 //
 // The result of a RespondActivityTaskFailed execution is sent and received over the wire as this struct.
 type HistoryService_RespondActivityTaskFailed_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RespondActivityTaskFailed_Result struct into a Thrift-level intermediate
@@ -33994,7 +36064,7 @@ type HistoryService_RespondActivityTaskFailed_Result struct {
 //   }
 func (v *HistoryService_RespondActivityTaskFailed_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -34054,6 +36124,14 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) ToWire() (wire.Value, 
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -34142,6 +36220,14 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) FromWire(w wire.Value)
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -34167,6 +36253,9 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) FromWire(w wire.Value)
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RespondActivityTaskFailed_Result should have at most one field: got %v fields", count)
 	}
@@ -34181,7 +36270,7 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -34209,6 +36298,10 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -34246,6 +36339,9 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) Equals(rhs *HistorySer
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -34276,6 +36372,9 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) MarshalLogObject(enc z
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -34385,6 +36484,21 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) IsSetServiceBusyError(
 	return v != nil && v.ServiceBusyError != nil
 }
 
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondActivityTaskFailed_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RespondActivityTaskFailed_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the result.
 //
@@ -34397,6 +36511,649 @@ func (v *HistoryService_RespondActivityTaskFailed_Result) MethodName() string {
 //
 // This will always be Reply for this struct.
 func (v *HistoryService_RespondActivityTaskFailed_Result) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
+}
+
+// HistoryService_RespondCrossClusterTasksCompleted_Args represents the arguments for the HistoryService.RespondCrossClusterTasksCompleted function.
+//
+// The arguments for RespondCrossClusterTasksCompleted are sent and received over the wire as this struct.
+type HistoryService_RespondCrossClusterTasksCompleted_Args struct {
+	Request *shared.RespondCrossClusterTasksCompletedRequest `json:"request,omitempty"`
+}
+
+// ToWire translates a HistoryService_RespondCrossClusterTasksCompleted_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Request != nil {
+		w, err = v.Request.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _RespondCrossClusterTasksCompletedRequest_Read(w wire.Value) (*shared.RespondCrossClusterTasksCompletedRequest, error) {
+	var v shared.RespondCrossClusterTasksCompletedRequest
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_RespondCrossClusterTasksCompleted_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_RespondCrossClusterTasksCompleted_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_RespondCrossClusterTasksCompleted_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.Request, err = _RespondCrossClusterTasksCompletedRequest_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_RespondCrossClusterTasksCompleted_Args
+// struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.Request != nil {
+		fields[i] = fmt.Sprintf("Request: %v", v.Request)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_RespondCrossClusterTasksCompleted_Args{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_RespondCrossClusterTasksCompleted_Args match the
+// provided HistoryService_RespondCrossClusterTasksCompleted_Args.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) Equals(rhs *HistoryService_RespondCrossClusterTasksCompleted_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_RespondCrossClusterTasksCompleted_Args.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Request != nil {
+		err = multierr.Append(err, enc.AddObject("request", v.Request))
+	}
+	return err
+}
+
+// GetRequest returns the value of Request if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) GetRequest() (o *shared.RespondCrossClusterTasksCompletedRequest) {
+	if v != nil && v.Request != nil {
+		return v.Request
+	}
+
+	return
+}
+
+// IsSetRequest returns true if Request is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) IsSetRequest() bool {
+	return v != nil && v.Request != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "RespondCrossClusterTasksCompleted" for this struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) MethodName() string {
+	return "RespondCrossClusterTasksCompleted"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Args) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
+// HistoryService_RespondCrossClusterTasksCompleted_Helper provides functions that aid in handling the
+// parameters and return values of the HistoryService.RespondCrossClusterTasksCompleted
+// function.
+var HistoryService_RespondCrossClusterTasksCompleted_Helper = struct {
+	// Args accepts the parameters of RespondCrossClusterTasksCompleted in-order and returns
+	// the arguments struct for the function.
+	Args func(
+		request *shared.RespondCrossClusterTasksCompletedRequest,
+	) *HistoryService_RespondCrossClusterTasksCompleted_Args
+
+	// IsException returns true if the given error can be thrown
+	// by RespondCrossClusterTasksCompleted.
+	//
+	// An error can be thrown by RespondCrossClusterTasksCompleted only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
+	IsException func(error) bool
+
+	// WrapResponse returns the result struct for RespondCrossClusterTasksCompleted
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// RespondCrossClusterTasksCompleted into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by RespondCrossClusterTasksCompleted
+	//
+	//   value, err := RespondCrossClusterTasksCompleted(args)
+	//   result, err := HistoryService_RespondCrossClusterTasksCompleted_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from RespondCrossClusterTasksCompleted: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*shared.RespondCrossClusterTasksCompletedResponse, error) (*HistoryService_RespondCrossClusterTasksCompleted_Result, error)
+
+	// UnwrapResponse takes the result struct for RespondCrossClusterTasksCompleted
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if RespondCrossClusterTasksCompleted threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := HistoryService_RespondCrossClusterTasksCompleted_Helper.UnwrapResponse(result)
+	UnwrapResponse func(*HistoryService_RespondCrossClusterTasksCompleted_Result) (*shared.RespondCrossClusterTasksCompletedResponse, error)
+}{}
+
+func init() {
+	HistoryService_RespondCrossClusterTasksCompleted_Helper.Args = func(
+		request *shared.RespondCrossClusterTasksCompletedRequest,
+	) *HistoryService_RespondCrossClusterTasksCompleted_Args {
+		return &HistoryService_RespondCrossClusterTasksCompleted_Args{
+			Request: request,
+		}
+	}
+
+	HistoryService_RespondCrossClusterTasksCompleted_Helper.IsException = func(err error) bool {
+		switch err.(type) {
+		case *shared.BadRequestError:
+			return true
+		case *shared.InternalServiceError:
+			return true
+		case *shared.ServiceBusyError:
+			return true
+		case *ShardOwnershipLostError:
+			return true
+		default:
+			return false
+		}
+	}
+
+	HistoryService_RespondCrossClusterTasksCompleted_Helper.WrapResponse = func(success *shared.RespondCrossClusterTasksCompletedResponse, err error) (*HistoryService_RespondCrossClusterTasksCompleted_Result, error) {
+		if err == nil {
+			return &HistoryService_RespondCrossClusterTasksCompleted_Result{Success: success}, nil
+		}
+
+		switch e := err.(type) {
+		case *shared.BadRequestError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondCrossClusterTasksCompleted_Result.BadRequestError")
+			}
+			return &HistoryService_RespondCrossClusterTasksCompleted_Result{BadRequestError: e}, nil
+		case *shared.InternalServiceError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondCrossClusterTasksCompleted_Result.InternalServiceError")
+			}
+			return &HistoryService_RespondCrossClusterTasksCompleted_Result{InternalServiceError: e}, nil
+		case *shared.ServiceBusyError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondCrossClusterTasksCompleted_Result.ServiceBusyError")
+			}
+			return &HistoryService_RespondCrossClusterTasksCompleted_Result{ServiceBusyError: e}, nil
+		case *ShardOwnershipLostError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondCrossClusterTasksCompleted_Result.ShardOwnershipLostError")
+			}
+			return &HistoryService_RespondCrossClusterTasksCompleted_Result{ShardOwnershipLostError: e}, nil
+		}
+
+		return nil, err
+	}
+	HistoryService_RespondCrossClusterTasksCompleted_Helper.UnwrapResponse = func(result *HistoryService_RespondCrossClusterTasksCompleted_Result) (success *shared.RespondCrossClusterTasksCompletedResponse, err error) {
+		if result.BadRequestError != nil {
+			err = result.BadRequestError
+			return
+		}
+		if result.InternalServiceError != nil {
+			err = result.InternalServiceError
+			return
+		}
+		if result.ServiceBusyError != nil {
+			err = result.ServiceBusyError
+			return
+		}
+		if result.ShardOwnershipLostError != nil {
+			err = result.ShardOwnershipLostError
+			return
+		}
+
+		if result.Success != nil {
+			success = result.Success
+			return
+		}
+
+		err = errors.New("expected a non-void result")
+		return
+	}
+
+}
+
+// HistoryService_RespondCrossClusterTasksCompleted_Result represents the result of a HistoryService.RespondCrossClusterTasksCompleted function call.
+//
+// The result of a RespondCrossClusterTasksCompleted execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
+type HistoryService_RespondCrossClusterTasksCompleted_Result struct {
+	// Value returned by RespondCrossClusterTasksCompleted after a successful execution.
+	Success                 *shared.RespondCrossClusterTasksCompletedResponse `json:"success,omitempty"`
+	BadRequestError         *shared.BadRequestError                           `json:"badRequestError,omitempty"`
+	InternalServiceError    *shared.InternalServiceError                      `json:"internalServiceError,omitempty"`
+	ServiceBusyError        *shared.ServiceBusyError                          `json:"serviceBusyError,omitempty"`
+	ShardOwnershipLostError *ShardOwnershipLostError                          `json:"shardOwnershipLostError,omitempty"`
+}
+
+// ToWire translates a HistoryService_RespondCrossClusterTasksCompleted_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) ToWire() (wire.Value, error) {
+	var (
+		fields [5]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Success != nil {
+		w, err = v.Success.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
+		i++
+	}
+	if v.BadRequestError != nil {
+		w, err = v.BadRequestError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.InternalServiceError != nil {
+		w, err = v.InternalServiceError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		w, err = v.ServiceBusyError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
+	if v.ShardOwnershipLostError != nil {
+		w, err = v.ShardOwnershipLostError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("HistoryService_RespondCrossClusterTasksCompleted_Result should have exactly one field: got %v fields", i)
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _RespondCrossClusterTasksCompletedResponse_Read(w wire.Value) (*shared.RespondCrossClusterTasksCompletedResponse, error) {
+	var v shared.RespondCrossClusterTasksCompletedResponse
+	err := v.FromWire(w)
+	return &v, err
+}
+
+// FromWire deserializes a HistoryService_RespondCrossClusterTasksCompleted_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a HistoryService_RespondCrossClusterTasksCompleted_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v HistoryService_RespondCrossClusterTasksCompleted_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 0:
+			if field.Value.Type() == wire.TStruct {
+				v.Success, err = _RespondCrossClusterTasksCompletedResponse_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.BadRequestError, err = _BadRequestError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if field.Value.Type() == wire.TStruct {
+				v.InternalServiceError, err = _InternalServiceError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if field.Value.Type() == wire.TStruct {
+				v.ServiceBusyError, err = _ServiceBusyError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if field.Value.Type() == wire.TStruct {
+				v.ShardOwnershipLostError, err = _ShardOwnershipLostError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.BadRequestError != nil {
+		count++
+	}
+	if v.InternalServiceError != nil {
+		count++
+	}
+	if v.ServiceBusyError != nil {
+		count++
+	}
+	if v.ShardOwnershipLostError != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("HistoryService_RespondCrossClusterTasksCompleted_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a HistoryService_RespondCrossClusterTasksCompleted_Result
+// struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [5]string
+	i := 0
+	if v.Success != nil {
+		fields[i] = fmt.Sprintf("Success: %v", v.Success)
+		i++
+	}
+	if v.BadRequestError != nil {
+		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
+		i++
+	}
+	if v.InternalServiceError != nil {
+		fields[i] = fmt.Sprintf("InternalServiceError: %v", v.InternalServiceError)
+		i++
+	}
+	if v.ServiceBusyError != nil {
+		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.ShardOwnershipLostError != nil {
+		fields[i] = fmt.Sprintf("ShardOwnershipLostError: %v", v.ShardOwnershipLostError)
+		i++
+	}
+
+	return fmt.Sprintf("HistoryService_RespondCrossClusterTasksCompleted_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this HistoryService_RespondCrossClusterTasksCompleted_Result match the
+// provided HistoryService_RespondCrossClusterTasksCompleted_Result.
+//
+// This function performs a deep comparison.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) Equals(rhs *HistoryService_RespondCrossClusterTasksCompleted_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
+		return false
+	}
+	if !((v.BadRequestError == nil && rhs.BadRequestError == nil) || (v.BadRequestError != nil && rhs.BadRequestError != nil && v.BadRequestError.Equals(rhs.BadRequestError))) {
+		return false
+	}
+	if !((v.InternalServiceError == nil && rhs.InternalServiceError == nil) || (v.InternalServiceError != nil && rhs.InternalServiceError != nil && v.InternalServiceError.Equals(rhs.InternalServiceError))) {
+		return false
+	}
+	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
+		return false
+	}
+	if !((v.ShardOwnershipLostError == nil && rhs.ShardOwnershipLostError == nil) || (v.ShardOwnershipLostError != nil && rhs.ShardOwnershipLostError != nil && v.ShardOwnershipLostError.Equals(rhs.ShardOwnershipLostError))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of HistoryService_RespondCrossClusterTasksCompleted_Result.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Success != nil {
+		err = multierr.Append(err, enc.AddObject("success", v.Success))
+	}
+	if v.BadRequestError != nil {
+		err = multierr.Append(err, enc.AddObject("badRequestError", v.BadRequestError))
+	}
+	if v.InternalServiceError != nil {
+		err = multierr.Append(err, enc.AddObject("internalServiceError", v.InternalServiceError))
+	}
+	if v.ServiceBusyError != nil {
+		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.ShardOwnershipLostError != nil {
+		err = multierr.Append(err, enc.AddObject("shardOwnershipLostError", v.ShardOwnershipLostError))
+	}
+	return err
+}
+
+// GetSuccess returns the value of Success if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) GetSuccess() (o *shared.RespondCrossClusterTasksCompletedResponse) {
+	if v != nil && v.Success != nil {
+		return v.Success
+	}
+
+	return
+}
+
+// IsSetSuccess returns true if Success is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) IsSetSuccess() bool {
+	return v != nil && v.Success != nil
+}
+
+// GetBadRequestError returns the value of BadRequestError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) GetBadRequestError() (o *shared.BadRequestError) {
+	if v != nil && v.BadRequestError != nil {
+		return v.BadRequestError
+	}
+
+	return
+}
+
+// IsSetBadRequestError returns true if BadRequestError is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) IsSetBadRequestError() bool {
+	return v != nil && v.BadRequestError != nil
+}
+
+// GetInternalServiceError returns the value of InternalServiceError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) GetInternalServiceError() (o *shared.InternalServiceError) {
+	if v != nil && v.InternalServiceError != nil {
+		return v.InternalServiceError
+	}
+
+	return
+}
+
+// IsSetInternalServiceError returns true if InternalServiceError is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) IsSetInternalServiceError() bool {
+	return v != nil && v.InternalServiceError != nil
+}
+
+// GetServiceBusyError returns the value of ServiceBusyError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) GetServiceBusyError() (o *shared.ServiceBusyError) {
+	if v != nil && v.ServiceBusyError != nil {
+		return v.ServiceBusyError
+	}
+
+	return
+}
+
+// IsSetServiceBusyError returns true if ServiceBusyError is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) IsSetServiceBusyError() bool {
+	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetShardOwnershipLostError returns the value of ShardOwnershipLostError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) GetShardOwnershipLostError() (o *ShardOwnershipLostError) {
+	if v != nil && v.ShardOwnershipLostError != nil {
+		return v.ShardOwnershipLostError
+	}
+
+	return
+}
+
+// IsSetShardOwnershipLostError returns true if ShardOwnershipLostError is not nil.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) IsSetShardOwnershipLostError() bool {
+	return v != nil && v.ShardOwnershipLostError != nil
+}
+
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "RespondCrossClusterTasksCompleted" for this struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) MethodName() string {
+	return "RespondCrossClusterTasksCompleted"
+}
+
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
+func (v *HistoryService_RespondCrossClusterTasksCompleted_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }
 
@@ -34630,6 +37387,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -34676,6 +37435,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondDecisionTaskCompleted_Result.ServiceBusyError")
 			}
 			return &HistoryService_RespondDecisionTaskCompleted_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondDecisionTaskCompleted_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RespondDecisionTaskCompleted_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -34709,6 +37473,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 
 		if result.Success != nil {
 			success = result.Success
@@ -34728,14 +37496,15 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type HistoryService_RespondDecisionTaskCompleted_Result struct {
 	// Value returned by RespondDecisionTaskCompleted after a successful execution.
-	Success                 *RespondDecisionTaskCompletedResponse `json:"success,omitempty"`
-	BadRequestError         *shared.BadRequestError               `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError          `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError          `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError              `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError          `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError            `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError              `json:"serviceBusyError,omitempty"`
+	Success                                *RespondDecisionTaskCompletedResponse          `json:"success,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RespondDecisionTaskCompleted_Result struct into a Thrift-level intermediate
@@ -34755,7 +37524,7 @@ type HistoryService_RespondDecisionTaskCompleted_Result struct {
 //   }
 func (v *HistoryService_RespondDecisionTaskCompleted_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [8]wire.Field
+		fields [9]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -34823,6 +37592,14 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) ToWire() (wire.Valu
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -34925,6 +37702,14 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) FromWire(w wire.Val
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -34953,6 +37738,9 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) FromWire(w wire.Val
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count != 1 {
 		return fmt.Errorf("HistoryService_RespondDecisionTaskCompleted_Result should have exactly one field: got %v fields", count)
 	}
@@ -34967,7 +37755,7 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [8]string
+	var fields [9]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
@@ -34999,6 +37787,10 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -35039,6 +37831,9 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) Equals(rhs *History
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -35072,6 +37867,9 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) MarshalLogObject(en
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -35194,6 +37992,21 @@ func (v *HistoryService_RespondDecisionTaskCompleted_Result) GetServiceBusyError
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RespondDecisionTaskCompleted_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondDecisionTaskCompleted_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RespondDecisionTaskCompleted_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -35442,6 +38255,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -35488,6 +38303,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondDecisionTaskFailed_Result.ServiceBusyError")
 			}
 			return &HistoryService_RespondDecisionTaskFailed_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_RespondDecisionTaskFailed_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_RespondDecisionTaskFailed_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -35521,6 +38341,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -35530,13 +38354,14 @@ func init() {
 //
 // The result of a RespondDecisionTaskFailed execution is sent and received over the wire as this struct.
 type HistoryService_RespondDecisionTaskFailed_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_RespondDecisionTaskFailed_Result struct into a Thrift-level intermediate
@@ -35556,7 +38381,7 @@ type HistoryService_RespondDecisionTaskFailed_Result struct {
 //   }
 func (v *HistoryService_RespondDecisionTaskFailed_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -35616,6 +38441,14 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) ToWire() (wire.Value, 
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -35704,6 +38537,14 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) FromWire(w wire.Value)
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -35729,6 +38570,9 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) FromWire(w wire.Value)
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_RespondDecisionTaskFailed_Result should have at most one field: got %v fields", count)
 	}
@@ -35743,7 +38587,7 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -35771,6 +38615,10 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -35808,6 +38656,9 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) Equals(rhs *HistorySer
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -35838,6 +38689,9 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) MarshalLogObject(enc z
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -35945,6 +38799,21 @@ func (v *HistoryService_RespondDecisionTaskFailed_Result) GetServiceBusyError() 
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_RespondDecisionTaskFailed_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_RespondDecisionTaskFailed_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_RespondDecisionTaskFailed_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -36193,6 +39062,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -36239,6 +39110,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_ScheduleDecisionTask_Result.ServiceBusyError")
 			}
 			return &HistoryService_ScheduleDecisionTask_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_ScheduleDecisionTask_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_ScheduleDecisionTask_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -36272,6 +39148,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -36281,13 +39161,14 @@ func init() {
 //
 // The result of a ScheduleDecisionTask execution is sent and received over the wire as this struct.
 type HistoryService_ScheduleDecisionTask_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_ScheduleDecisionTask_Result struct into a Thrift-level intermediate
@@ -36307,7 +39188,7 @@ type HistoryService_ScheduleDecisionTask_Result struct {
 //   }
 func (v *HistoryService_ScheduleDecisionTask_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -36367,6 +39248,14 @@ func (v *HistoryService_ScheduleDecisionTask_Result) ToWire() (wire.Value, error
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -36455,6 +39344,14 @@ func (v *HistoryService_ScheduleDecisionTask_Result) FromWire(w wire.Value) erro
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -36480,6 +39377,9 @@ func (v *HistoryService_ScheduleDecisionTask_Result) FromWire(w wire.Value) erro
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_ScheduleDecisionTask_Result should have at most one field: got %v fields", count)
 	}
@@ -36494,7 +39394,7 @@ func (v *HistoryService_ScheduleDecisionTask_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -36522,6 +39422,10 @@ func (v *HistoryService_ScheduleDecisionTask_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -36559,6 +39463,9 @@ func (v *HistoryService_ScheduleDecisionTask_Result) Equals(rhs *HistoryService_
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -36589,6 +39496,9 @@ func (v *HistoryService_ScheduleDecisionTask_Result) MarshalLogObject(enc zapcor
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -36696,6 +39606,21 @@ func (v *HistoryService_ScheduleDecisionTask_Result) GetServiceBusyError() (o *s
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_ScheduleDecisionTask_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_ScheduleDecisionTask_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_ScheduleDecisionTask_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -37761,6 +40686,8 @@ func init() {
 			return true
 		case *shared.LimitExceededError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -37807,6 +40734,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_SignalWorkflowExecution_Result.LimitExceededError")
 			}
 			return &HistoryService_SignalWorkflowExecution_Result{LimitExceededError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_SignalWorkflowExecution_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_SignalWorkflowExecution_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -37840,6 +40772,10 @@ func init() {
 			err = result.LimitExceededError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -37849,13 +40785,14 @@ func init() {
 //
 // The result of a SignalWorkflowExecution execution is sent and received over the wire as this struct.
 type HistoryService_SignalWorkflowExecution_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_SignalWorkflowExecution_Result struct into a Thrift-level intermediate
@@ -37875,7 +40812,7 @@ type HistoryService_SignalWorkflowExecution_Result struct {
 //   }
 func (v *HistoryService_SignalWorkflowExecution_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -37935,6 +40872,14 @@ func (v *HistoryService_SignalWorkflowExecution_Result) ToWire() (wire.Value, er
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -38023,6 +40968,14 @@ func (v *HistoryService_SignalWorkflowExecution_Result) FromWire(w wire.Value) e
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -38048,6 +41001,9 @@ func (v *HistoryService_SignalWorkflowExecution_Result) FromWire(w wire.Value) e
 	if v.LimitExceededError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_SignalWorkflowExecution_Result should have at most one field: got %v fields", count)
 	}
@@ -38062,7 +41018,7 @@ func (v *HistoryService_SignalWorkflowExecution_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -38090,6 +41046,10 @@ func (v *HistoryService_SignalWorkflowExecution_Result) String() string {
 	}
 	if v.LimitExceededError != nil {
 		fields[i] = fmt.Sprintf("LimitExceededError: %v", v.LimitExceededError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -38127,6 +41087,9 @@ func (v *HistoryService_SignalWorkflowExecution_Result) Equals(rhs *HistoryServi
 	if !((v.LimitExceededError == nil && rhs.LimitExceededError == nil) || (v.LimitExceededError != nil && rhs.LimitExceededError != nil && v.LimitExceededError.Equals(rhs.LimitExceededError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -38157,6 +41120,9 @@ func (v *HistoryService_SignalWorkflowExecution_Result) MarshalLogObject(enc zap
 	}
 	if v.LimitExceededError != nil {
 		err = multierr.Append(err, enc.AddObject("limitExceededError", v.LimitExceededError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -38264,6 +41230,21 @@ func (v *HistoryService_SignalWorkflowExecution_Result) GetLimitExceededError() 
 // IsSetLimitExceededError returns true if LimitExceededError is not nil.
 func (v *HistoryService_SignalWorkflowExecution_Result) IsSetLimitExceededError() bool {
 	return v != nil && v.LimitExceededError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_SignalWorkflowExecution_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_SignalWorkflowExecution_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -40651,6 +43632,8 @@ func init() {
 			return true
 		case *shared.ServiceBusyError:
 			return true
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			return true
 		default:
 			return false
 		}
@@ -40697,6 +43680,11 @@ func init() {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_TerminateWorkflowExecution_Result.ServiceBusyError")
 			}
 			return &HistoryService_TerminateWorkflowExecution_Result{ServiceBusyError: e}, nil
+		case *shared.WorkflowExecutionAlreadyCompletedError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for HistoryService_TerminateWorkflowExecution_Result.WorkflowExecutionAlreadyCompletedError")
+			}
+			return &HistoryService_TerminateWorkflowExecution_Result{WorkflowExecutionAlreadyCompletedError: e}, nil
 		}
 
 		return nil, err
@@ -40730,6 +43718,10 @@ func init() {
 			err = result.ServiceBusyError
 			return
 		}
+		if result.WorkflowExecutionAlreadyCompletedError != nil {
+			err = result.WorkflowExecutionAlreadyCompletedError
+			return
+		}
 		return
 	}
 
@@ -40739,13 +43731,14 @@ func init() {
 //
 // The result of a TerminateWorkflowExecution execution is sent and received over the wire as this struct.
 type HistoryService_TerminateWorkflowExecution_Result struct {
-	BadRequestError         *shared.BadRequestError      `json:"badRequestError,omitempty"`
-	InternalServiceError    *shared.InternalServiceError `json:"internalServiceError,omitempty"`
-	EntityNotExistError     *shared.EntityNotExistsError `json:"entityNotExistError,omitempty"`
-	ShardOwnershipLostError *ShardOwnershipLostError     `json:"shardOwnershipLostError,omitempty"`
-	DomainNotActiveError    *shared.DomainNotActiveError `json:"domainNotActiveError,omitempty"`
-	LimitExceededError      *shared.LimitExceededError   `json:"limitExceededError,omitempty"`
-	ServiceBusyError        *shared.ServiceBusyError     `json:"serviceBusyError,omitempty"`
+	BadRequestError                        *shared.BadRequestError                        `json:"badRequestError,omitempty"`
+	InternalServiceError                   *shared.InternalServiceError                   `json:"internalServiceError,omitempty"`
+	EntityNotExistError                    *shared.EntityNotExistsError                   `json:"entityNotExistError,omitempty"`
+	ShardOwnershipLostError                *ShardOwnershipLostError                       `json:"shardOwnershipLostError,omitempty"`
+	DomainNotActiveError                   *shared.DomainNotActiveError                   `json:"domainNotActiveError,omitempty"`
+	LimitExceededError                     *shared.LimitExceededError                     `json:"limitExceededError,omitempty"`
+	ServiceBusyError                       *shared.ServiceBusyError                       `json:"serviceBusyError,omitempty"`
+	WorkflowExecutionAlreadyCompletedError *shared.WorkflowExecutionAlreadyCompletedError `json:"workflowExecutionAlreadyCompletedError,omitempty"`
 }
 
 // ToWire translates a HistoryService_TerminateWorkflowExecution_Result struct into a Thrift-level intermediate
@@ -40765,7 +43758,7 @@ type HistoryService_TerminateWorkflowExecution_Result struct {
 //   }
 func (v *HistoryService_TerminateWorkflowExecution_Result) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -40825,6 +43818,14 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) ToWire() (wire.Value,
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		w, err = v.WorkflowExecutionAlreadyCompletedError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -40913,6 +43914,14 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) FromWire(w wire.Value
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.WorkflowExecutionAlreadyCompletedError, err = _WorkflowExecutionAlreadyCompletedError_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -40938,6 +43947,9 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) FromWire(w wire.Value
 	if v.ServiceBusyError != nil {
 		count++
 	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		count++
+	}
 	if count > 1 {
 		return fmt.Errorf("HistoryService_TerminateWorkflowExecution_Result should have at most one field: got %v fields", count)
 	}
@@ -40952,7 +43964,7 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.BadRequestError != nil {
 		fields[i] = fmt.Sprintf("BadRequestError: %v", v.BadRequestError)
@@ -40980,6 +43992,10 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) String() string {
 	}
 	if v.ServiceBusyError != nil {
 		fields[i] = fmt.Sprintf("ServiceBusyError: %v", v.ServiceBusyError)
+		i++
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		fields[i] = fmt.Sprintf("WorkflowExecutionAlreadyCompletedError: %v", v.WorkflowExecutionAlreadyCompletedError)
 		i++
 	}
 
@@ -41017,6 +44033,9 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) Equals(rhs *HistorySe
 	if !((v.ServiceBusyError == nil && rhs.ServiceBusyError == nil) || (v.ServiceBusyError != nil && rhs.ServiceBusyError != nil && v.ServiceBusyError.Equals(rhs.ServiceBusyError))) {
 		return false
 	}
+	if !((v.WorkflowExecutionAlreadyCompletedError == nil && rhs.WorkflowExecutionAlreadyCompletedError == nil) || (v.WorkflowExecutionAlreadyCompletedError != nil && rhs.WorkflowExecutionAlreadyCompletedError != nil && v.WorkflowExecutionAlreadyCompletedError.Equals(rhs.WorkflowExecutionAlreadyCompletedError))) {
+		return false
+	}
 
 	return true
 }
@@ -41047,6 +44066,9 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) MarshalLogObject(enc 
 	}
 	if v.ServiceBusyError != nil {
 		err = multierr.Append(err, enc.AddObject("serviceBusyError", v.ServiceBusyError))
+	}
+	if v.WorkflowExecutionAlreadyCompletedError != nil {
+		err = multierr.Append(err, enc.AddObject("workflowExecutionAlreadyCompletedError", v.WorkflowExecutionAlreadyCompletedError))
 	}
 	return err
 }
@@ -41154,6 +44176,21 @@ func (v *HistoryService_TerminateWorkflowExecution_Result) GetServiceBusyError()
 // IsSetServiceBusyError returns true if ServiceBusyError is not nil.
 func (v *HistoryService_TerminateWorkflowExecution_Result) IsSetServiceBusyError() bool {
 	return v != nil && v.ServiceBusyError != nil
+}
+
+// GetWorkflowExecutionAlreadyCompletedError returns the value of WorkflowExecutionAlreadyCompletedError if it is set or its
+// zero value if it is unset.
+func (v *HistoryService_TerminateWorkflowExecution_Result) GetWorkflowExecutionAlreadyCompletedError() (o *shared.WorkflowExecutionAlreadyCompletedError) {
+	if v != nil && v.WorkflowExecutionAlreadyCompletedError != nil {
+		return v.WorkflowExecutionAlreadyCompletedError
+	}
+
+	return
+}
+
+// IsSetWorkflowExecutionAlreadyCompletedError returns true if WorkflowExecutionAlreadyCompletedError is not nil.
+func (v *HistoryService_TerminateWorkflowExecution_Result) IsSetWorkflowExecutionAlreadyCompletedError() bool {
+	return v != nil && v.WorkflowExecutionAlreadyCompletedError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

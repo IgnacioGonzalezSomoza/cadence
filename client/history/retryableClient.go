@@ -635,3 +635,51 @@ func (c *retryableClient) NotifyFailoverMarkers(
 
 	return backoff.Retry(op, c.policy, c.isRetryable)
 }
+
+func (c *retryableClient) GetCrossClusterTasks(
+	ctx context.Context,
+	request *types.GetCrossClusterTasksRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetCrossClusterTasksResponse, error) {
+	var resp *types.GetCrossClusterTasksResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.GetCrossClusterTasks(ctx, request, opts...)
+		return err
+	}
+
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}
+
+func (c *retryableClient) RespondCrossClusterTasksCompleted(
+	ctx context.Context,
+	request *types.RespondCrossClusterTasksCompletedRequest,
+	opts ...yarpc.CallOption,
+) (*types.RespondCrossClusterTasksCompletedResponse, error) {
+	var resp *types.RespondCrossClusterTasksCompletedResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.RespondCrossClusterTasksCompleted(ctx, request, opts...)
+		return err
+	}
+
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}
+
+func (c *retryableClient) GetFailoverInfo(
+	ctx context.Context,
+	request *types.GetFailoverInfoRequest,
+	opts ...yarpc.CallOption,
+) (*types.GetFailoverInfoResponse, error) {
+	var resp *types.GetFailoverInfoResponse
+	op := func() error {
+		var err error
+		resp, err = c.client.GetFailoverInfo(ctx, request, opts...)
+		return err
+	}
+
+	err := backoff.Retry(op, c.policy, c.isRetryable)
+	return resp, err
+}

@@ -46,6 +46,8 @@ func FromError(err error) error {
 			CurrentCluster: e.CurrentCluster,
 			ActiveCluster:  e.ActiveCluster,
 		}))
+	case *types.WorkflowExecutionAlreadyCompletedError:
+		return protobuf.NewError(yarpcerrors.CodeNotFound, e.Message, protobuf.WithErrorDetails(&apiv1.WorkflowExecutionAlreadyCompletedError{}))
 	case *types.BadRequestError:
 		return protobuf.NewError(yarpcerrors.CodeInvalidArgument, e.Message)
 	case *types.QueryFailedError:
@@ -81,6 +83,10 @@ func FromError(err error) error {
 			FeatureVersion:    e.FeatureVersion,
 			ClientImpl:        e.ClientImpl,
 			SupportedVersions: e.SupportedVersions,
+		}))
+	case *types.FeatureNotEnabledError:
+		return protobuf.NewError(yarpcerrors.CodeFailedPrecondition, "Feature flag not enabled", protobuf.WithErrorDetails(&apiv1.FeatureNotEnabledError{
+			FeatureFlag: e.FeatureFlag,
 		}))
 	case *types.DomainNotActiveError:
 		return protobuf.NewError(yarpcerrors.CodeFailedPrecondition, e.Message, protobuf.WithErrorDetails(&apiv1.DomainNotActiveError{
@@ -123,6 +129,10 @@ func ToError(err error) error {
 				Message:        status.Message(),
 				CurrentCluster: details.CurrentCluster,
 				ActiveCluster:  details.ActiveCluster,
+			}
+		case *apiv1.WorkflowExecutionAlreadyCompletedError:
+			return &types.WorkflowExecutionAlreadyCompletedError{
+				Message: status.Message(),
 			}
 		}
 	case yarpcerrors.CodeInvalidArgument:
@@ -192,6 +202,10 @@ func ToError(err error) error {
 				FeatureVersion:    details.FeatureVersion,
 				ClientImpl:        details.ClientImpl,
 				SupportedVersions: details.SupportedVersions,
+			}
+		case *apiv1.FeatureNotEnabledError:
+			return &types.FeatureNotEnabledError{
+				FeatureFlag: details.FeatureFlag,
 			}
 		case *apiv1.DomainNotActiveError:
 			return &types.DomainNotActiveError{

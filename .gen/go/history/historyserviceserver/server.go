@@ -65,10 +65,20 @@ type Interface interface {
 		DescribeRequest *history.DescribeWorkflowExecutionRequest,
 	) (*shared.DescribeWorkflowExecutionResponse, error)
 
+	GetCrossClusterTasks(
+		ctx context.Context,
+		Request *shared.GetCrossClusterTasksRequest,
+	) (*shared.GetCrossClusterTasksResponse, error)
+
 	GetDLQReplicationMessages(
 		ctx context.Context,
 		Request *replicator.GetDLQReplicationMessagesRequest,
 	) (*replicator.GetDLQReplicationMessagesResponse, error)
+
+	GetFailoverInfo(
+		ctx context.Context,
+		Request *history.GetFailoverInfoRequest,
+	) (*history.GetFailoverInfoResponse, error)
 
 	GetMutableState(
 		ctx context.Context,
@@ -190,6 +200,11 @@ type Interface interface {
 		FailRequest *history.RespondActivityTaskFailedRequest,
 	) error
 
+	RespondCrossClusterTasksCompleted(
+		ctx context.Context,
+		Request *shared.RespondCrossClusterTasksCompletedRequest,
+	) (*shared.RespondCrossClusterTasksCompletedResponse, error)
+
 	RespondDecisionTaskCompleted(
 		ctx context.Context,
 		CompleteRequest *history.RespondDecisionTaskCompletedRequest,
@@ -303,6 +318,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 			},
 
 			thrift.Method{
+				Name: "GetCrossClusterTasks",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.GetCrossClusterTasks),
+				},
+				Signature:    "GetCrossClusterTasks(Request *shared.GetCrossClusterTasksRequest) (*shared.GetCrossClusterTasksResponse)",
+				ThriftModule: history.ThriftModule,
+			},
+
+			thrift.Method{
 				Name: "GetDLQReplicationMessages",
 				HandlerSpec: thrift.HandlerSpec{
 
@@ -310,6 +336,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 					Unary: thrift.UnaryHandler(h.GetDLQReplicationMessages),
 				},
 				Signature:    "GetDLQReplicationMessages(Request *replicator.GetDLQReplicationMessagesRequest) (*replicator.GetDLQReplicationMessagesResponse)",
+				ThriftModule: history.ThriftModule,
+			},
+
+			thrift.Method{
+				Name: "GetFailoverInfo",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.GetFailoverInfo),
+				},
+				Signature:    "GetFailoverInfo(Request *history.GetFailoverInfoRequest) (*history.GetFailoverInfoResponse)",
 				ThriftModule: history.ThriftModule,
 			},
 
@@ -578,6 +615,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 			},
 
 			thrift.Method{
+				Name: "RespondCrossClusterTasksCompleted",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.RespondCrossClusterTasksCompleted),
+				},
+				Signature:    "RespondCrossClusterTasksCompleted(Request *shared.RespondCrossClusterTasksCompletedRequest) (*shared.RespondCrossClusterTasksCompletedResponse)",
+				ThriftModule: history.ThriftModule,
+			},
+
+			thrift.Method{
 				Name: "RespondDecisionTaskCompleted",
 				HandlerSpec: thrift.HandlerSpec{
 
@@ -678,7 +726,7 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 		},
 	}
 
-	procedures := make([]transport.Procedure, 0, 39)
+	procedures := make([]transport.Procedure, 0, 42)
 	procedures = append(procedures, thrift.BuildProcedures(service, opts...)...)
 	return procedures
 }
@@ -839,6 +887,36 @@ func (h handler) DescribeWorkflowExecution(ctx context.Context, body wire.Value)
 	return response, err
 }
 
+func (h handler) GetCrossClusterTasks(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args history.HistoryService_GetCrossClusterTasks_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'HistoryService' procedure 'GetCrossClusterTasks': %w", err)
+	}
+
+	success, appErr := h.impl.GetCrossClusterTasks(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := history.HistoryService_GetCrossClusterTasks_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
 func (h handler) GetDLQReplicationMessages(ctx context.Context, body wire.Value) (thrift.Response, error) {
 	var args history.HistoryService_GetDLQReplicationMessages_Args
 	if err := args.FromWire(body); err != nil {
@@ -850,6 +928,36 @@ func (h handler) GetDLQReplicationMessages(ctx context.Context, body wire.Value)
 
 	hadError := appErr != nil
 	result, err := history.HistoryService_GetDLQReplicationMessages_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) GetFailoverInfo(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args history.HistoryService_GetFailoverInfo_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'HistoryService' procedure 'GetFailoverInfo': %w", err)
+	}
+
+	success, appErr := h.impl.GetFailoverInfo(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := history.HistoryService_GetFailoverInfo_Helper.WrapResponse(success, appErr)
 
 	var response thrift.Response
 	if err == nil {
@@ -1570,6 +1678,36 @@ func (h handler) RespondActivityTaskFailed(ctx context.Context, body wire.Value)
 
 	hadError := appErr != nil
 	result, err := history.HistoryService_RespondActivityTaskFailed_Helper.WrapResponse(appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) RespondCrossClusterTasksCompleted(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args history.HistoryService_RespondCrossClusterTasksCompleted_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'HistoryService' procedure 'RespondCrossClusterTasksCompleted': %w", err)
+	}
+
+	success, appErr := h.impl.RespondCrossClusterTasksCompleted(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := history.HistoryService_RespondCrossClusterTasksCompleted_Helper.WrapResponse(success, appErr)
 
 	var response thrift.Response
 	if err == nil {

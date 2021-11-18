@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"github.com/uber/cadence/common"
+	"github.com/uber/cadence/common/config"
 	"github.com/uber/cadence/common/log"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/resource"
-	"github.com/uber/cadence/common/service/config"
 	"github.com/uber/cadence/common/types"
 )
 
@@ -1136,6 +1136,36 @@ func (handler *DCRedirectionHandlerImpl) ListTaskListPartitions(
 		default:
 			remoteClient := handler.GetRemoteFrontendClient(targetDC)
 			resp, err = remoteClient.ListTaskListPartitions(ctx, request)
+		}
+		return err
+	})
+
+	return resp, err
+}
+
+// GetTaskListsByDomain API call
+func (handler *DCRedirectionHandlerImpl) GetTaskListsByDomain(
+	ctx context.Context,
+	request *types.GetTaskListsByDomainRequest,
+) (resp *types.GetTaskListsByDomainResponse, retError error) {
+
+	var apiName = "GetTaskListsByDomain"
+	var err error
+	var cluster string
+
+	scope, startTime := handler.beforeCall(metrics.DCRedirectionGetTaskListsByDomainScope)
+	defer func() {
+		handler.afterCall(scope, startTime, cluster, &retError)
+	}()
+
+	err = handler.redirectionPolicy.WithDomainNameRedirect(ctx, request.GetDomain(), apiName, func(targetDC string) error {
+		cluster = targetDC
+		switch {
+		case targetDC == handler.currentClusterName:
+			resp, err = handler.frontendHandler.GetTaskListsByDomain(ctx, request)
+		default:
+			remoteClient := handler.GetRemoteFrontendClient(targetDC)
+			resp, err = remoteClient.GetTaskListsByDomain(ctx, request)
 		}
 		return err
 	})

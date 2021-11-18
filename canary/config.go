@@ -22,12 +22,13 @@ package canary
 
 import (
 	"errors"
+	"time"
 
 	"github.com/uber-go/tally"
 	"go.uber.org/cadence/.gen/go/cadence/workflowserviceclient"
 	"go.uber.org/zap"
 
-	"github.com/uber/cadence/common/service/config"
+	"github.com/uber/cadence/common/config"
 )
 
 const (
@@ -64,6 +65,14 @@ type (
 	Canary struct {
 		Domains  []string `yaml:"domains"`
 		Excludes []string `yaml:"excludes"`
+		Cron     Cron     `yaml:"cron"`
+	}
+
+	// Cron contains configuration for the cron workflow for canary
+	Cron struct {
+		CronSchedule         string        `yaml:"cronSchedule"`         // default to "@every 30s"
+		CronExecutionTimeout time.Duration `yaml:"cronExecutionTimeout"` //default to 18 minutes
+		StartJobTimeout      time.Duration `yaml:"startJobTimeout"`      // default to 9 minutes
 	}
 
 	// Cadence contains the configuration for cadence service

@@ -64,10 +64,20 @@ type Interface interface {
 		Request *shared.DescribeQueueRequest,
 	) (*shared.DescribeQueueResponse, error)
 
+	DescribeShardDistribution(
+		ctx context.Context,
+		Request *shared.DescribeShardDistributionRequest,
+	) (*shared.DescribeShardDistributionResponse, error)
+
 	DescribeWorkflowExecution(
 		ctx context.Context,
 		Request *admin.DescribeWorkflowExecutionRequest,
 	) (*admin.DescribeWorkflowExecutionResponse, error)
+
+	GetCrossClusterTasks(
+		ctx context.Context,
+		Request *shared.GetCrossClusterTasksRequest,
+	) (*shared.GetCrossClusterTasksResponse, error)
 
 	GetDLQReplicationMessages(
 		ctx context.Context,
@@ -79,6 +89,11 @@ type Interface interface {
 		Request *replicator.GetDomainReplicationMessagesRequest,
 	) (*replicator.GetDomainReplicationMessagesResponse, error)
 
+	GetDynamicConfig(
+		ctx context.Context,
+		Request *admin.GetDynamicConfigRequest,
+	) (*admin.GetDynamicConfigResponse, error)
+
 	GetReplicationMessages(
 		ctx context.Context,
 		Request *replicator.GetReplicationMessagesRequest,
@@ -88,6 +103,11 @@ type Interface interface {
 		ctx context.Context,
 		GetRequest *admin.GetWorkflowExecutionRawHistoryV2Request,
 	) (*admin.GetWorkflowExecutionRawHistoryV2Response, error)
+
+	ListDynamicConfig(
+		ctx context.Context,
+		Request *admin.ListDynamicConfigRequest,
+	) (*admin.ListDynamicConfigResponse, error)
 
 	MergeDLQMessages(
 		ctx context.Context,
@@ -127,6 +147,16 @@ type Interface interface {
 	ResetQueue(
 		ctx context.Context,
 		Request *shared.ResetQueueRequest,
+	) error
+
+	RestoreDynamicConfig(
+		ctx context.Context,
+		Request *admin.RestoreDynamicConfigRequest,
+	) error
+
+	UpdateDynamicConfig(
+		ctx context.Context,
+		Request *admin.UpdateDynamicConfigRequest,
 	) error
 }
 
@@ -197,6 +227,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 			},
 
 			thrift.Method{
+				Name: "DescribeShardDistribution",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.DescribeShardDistribution),
+				},
+				Signature:    "DescribeShardDistribution(Request *shared.DescribeShardDistributionRequest) (*shared.DescribeShardDistributionResponse)",
+				ThriftModule: admin.ThriftModule,
+			},
+
+			thrift.Method{
 				Name: "DescribeWorkflowExecution",
 				HandlerSpec: thrift.HandlerSpec{
 
@@ -204,6 +245,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 					Unary: thrift.UnaryHandler(h.DescribeWorkflowExecution),
 				},
 				Signature:    "DescribeWorkflowExecution(Request *admin.DescribeWorkflowExecutionRequest) (*admin.DescribeWorkflowExecutionResponse)",
+				ThriftModule: admin.ThriftModule,
+			},
+
+			thrift.Method{
+				Name: "GetCrossClusterTasks",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.GetCrossClusterTasks),
+				},
+				Signature:    "GetCrossClusterTasks(Request *shared.GetCrossClusterTasksRequest) (*shared.GetCrossClusterTasksResponse)",
 				ThriftModule: admin.ThriftModule,
 			},
 
@@ -230,6 +282,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 			},
 
 			thrift.Method{
+				Name: "GetDynamicConfig",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.GetDynamicConfig),
+				},
+				Signature:    "GetDynamicConfig(Request *admin.GetDynamicConfigRequest) (*admin.GetDynamicConfigResponse)",
+				ThriftModule: admin.ThriftModule,
+			},
+
+			thrift.Method{
 				Name: "GetReplicationMessages",
 				HandlerSpec: thrift.HandlerSpec{
 
@@ -248,6 +311,17 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 					Unary: thrift.UnaryHandler(h.GetWorkflowExecutionRawHistoryV2),
 				},
 				Signature:    "GetWorkflowExecutionRawHistoryV2(GetRequest *admin.GetWorkflowExecutionRawHistoryV2Request) (*admin.GetWorkflowExecutionRawHistoryV2Response)",
+				ThriftModule: admin.ThriftModule,
+			},
+
+			thrift.Method{
+				Name: "ListDynamicConfig",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.ListDynamicConfig),
+				},
+				Signature:    "ListDynamicConfig(Request *admin.ListDynamicConfigRequest) (*admin.ListDynamicConfigResponse)",
 				ThriftModule: admin.ThriftModule,
 			},
 
@@ -338,10 +412,32 @@ func New(impl Interface, opts ...thrift.RegisterOption) []transport.Procedure {
 				Signature:    "ResetQueue(Request *shared.ResetQueueRequest)",
 				ThriftModule: admin.ThriftModule,
 			},
+
+			thrift.Method{
+				Name: "RestoreDynamicConfig",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.RestoreDynamicConfig),
+				},
+				Signature:    "RestoreDynamicConfig(Request *admin.RestoreDynamicConfigRequest)",
+				ThriftModule: admin.ThriftModule,
+			},
+
+			thrift.Method{
+				Name: "UpdateDynamicConfig",
+				HandlerSpec: thrift.HandlerSpec{
+
+					Type:  transport.Unary,
+					Unary: thrift.UnaryHandler(h.UpdateDynamicConfig),
+				},
+				Signature:    "UpdateDynamicConfig(Request *admin.UpdateDynamicConfigRequest)",
+				ThriftModule: admin.ThriftModule,
+			},
 		},
 	}
 
-	procedures := make([]transport.Procedure, 0, 18)
+	procedures := make([]transport.Procedure, 0, 24)
 	procedures = append(procedures, thrift.BuildProcedures(service, opts...)...)
 	return procedures
 }
@@ -502,6 +598,36 @@ func (h handler) DescribeQueue(ctx context.Context, body wire.Value) (thrift.Res
 	return response, err
 }
 
+func (h handler) DescribeShardDistribution(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_DescribeShardDistribution_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'DescribeShardDistribution': %w", err)
+	}
+
+	success, appErr := h.impl.DescribeShardDistribution(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_DescribeShardDistribution_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
 func (h handler) DescribeWorkflowExecution(ctx context.Context, body wire.Value) (thrift.Response, error) {
 	var args admin.AdminService_DescribeWorkflowExecution_Args
 	if err := args.FromWire(body); err != nil {
@@ -513,6 +639,36 @@ func (h handler) DescribeWorkflowExecution(ctx context.Context, body wire.Value)
 
 	hadError := appErr != nil
 	result, err := admin.AdminService_DescribeWorkflowExecution_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) GetCrossClusterTasks(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_GetCrossClusterTasks_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'GetCrossClusterTasks': %w", err)
+	}
+
+	success, appErr := h.impl.GetCrossClusterTasks(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_GetCrossClusterTasks_Helper.WrapResponse(success, appErr)
 
 	var response thrift.Response
 	if err == nil {
@@ -592,6 +748,36 @@ func (h handler) GetDomainReplicationMessages(ctx context.Context, body wire.Val
 	return response, err
 }
 
+func (h handler) GetDynamicConfig(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_GetDynamicConfig_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'GetDynamicConfig': %w", err)
+	}
+
+	success, appErr := h.impl.GetDynamicConfig(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_GetDynamicConfig_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
 func (h handler) GetReplicationMessages(ctx context.Context, body wire.Value) (thrift.Response, error) {
 	var args admin.AdminService_GetReplicationMessages_Args
 	if err := args.FromWire(body); err != nil {
@@ -633,6 +819,36 @@ func (h handler) GetWorkflowExecutionRawHistoryV2(ctx context.Context, body wire
 
 	hadError := appErr != nil
 	result, err := admin.AdminService_GetWorkflowExecutionRawHistoryV2_Helper.WrapResponse(success, appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) ListDynamicConfig(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_ListDynamicConfig_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'ListDynamicConfig': %w", err)
+	}
+
+	success, appErr := h.impl.ListDynamicConfig(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_ListDynamicConfig_Helper.WrapResponse(success, appErr)
 
 	var response thrift.Response
 	if err == nil {
@@ -873,6 +1089,66 @@ func (h handler) ResetQueue(ctx context.Context, body wire.Value) (thrift.Respon
 
 	hadError := appErr != nil
 	result, err := admin.AdminService_ResetQueue_Helper.WrapResponse(appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) RestoreDynamicConfig(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_RestoreDynamicConfig_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'RestoreDynamicConfig': %w", err)
+	}
+
+	appErr := h.impl.RestoreDynamicConfig(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_RestoreDynamicConfig_Helper.WrapResponse(appErr)
+
+	var response thrift.Response
+	if err == nil {
+		response.IsApplicationError = hadError
+		response.Body = result
+		if namer, ok := appErr.(yarpcErrorNamer); ok {
+			response.ApplicationErrorName = namer.YARPCErrorName()
+		}
+		if extractor, ok := appErr.(yarpcErrorCoder); ok {
+			response.ApplicationErrorCode = extractor.YARPCErrorCode()
+		}
+		if appErr != nil {
+			response.ApplicationErrorDetails = appErr.Error()
+		}
+	}
+
+	return response, err
+}
+
+func (h handler) UpdateDynamicConfig(ctx context.Context, body wire.Value) (thrift.Response, error) {
+	var args admin.AdminService_UpdateDynamicConfig_Args
+	if err := args.FromWire(body); err != nil {
+		return thrift.Response{}, yarpcerrors.InvalidArgumentErrorf(
+			"could not decode Thrift request for service 'AdminService' procedure 'UpdateDynamicConfig': %w", err)
+	}
+
+	appErr := h.impl.UpdateDynamicConfig(ctx, args.Request)
+
+	hadError := appErr != nil
+	result, err := admin.AdminService_UpdateDynamicConfig_Helper.WrapResponse(appErr)
 
 	var response thrift.Response
 	if err == nil {

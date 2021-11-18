@@ -686,7 +686,7 @@ func TestTimerStartedEventAttributes(t *testing.T) {
 	}
 }
 func TestUpdateDomainRequest(t *testing.T) {
-	for _, item := range []*types.UpdateDomainRequest{nil, {EmitMetric: common.BoolPtr(true)}, &testdata.UpdateDomainRequest} {
+	for _, item := range []*types.UpdateDomainRequest{nil, {}, &testdata.UpdateDomainRequest} {
 		assert.Equal(t, item, ToUpdateDomainRequest(FromUpdateDomainRequest(item)))
 	}
 }
@@ -766,6 +766,18 @@ func TestParentExecutionInfo(t *testing.T) {
 	for _, item := range []*types.ParentExecutionInfo{nil, {}, &testdata.ParentExecutionInfo} {
 		assert.Equal(t, item, ToParentExecutionInfo(FromParentExecutionInfo(item)))
 	}
+}
+func TestParentExecutionInfoFields(t *testing.T) {
+	assert.Nil(t, FromParentExecutionInfoFields(nil, nil, nil, nil))
+	assert.Panics(t, func() { FromParentExecutionInfoFields(nil, &testdata.ParentExecutionInfo.Domain, nil, nil) })
+	info := FromParentExecutionInfoFields(nil,
+		&testdata.ParentExecutionInfo.Domain,
+		testdata.ParentExecutionInfo.Execution,
+		&testdata.ParentExecutionInfo.InitiatedID)
+	assert.Equal(t, "", *ToParentDomainID(info))
+	assert.Equal(t, testdata.ParentExecutionInfo.Domain, *ToParentDomainName(info))
+	assert.Equal(t, testdata.ParentExecutionInfo.Execution, ToParentWorkflowExecution(info))
+	assert.Equal(t, testdata.ParentExecutionInfo.InitiatedID, *ToParentInitiatedID(info))
 }
 func TestWorkflowExecutionInfo(t *testing.T) {
 	for _, item := range []*types.WorkflowExecutionInfo{nil, {}, &testdata.WorkflowExecutionInfo} {
@@ -896,6 +908,10 @@ func TestPayload(t *testing.T) {
 	for _, item := range [][]byte{nil, {}, testdata.Payload1} {
 		assert.Equal(t, item, ToPayload(FromPayload(item)))
 	}
+
+	assert.Equal(t, []byte{}, ToPayload(&apiv1.Payload{
+		Data: nil,
+	}))
 }
 func TestPayloadMap(t *testing.T) {
 	for _, item := range []map[string][]byte{nil, {}, testdata.PayloadMap} {
@@ -992,6 +1008,7 @@ func TestListClosedWorkflowExecutionsRequest(t *testing.T) {
 		assert.Equal(t, item, ToListClosedWorkflowExecutionsRequest(FromListClosedWorkflowExecutionsRequest(item)))
 	}
 }
+
 func TestListOpenWorkflowExecutionsRequest(t *testing.T) {
 	for _, item := range []*types.ListOpenWorkflowExecutionsRequest{
 		nil,
@@ -1000,5 +1017,27 @@ func TestListOpenWorkflowExecutionsRequest(t *testing.T) {
 		&testdata.ListOpenWorkflowExecutionsRequest_TypeFilter,
 	} {
 		assert.Equal(t, item, ToListOpenWorkflowExecutionsRequest(FromListOpenWorkflowExecutionsRequest(item)))
+	}
+}
+
+func TestGetTaskListsByDomainResponse(t *testing.T) {
+	for _, item := range []*types.GetTaskListsByDomainResponse{nil, {}, &testdata.GetTaskListsByDomainResponse} {
+		assert.Equal(t, item, ToMatchingGetTaskListsByDomainResponse(FromMatchingGetTaskListsByDomainResponse(item)))
+	}
+}
+
+func TestFailoverInfo(t *testing.T) {
+	for _, item := range []*types.FailoverInfo{
+		nil,
+		{},
+		&testdata.FailoverInfo,
+	} {
+		assert.Equal(t, item, ToFailoverInfo(FromFailoverInfo(item)))
+	}
+}
+
+func TestDescribeTaskListResponseMap(t *testing.T) {
+	for _, item := range []map[string]*types.DescribeTaskListResponse{nil, {}, testdata.DescribeTaskListResponseMap} {
+		assert.Equal(t, item, ToDescribeTaskListResponseMap(FromDescribeTaskListResponseMap(item)))
 	}
 }

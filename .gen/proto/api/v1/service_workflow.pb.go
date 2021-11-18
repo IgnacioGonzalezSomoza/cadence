@@ -650,6 +650,118 @@ func (m *ResetWorkflowExecutionResponse) GetRunId() string {
 	return ""
 }
 
+type RequestCancelWorkflowExecutionRequest struct {
+	Domain               string             `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	WorkflowExecution    *WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
+	Identity             string             `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	RequestId            string             `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) Reset()         { *m = RequestCancelWorkflowExecutionRequest{} }
+func (m *RequestCancelWorkflowExecutionRequest) String() string { return proto.CompactTextString(m) }
+func (*RequestCancelWorkflowExecutionRequest) ProtoMessage()    {}
+func (*RequestCancelWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674d14d2fee4e473, []int{8}
+}
+func (m *RequestCancelWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RequestCancelWorkflowExecutionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RequestCancelWorkflowExecutionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RequestCancelWorkflowExecutionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RequestCancelWorkflowExecutionRequest.Merge(m, src)
+}
+func (m *RequestCancelWorkflowExecutionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *RequestCancelWorkflowExecutionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RequestCancelWorkflowExecutionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RequestCancelWorkflowExecutionRequest proto.InternalMessageInfo
+
+func (m *RequestCancelWorkflowExecutionRequest) GetDomain() string {
+	if m != nil {
+		return m.Domain
+	}
+	return ""
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) GetWorkflowExecution() *WorkflowExecution {
+	if m != nil {
+		return m.WorkflowExecution
+	}
+	return nil
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) GetIdentity() string {
+	if m != nil {
+		return m.Identity
+	}
+	return ""
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) GetRequestId() string {
+	if m != nil {
+		return m.RequestId
+	}
+	return ""
+}
+
+type RequestCancelWorkflowExecutionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RequestCancelWorkflowExecutionResponse) Reset() {
+	*m = RequestCancelWorkflowExecutionResponse{}
+}
+func (m *RequestCancelWorkflowExecutionResponse) String() string { return proto.CompactTextString(m) }
+func (*RequestCancelWorkflowExecutionResponse) ProtoMessage()    {}
+func (*RequestCancelWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674d14d2fee4e473, []int{9}
+}
+func (m *RequestCancelWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RequestCancelWorkflowExecutionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RequestCancelWorkflowExecutionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RequestCancelWorkflowExecutionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RequestCancelWorkflowExecutionResponse.Merge(m, src)
+}
+func (m *RequestCancelWorkflowExecutionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *RequestCancelWorkflowExecutionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RequestCancelWorkflowExecutionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RequestCancelWorkflowExecutionResponse proto.InternalMessageInfo
+
 type TerminateWorkflowExecutionRequest struct {
 	Domain               string             `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	WorkflowExecution    *WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
@@ -665,7 +777,7 @@ func (m *TerminateWorkflowExecutionRequest) Reset()         { *m = TerminateWork
 func (m *TerminateWorkflowExecutionRequest) String() string { return proto.CompactTextString(m) }
 func (*TerminateWorkflowExecutionRequest) ProtoMessage()    {}
 func (*TerminateWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{8}
+	return fileDescriptor_674d14d2fee4e473, []int{10}
 }
 func (m *TerminateWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -739,7 +851,7 @@ func (m *TerminateWorkflowExecutionResponse) Reset()         { *m = TerminateWor
 func (m *TerminateWorkflowExecutionResponse) String() string { return proto.CompactTextString(m) }
 func (*TerminateWorkflowExecutionResponse) ProtoMessage()    {}
 func (*TerminateWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{9}
+	return fileDescriptor_674d14d2fee4e473, []int{11}
 }
 func (m *TerminateWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -780,7 +892,7 @@ func (m *DescribeWorkflowExecutionRequest) Reset()         { *m = DescribeWorkfl
 func (m *DescribeWorkflowExecutionRequest) String() string { return proto.CompactTextString(m) }
 func (*DescribeWorkflowExecutionRequest) ProtoMessage()    {}
 func (*DescribeWorkflowExecutionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{10}
+	return fileDescriptor_674d14d2fee4e473, []int{12}
 }
 func (m *DescribeWorkflowExecutionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -838,7 +950,7 @@ func (m *DescribeWorkflowExecutionResponse) Reset()         { *m = DescribeWorkf
 func (m *DescribeWorkflowExecutionResponse) String() string { return proto.CompactTextString(m) }
 func (*DescribeWorkflowExecutionResponse) ProtoMessage()    {}
 func (*DescribeWorkflowExecutionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{11}
+	return fileDescriptor_674d14d2fee4e473, []int{13}
 }
 func (m *DescribeWorkflowExecutionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -917,7 +1029,7 @@ func (m *QueryWorkflowRequest) Reset()         { *m = QueryWorkflowRequest{} }
 func (m *QueryWorkflowRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryWorkflowRequest) ProtoMessage()    {}
 func (*QueryWorkflowRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{12}
+	return fileDescriptor_674d14d2fee4e473, []int{14}
 }
 func (m *QueryWorkflowRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -993,7 +1105,7 @@ func (m *QueryWorkflowResponse) Reset()         { *m = QueryWorkflowResponse{} }
 func (m *QueryWorkflowResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryWorkflowResponse) ProtoMessage()    {}
 func (*QueryWorkflowResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{13}
+	return fileDescriptor_674d14d2fee4e473, []int{15}
 }
 func (m *QueryWorkflowResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1050,7 +1162,7 @@ func (m *DescribeTaskListRequest) Reset()         { *m = DescribeTaskListRequest
 func (m *DescribeTaskListRequest) String() string { return proto.CompactTextString(m) }
 func (*DescribeTaskListRequest) ProtoMessage()    {}
 func (*DescribeTaskListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{14}
+	return fileDescriptor_674d14d2fee4e473, []int{16}
 }
 func (m *DescribeTaskListRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1119,7 +1231,7 @@ func (m *DescribeTaskListResponse) Reset()         { *m = DescribeTaskListRespon
 func (m *DescribeTaskListResponse) String() string { return proto.CompactTextString(m) }
 func (*DescribeTaskListResponse) ProtoMessage()    {}
 func (*DescribeTaskListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{15}
+	return fileDescriptor_674d14d2fee4e473, []int{17}
 }
 func (m *DescribeTaskListResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1162,6 +1274,108 @@ func (m *DescribeTaskListResponse) GetTaskListStatus() *TaskListStatus {
 	return nil
 }
 
+type GetTaskListsByDomainRequest struct {
+	Domain               string   `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetTaskListsByDomainRequest) Reset()         { *m = GetTaskListsByDomainRequest{} }
+func (m *GetTaskListsByDomainRequest) String() string { return proto.CompactTextString(m) }
+func (*GetTaskListsByDomainRequest) ProtoMessage()    {}
+func (*GetTaskListsByDomainRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674d14d2fee4e473, []int{18}
+}
+func (m *GetTaskListsByDomainRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetTaskListsByDomainRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetTaskListsByDomainRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetTaskListsByDomainRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetTaskListsByDomainRequest.Merge(m, src)
+}
+func (m *GetTaskListsByDomainRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetTaskListsByDomainRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetTaskListsByDomainRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetTaskListsByDomainRequest proto.InternalMessageInfo
+
+func (m *GetTaskListsByDomainRequest) GetDomain() string {
+	if m != nil {
+		return m.Domain
+	}
+	return ""
+}
+
+type GetTaskListsByDomainResponse struct {
+	DecisionTaskListMap  map[string]*DescribeTaskListResponse `protobuf:"bytes,1,rep,name=decision_task_list_map,json=decisionTaskListMap,proto3" json:"decision_task_list_map,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	ActivityTaskListMap  map[string]*DescribeTaskListResponse `protobuf:"bytes,2,rep,name=activity_task_list_map,json=activityTaskListMap,proto3" json:"activity_task_list_map,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	XXX_NoUnkeyedLiteral struct{}                             `json:"-"`
+	XXX_unrecognized     []byte                               `json:"-"`
+	XXX_sizecache        int32                                `json:"-"`
+}
+
+func (m *GetTaskListsByDomainResponse) Reset()         { *m = GetTaskListsByDomainResponse{} }
+func (m *GetTaskListsByDomainResponse) String() string { return proto.CompactTextString(m) }
+func (*GetTaskListsByDomainResponse) ProtoMessage()    {}
+func (*GetTaskListsByDomainResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674d14d2fee4e473, []int{19}
+}
+func (m *GetTaskListsByDomainResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GetTaskListsByDomainResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GetTaskListsByDomainResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GetTaskListsByDomainResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetTaskListsByDomainResponse.Merge(m, src)
+}
+func (m *GetTaskListsByDomainResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *GetTaskListsByDomainResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetTaskListsByDomainResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetTaskListsByDomainResponse proto.InternalMessageInfo
+
+func (m *GetTaskListsByDomainResponse) GetDecisionTaskListMap() map[string]*DescribeTaskListResponse {
+	if m != nil {
+		return m.DecisionTaskListMap
+	}
+	return nil
+}
+
+func (m *GetTaskListsByDomainResponse) GetActivityTaskListMap() map[string]*DescribeTaskListResponse {
+	if m != nil {
+		return m.ActivityTaskListMap
+	}
+	return nil
+}
+
 type ListTaskListPartitionsRequest struct {
 	Domain               string    `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
 	TaskList             *TaskList `protobuf:"bytes,2,opt,name=task_list,json=taskList,proto3" json:"task_list,omitempty"`
@@ -1174,7 +1388,7 @@ func (m *ListTaskListPartitionsRequest) Reset()         { *m = ListTaskListParti
 func (m *ListTaskListPartitionsRequest) String() string { return proto.CompactTextString(m) }
 func (*ListTaskListPartitionsRequest) ProtoMessage()    {}
 func (*ListTaskListPartitionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{16}
+	return fileDescriptor_674d14d2fee4e473, []int{20}
 }
 func (m *ListTaskListPartitionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1229,7 +1443,7 @@ func (m *ListTaskListPartitionsResponse) Reset()         { *m = ListTaskListPart
 func (m *ListTaskListPartitionsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListTaskListPartitionsResponse) ProtoMessage()    {}
 func (*ListTaskListPartitionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{17}
+	return fileDescriptor_674d14d2fee4e473, []int{21}
 }
 func (m *ListTaskListPartitionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1272,100 +1486,6 @@ func (m *ListTaskListPartitionsResponse) GetDecisionTaskListPartitions() []*Task
 	return nil
 }
 
-type ResetStickyTaskListRequest struct {
-	Domain               string             `protobuf:"bytes,1,opt,name=domain,proto3" json:"domain,omitempty"`
-	WorkflowExecution    *WorkflowExecution `protobuf:"bytes,2,opt,name=workflow_execution,json=workflowExecution,proto3" json:"workflow_execution,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *ResetStickyTaskListRequest) Reset()         { *m = ResetStickyTaskListRequest{} }
-func (m *ResetStickyTaskListRequest) String() string { return proto.CompactTextString(m) }
-func (*ResetStickyTaskListRequest) ProtoMessage()    {}
-func (*ResetStickyTaskListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{18}
-}
-func (m *ResetStickyTaskListRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ResetStickyTaskListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ResetStickyTaskListRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ResetStickyTaskListRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ResetStickyTaskListRequest.Merge(m, src)
-}
-func (m *ResetStickyTaskListRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *ResetStickyTaskListRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ResetStickyTaskListRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ResetStickyTaskListRequest proto.InternalMessageInfo
-
-func (m *ResetStickyTaskListRequest) GetDomain() string {
-	if m != nil {
-		return m.Domain
-	}
-	return ""
-}
-
-func (m *ResetStickyTaskListRequest) GetWorkflowExecution() *WorkflowExecution {
-	if m != nil {
-		return m.WorkflowExecution
-	}
-	return nil
-}
-
-type ResetStickyTaskListResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ResetStickyTaskListResponse) Reset()         { *m = ResetStickyTaskListResponse{} }
-func (m *ResetStickyTaskListResponse) String() string { return proto.CompactTextString(m) }
-func (*ResetStickyTaskListResponse) ProtoMessage()    {}
-func (*ResetStickyTaskListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{19}
-}
-func (m *ResetStickyTaskListResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ResetStickyTaskListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ResetStickyTaskListResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ResetStickyTaskListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ResetStickyTaskListResponse.Merge(m, src)
-}
-func (m *ResetStickyTaskListResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *ResetStickyTaskListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ResetStickyTaskListResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ResetStickyTaskListResponse proto.InternalMessageInfo
-
 type GetClusterInfoRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1376,7 +1496,7 @@ func (m *GetClusterInfoRequest) Reset()         { *m = GetClusterInfoRequest{} }
 func (m *GetClusterInfoRequest) String() string { return proto.CompactTextString(m) }
 func (*GetClusterInfoRequest) ProtoMessage()    {}
 func (*GetClusterInfoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{20}
+	return fileDescriptor_674d14d2fee4e473, []int{22}
 }
 func (m *GetClusterInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1416,7 +1536,7 @@ func (m *GetClusterInfoResponse) Reset()         { *m = GetClusterInfoResponse{}
 func (m *GetClusterInfoResponse) String() string { return proto.CompactTextString(m) }
 func (*GetClusterInfoResponse) ProtoMessage()    {}
 func (*GetClusterInfoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{21}
+	return fileDescriptor_674d14d2fee4e473, []int{23}
 }
 func (m *GetClusterInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1469,7 +1589,7 @@ func (m *GetWorkflowExecutionHistoryRequest) Reset()         { *m = GetWorkflowE
 func (m *GetWorkflowExecutionHistoryRequest) String() string { return proto.CompactTextString(m) }
 func (*GetWorkflowExecutionHistoryRequest) ProtoMessage()    {}
 func (*GetWorkflowExecutionHistoryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{22}
+	return fileDescriptor_674d14d2fee4e473, []int{24}
 }
 func (m *GetWorkflowExecutionHistoryRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1561,7 +1681,7 @@ func (m *GetWorkflowExecutionHistoryResponse) Reset()         { *m = GetWorkflow
 func (m *GetWorkflowExecutionHistoryResponse) String() string { return proto.CompactTextString(m) }
 func (*GetWorkflowExecutionHistoryResponse) ProtoMessage()    {}
 func (*GetWorkflowExecutionHistoryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_674d14d2fee4e473, []int{23}
+	return fileDescriptor_674d14d2fee4e473, []int{25}
 }
 func (m *GetWorkflowExecutionHistoryResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1618,6 +1738,53 @@ func (m *GetWorkflowExecutionHistoryResponse) GetArchived() bool {
 	return false
 }
 
+type FeatureFlags struct {
+	WorkflowExecutionAlreadyCompletedErrorEnabled bool     `protobuf:"varint,1,opt,name=workflow_execution_already_completed_error_enabled,json=workflowExecutionAlreadyCompletedErrorEnabled,proto3" json:"workflow_execution_already_completed_error_enabled,omitempty"`
+	XXX_NoUnkeyedLiteral                          struct{} `json:"-"`
+	XXX_unrecognized                              []byte   `json:"-"`
+	XXX_sizecache                                 int32    `json:"-"`
+}
+
+func (m *FeatureFlags) Reset()         { *m = FeatureFlags{} }
+func (m *FeatureFlags) String() string { return proto.CompactTextString(m) }
+func (*FeatureFlags) ProtoMessage()    {}
+func (*FeatureFlags) Descriptor() ([]byte, []int) {
+	return fileDescriptor_674d14d2fee4e473, []int{26}
+}
+func (m *FeatureFlags) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *FeatureFlags) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_FeatureFlags.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *FeatureFlags) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FeatureFlags.Merge(m, src)
+}
+func (m *FeatureFlags) XXX_Size() int {
+	return m.Size()
+}
+func (m *FeatureFlags) XXX_DiscardUnknown() {
+	xxx_messageInfo_FeatureFlags.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FeatureFlags proto.InternalMessageInfo
+
+func (m *FeatureFlags) GetWorkflowExecutionAlreadyCompletedErrorEnabled() bool {
+	if m != nil {
+		return m.WorkflowExecutionAlreadyCompletedErrorEnabled
+	}
+	return false
+}
+
 func init() {
 	proto.RegisterType((*StartWorkflowExecutionRequest)(nil), "uber.cadence.api.v1.StartWorkflowExecutionRequest")
 	proto.RegisterType((*StartWorkflowExecutionResponse)(nil), "uber.cadence.api.v1.StartWorkflowExecutionResponse")
@@ -1627,6 +1794,8 @@ func init() {
 	proto.RegisterType((*SignalWithStartWorkflowExecutionResponse)(nil), "uber.cadence.api.v1.SignalWithStartWorkflowExecutionResponse")
 	proto.RegisterType((*ResetWorkflowExecutionRequest)(nil), "uber.cadence.api.v1.ResetWorkflowExecutionRequest")
 	proto.RegisterType((*ResetWorkflowExecutionResponse)(nil), "uber.cadence.api.v1.ResetWorkflowExecutionResponse")
+	proto.RegisterType((*RequestCancelWorkflowExecutionRequest)(nil), "uber.cadence.api.v1.RequestCancelWorkflowExecutionRequest")
+	proto.RegisterType((*RequestCancelWorkflowExecutionResponse)(nil), "uber.cadence.api.v1.RequestCancelWorkflowExecutionResponse")
 	proto.RegisterType((*TerminateWorkflowExecutionRequest)(nil), "uber.cadence.api.v1.TerminateWorkflowExecutionRequest")
 	proto.RegisterType((*TerminateWorkflowExecutionResponse)(nil), "uber.cadence.api.v1.TerminateWorkflowExecutionResponse")
 	proto.RegisterType((*DescribeWorkflowExecutionRequest)(nil), "uber.cadence.api.v1.DescribeWorkflowExecutionRequest")
@@ -1635,14 +1804,17 @@ func init() {
 	proto.RegisterType((*QueryWorkflowResponse)(nil), "uber.cadence.api.v1.QueryWorkflowResponse")
 	proto.RegisterType((*DescribeTaskListRequest)(nil), "uber.cadence.api.v1.DescribeTaskListRequest")
 	proto.RegisterType((*DescribeTaskListResponse)(nil), "uber.cadence.api.v1.DescribeTaskListResponse")
+	proto.RegisterType((*GetTaskListsByDomainRequest)(nil), "uber.cadence.api.v1.GetTaskListsByDomainRequest")
+	proto.RegisterType((*GetTaskListsByDomainResponse)(nil), "uber.cadence.api.v1.GetTaskListsByDomainResponse")
+	proto.RegisterMapType((map[string]*DescribeTaskListResponse)(nil), "uber.cadence.api.v1.GetTaskListsByDomainResponse.ActivityTaskListMapEntry")
+	proto.RegisterMapType((map[string]*DescribeTaskListResponse)(nil), "uber.cadence.api.v1.GetTaskListsByDomainResponse.DecisionTaskListMapEntry")
 	proto.RegisterType((*ListTaskListPartitionsRequest)(nil), "uber.cadence.api.v1.ListTaskListPartitionsRequest")
 	proto.RegisterType((*ListTaskListPartitionsResponse)(nil), "uber.cadence.api.v1.ListTaskListPartitionsResponse")
-	proto.RegisterType((*ResetStickyTaskListRequest)(nil), "uber.cadence.api.v1.ResetStickyTaskListRequest")
-	proto.RegisterType((*ResetStickyTaskListResponse)(nil), "uber.cadence.api.v1.ResetStickyTaskListResponse")
 	proto.RegisterType((*GetClusterInfoRequest)(nil), "uber.cadence.api.v1.GetClusterInfoRequest")
 	proto.RegisterType((*GetClusterInfoResponse)(nil), "uber.cadence.api.v1.GetClusterInfoResponse")
 	proto.RegisterType((*GetWorkflowExecutionHistoryRequest)(nil), "uber.cadence.api.v1.GetWorkflowExecutionHistoryRequest")
 	proto.RegisterType((*GetWorkflowExecutionHistoryResponse)(nil), "uber.cadence.api.v1.GetWorkflowExecutionHistoryResponse")
+	proto.RegisterType((*FeatureFlags)(nil), "uber.cadence.api.v1.FeatureFlags")
 }
 
 func init() {
@@ -1650,129 +1822,141 @@ func init() {
 }
 
 var fileDescriptor_674d14d2fee4e473 = []byte{
-	// 1947 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x59, 0xdd, 0x6e, 0x1b, 0xc7,
-	0x15, 0xc6, 0x8a, 0xfa, 0xa1, 0x0e, 0x29, 0x59, 0x1e, 0x47, 0xd2, 0x9a, 0x8a, 0xfe, 0xd6, 0x69,
-	0xaa, 0x3a, 0x09, 0x55, 0xcb, 0xad, 0x9d, 0xa6, 0x3f, 0x81, 0x2c, 0xc7, 0x8e, 0x80, 0x38, 0x50,
-	0x57, 0x6a, 0x8d, 0xf6, 0x66, 0x31, 0xda, 0x1d, 0x92, 0x53, 0x2d, 0x77, 0x56, 0x33, 0xb3, 0xa4,
-	0x99, 0xbb, 0x16, 0x41, 0x2f, 0x1a, 0x14, 0x68, 0x9f, 0xa0, 0x17, 0xed, 0x75, 0xd1, 0xa7, 0x28,
-	0x8a, 0x5e, 0xf5, 0x11, 0x5a, 0xbf, 0x40, 0xdf, 0xc0, 0x28, 0x76, 0x76, 0x96, 0x22, 0xa9, 0xe1,
-	0x52, 0x72, 0x11, 0xc4, 0x77, 0x9c, 0x33, 0xe7, 0x7c, 0x73, 0xfe, 0xe6, 0xcc, 0x39, 0x4b, 0xb8,
-	0x9b, 0x9c, 0x12, 0xbe, 0xeb, 0xe3, 0x80, 0x44, 0x3e, 0xd9, 0xc5, 0x31, 0xdd, 0xed, 0xdc, 0xdb,
-	0x15, 0x84, 0x77, 0xa8, 0x4f, 0xbc, 0x2e, 0xe3, 0x67, 0x8d, 0x90, 0x75, 0xeb, 0x31, 0x67, 0x92,
-	0xa1, 0x5b, 0x29, 0x6f, 0x5d, 0xf3, 0xd6, 0x71, 0x4c, 0xeb, 0x9d, 0x7b, 0xb5, 0x8d, 0x26, 0x63,
-	0xcd, 0x90, 0xec, 0x2a, 0x96, 0xd3, 0xa4, 0xb1, 0x1b, 0x24, 0x1c, 0x4b, 0xca, 0xa2, 0x4c, 0xa8,
-	0xb6, 0x65, 0x3a, 0xc0, 0x67, 0xed, 0x76, 0x9f, 0x63, 0xdb, 0xc4, 0xd1, 0xa2, 0x42, 0x32, 0xde,
-	0xd3, 0x2c, 0x9b, 0x26, 0x96, 0xf3, 0x84, 0xf4, 0x19, 0x1c, 0x13, 0x83, 0xc4, 0xe2, 0x2c, 0xa4,
-	0x42, 0x16, 0xf1, 0x0c, 0x9b, 0xe8, 0xfc, 0x73, 0x0e, 0xd6, 0x8f, 0x25, 0xe6, 0xf2, 0xb9, 0xa6,
-	0x7f, 0xf2, 0x82, 0xf8, 0x49, 0x6a, 0x8e, 0x4b, 0xce, 0x13, 0x22, 0x24, 0x5a, 0x81, 0xd9, 0x80,
-	0xb5, 0x31, 0x8d, 0x6c, 0x6b, 0xcb, 0xda, 0x99, 0x77, 0xf5, 0x0a, 0x6d, 0x42, 0x25, 0xc7, 0xf2,
-	0x68, 0x60, 0x4f, 0xa9, 0x4d, 0xc8, 0x49, 0x87, 0x01, 0x7a, 0x02, 0x0b, 0x7d, 0x06, 0xd9, 0x8b,
-	0x89, 0x5d, 0xda, 0xb2, 0x76, 0x2a, 0x7b, 0xdb, 0x75, 0x83, 0x57, 0xeb, 0xf9, 0xf1, 0x27, 0xbd,
-	0x98, 0xb8, 0xd5, 0xee, 0xc0, 0x0a, 0x7d, 0x04, 0xf3, 0xa9, 0x61, 0x5e, 0x6a, 0x99, 0x3d, 0xad,
-	0x30, 0xd6, 0x8d, 0x18, 0x27, 0x58, 0x9c, 0x7d, 0x46, 0x85, 0x74, 0xcb, 0x52, 0xff, 0x42, 0x7b,
-	0x30, 0x43, 0xa3, 0x38, 0x91, 0xf6, 0x8c, 0x92, 0x7b, 0xdb, 0x28, 0x77, 0x84, 0x7b, 0x21, 0xc3,
-	0x81, 0x9b, 0xb1, 0x22, 0x0c, 0x5b, 0x24, 0x77, 0x82, 0x27, 0x52, 0xdf, 0x78, 0x92, 0x79, 0x7e,
-	0xc8, 0x04, 0xf1, 0x24, 0x6d, 0x13, 0x96, 0x48, 0x7b, 0x56, 0xc1, 0xdd, 0xae, 0x67, 0xb9, 0x50,
-	0xcf, 0x73, 0xa1, 0xfe, 0x58, 0xe7, 0x82, 0xfb, 0x76, 0x1f, 0x42, 0x79, 0xf7, 0x84, 0x1d, 0xa4,
-	0xf2, 0x27, 0x99, 0x38, 0x7a, 0x0e, 0x6b, 0xca, 0xa4, 0x31, 0xe8, 0x73, 0x93, 0xd0, 0x57, 0x53,
-	0x69, 0x13, 0x70, 0x0d, 0xca, 0x34, 0x20, 0x91, 0xa4, 0xb2, 0x67, 0x97, 0x55, 0x44, 0xfa, 0x6b,
-	0xb4, 0x0e, 0xc0, 0xb3, 0x98, 0xa6, 0xf1, 0x9a, 0x57, 0xbb, 0xf3, 0x9a, 0x72, 0x18, 0x20, 0x1f,
-	0xec, 0x81, 0x78, 0x7a, 0x9c, 0x24, 0x82, 0x78, 0x31, 0x0b, 0xa9, 0xdf, 0xb3, 0x61, 0xcb, 0xda,
-	0x59, 0xdc, 0xbb, 0x5b, 0x18, 0xb9, 0xc3, 0xc0, 0x4d, 0x45, 0x8e, 0x94, 0x84, 0xbb, 0xdc, 0x35,
-	0x91, 0xd1, 0x01, 0x54, 0x39, 0x91, 0xbc, 0x97, 0x03, 0x57, 0x94, 0xa5, 0x5b, 0x46, 0x60, 0x37,
-	0x65, 0xd4, 0x70, 0x15, 0x7e, 0xb1, 0x40, 0x77, 0x60, 0xc1, 0xe7, 0x69, 0x6c, 0xfc, 0x16, 0x09,
-	0x92, 0x90, 0xd8, 0x55, 0x65, 0x4b, 0x35, 0x25, 0x1e, 0x6b, 0x1a, 0xfa, 0x00, 0xa6, 0xdb, 0xa4,
-	0xcd, 0xec, 0x05, 0xed, 0x4b, 0xd3, 0x09, 0xcf, 0x48, 0x9b, 0xb9, 0x8a, 0x0d, 0xb9, 0x70, 0x53,
-	0x10, 0xcc, 0xfd, 0x96, 0x87, 0xa5, 0xe4, 0xf4, 0x34, 0x91, 0x44, 0xd8, 0x8b, 0x4a, 0xf6, 0x5b,
-	0x46, 0xd9, 0x63, 0xc5, 0xbd, 0xdf, 0x67, 0x76, 0x97, 0xc4, 0x08, 0x05, 0xdd, 0x87, 0xd9, 0x16,
-	0xc1, 0x01, 0xe1, 0xf6, 0x0d, 0x05, 0xb4, 0x66, 0x04, 0xfa, 0x54, 0xb1, 0xb8, 0x9a, 0x15, 0x7d,
-	0x04, 0x95, 0x80, 0x84, 0xb8, 0x97, 0xe5, 0x86, 0xbd, 0x34, 0x29, 0x15, 0x40, 0x71, 0xab, 0x5c,
-	0x70, 0x1e, 0xc2, 0xc6, 0xb8, 0xbb, 0x2c, 0x62, 0x16, 0x09, 0x82, 0x96, 0x61, 0x96, 0x27, 0x51,
-	0x1a, 0xff, 0xec, 0x32, 0xcf, 0xf0, 0x24, 0x3a, 0x0c, 0x9c, 0xbf, 0x4f, 0xc1, 0xc6, 0x31, 0x6d,
-	0x46, 0x38, 0xbc, 0x76, 0x19, 0xf8, 0x19, 0xa0, 0x7e, 0xda, 0xf4, 0x73, 0x5e, 0x55, 0x83, 0xca,
-	0xde, 0xbb, 0x85, 0x09, 0x73, 0x71, 0xc4, 0xcd, 0xee, 0x28, 0x69, 0x28, 0x91, 0x4b, 0x85, 0x89,
-	0x3c, 0x3d, 0x9a, 0xc8, 0x9b, 0x50, 0x11, 0xca, 0x16, 0x2f, 0xc2, 0x6d, 0xa2, 0x6e, 0xfe, 0xbc,
-	0x0b, 0x19, 0xe9, 0x73, 0xdc, 0x26, 0xe8, 0x63, 0xa8, 0x6a, 0x86, 0xac, 0x36, 0xcc, 0x5e, 0xa1,
-	0x36, 0x68, 0xc8, 0x43, 0x55, 0x21, 0x6c, 0x98, 0xf3, 0x59, 0x24, 0x39, 0x0b, 0xd5, 0x55, 0xad,
-	0xba, 0xf9, 0xd2, 0xd9, 0x86, 0xcd, 0xb1, 0x7e, 0xcc, 0x42, 0xe0, 0xbc, 0xb2, 0xe0, 0xdb, 0x9a,
-	0x87, 0xca, 0x56, 0x71, 0xed, 0x7d, 0x0e, 0x0b, 0x59, 0x89, 0xd0, 0xd6, 0x29, 0xdf, 0x57, 0xf6,
-	0xf6, 0xcc, 0x19, 0x59, 0x04, 0xe5, 0x56, 0x15, 0x50, 0x0e, 0x3c, 0xe2, 0xa3, 0xa9, 0x89, 0x3e,
-	0x2a, 0xfd, 0x1f, 0x3e, 0x9a, 0x1e, 0xf6, 0xd1, 0x3e, 0xec, 0x4c, 0xb6, 0xbf, 0x38, 0x5f, 0xff,
-	0x3a, 0x05, 0xeb, 0x2e, 0x11, 0x44, 0xbe, 0x29, 0xe9, 0xba, 0x02, 0xb3, 0x9c, 0x60, 0xc1, 0x22,
-	0x9d, 0xac, 0x7a, 0x85, 0x1e, 0x82, 0x1d, 0x10, 0x9f, 0x8a, 0xf4, 0x29, 0x69, 0xd0, 0x88, 0x8a,
-	0x96, 0x47, 0x3a, 0x24, 0xea, 0x27, 0x6e, 0xc9, 0x5d, 0xce, 0xf7, 0x9f, 0xa8, 0xed, 0x4f, 0xd2,
-	0xdd, 0xc3, 0x60, 0x24, 0xc7, 0x67, 0x46, 0x73, 0xbc, 0x0e, 0xb7, 0xc4, 0x19, 0x8d, 0x3d, 0x1d,
-	0x23, 0x4e, 0x70, 0x1c, 0x87, 0x3d, 0x95, 0xc9, 0x65, 0xf7, 0x66, 0xba, 0x95, 0xb9, 0xd8, 0xcd,
-	0x36, 0xd2, 0xca, 0x30, 0xce, 0x5f, 0xc5, 0x9e, 0x7e, 0x65, 0xc1, 0xf6, 0x09, 0xe1, 0x6d, 0x1a,
-	0x61, 0x49, 0xde, 0x74, 0x6f, 0x3f, 0x80, 0xb9, 0x80, 0x48, 0x4c, 0x43, 0xa1, 0xfb, 0x84, 0xe2,
-	0x7c, 0xcd, 0x99, 0x87, 0x8a, 0xcd, 0xcc, 0x70, 0xb1, 0x71, 0xde, 0x01, 0xa7, 0xc8, 0x7e, 0x7d,
-	0xa9, 0xff, 0x68, 0xc1, 0xd6, 0x63, 0x22, 0x7c, 0x4e, 0x4f, 0xdf, 0x14, 0x2f, 0x39, 0xaf, 0x4a,
-	0xb0, 0x5d, 0xa0, 0x93, 0x8e, 0x7b, 0x08, 0xab, 0x17, 0xdd, 0x8e, 0xcf, 0xa2, 0x06, 0x6d, 0xea,
-	0xa7, 0x45, 0x17, 0x9b, 0xfb, 0x57, 0xd3, 0xe0, 0x60, 0x50, 0xd4, 0x5d, 0x21, 0x46, 0x3a, 0x3a,
-	0x85, 0xd5, 0xcb, 0xa6, 0x7a, 0x34, 0x6a, 0x30, 0x6d, 0xef, 0xdd, 0xab, 0x9d, 0x76, 0x18, 0x35,
-	0xd8, 0x45, 0x8f, 0x31, 0x44, 0x46, 0xcf, 0x01, 0xc5, 0x24, 0x0a, 0x68, 0xd4, 0xf4, 0xb0, 0x2f,
-	0x69, 0x87, 0x4a, 0x4a, 0x84, 0x5d, 0xda, 0x2a, 0xed, 0x54, 0xf6, 0x76, 0xcc, 0x09, 0x91, 0xb1,
-	0xef, 0x67, 0xdc, 0x3d, 0x05, 0x7e, 0x33, 0x1e, 0x22, 0x52, 0x22, 0xd0, 0x2f, 0x60, 0x29, 0x07,
-	0xf6, 0x5b, 0x34, 0x0c, 0x38, 0x89, 0xec, 0x69, 0x05, 0x5b, 0x2f, 0x82, 0x3d, 0x48, 0x79, 0x87,
-	0x35, 0xbf, 0x11, 0x0f, 0x6c, 0x71, 0x12, 0xa1, 0xe3, 0x0b, 0xe8, 0xbc, 0x1e, 0xe8, 0x96, 0xb5,
-	0x50, 0xe3, 0xc7, 0x9a, 0x77, 0x08, 0x34, 0x27, 0x3a, 0x5f, 0x96, 0xe0, 0xad, 0x9f, 0xa6, 0x33,
-	0x43, 0xee, 0xbe, 0x6f, 0xe8, 0xba, 0x7e, 0x08, 0x33, 0x6a, 0x74, 0xd1, 0x8f, 0x88, 0x53, 0x88,
-	0xa4, 0x14, 0x76, 0x33, 0x01, 0xe4, 0xc1, 0x8a, 0xfa, 0xe1, 0x71, 0xf2, 0x2b, 0xe2, 0xcb, 0x34,
-	0x3f, 0x03, 0xaa, 0x94, 0x9a, 0x56, 0x1d, 0xe9, 0x77, 0x8c, 0x50, 0x19, 0x84, 0x92, 0x38, 0xc8,
-	0x05, 0xdc, 0xb7, 0xce, 0x0d, 0xd4, 0x34, 0x1f, 0xb3, 0x03, 0x7c, 0x16, 0x09, 0x2a, 0x24, 0x89,
-	0xfc, 0x9e, 0x17, 0x92, 0x0e, 0x09, 0x95, 0xfb, 0xc7, 0xf5, 0xbc, 0xea, 0x84, 0x83, 0x0b, 0x91,
-	0xcf, 0x52, 0x09, 0x77, 0xf9, 0xdc, 0x44, 0x76, 0xfe, 0x6c, 0xc1, 0xf2, 0x48, 0x18, 0xf4, 0xdd,
-	0xfb, 0x18, 0xaa, 0xb9, 0x79, 0x22, 0x09, 0xf3, 0xd7, 0x7d, 0xc2, 0x23, 0xab, 0xed, 0x48, 0x05,
-	0xd0, 0x21, 0x2c, 0x0e, 0xfa, 0x87, 0x04, 0x3a, 0x58, 0xce, 0x24, 0xbf, 0x90, 0xc0, 0x5d, 0x38,
-	0x1f, 0x5c, 0x3a, 0xff, 0xb5, 0x60, 0x35, 0xaf, 0x16, 0xfd, 0x41, 0x6a, 0x42, 0xbe, 0x0c, 0x4d,
-	0x66, 0x53, 0xd7, 0x9b, 0xcc, 0x9e, 0xc2, 0x62, 0x5f, 0xf6, 0x62, 0x3c, 0x5c, 0x1c, 0x33, 0x1e,
-	0xe6, 0x00, 0xd9, 0x78, 0x28, 0x07, 0x56, 0xe9, 0x13, 0x4b, 0x23, 0x3f, 0x4c, 0x02, 0xe2, 0x5d,
-	0x00, 0x0a, 0x89, 0x65, 0x92, 0xbd, 0x02, 0x65, 0x77, 0x59, 0xef, 0xe7, 0x20, 0xc7, 0x6a, 0xd3,
-	0xf9, 0x8b, 0x05, 0xf6, 0x65, 0x8b, 0x75, 0x68, 0x7e, 0x00, 0x73, 0x31, 0x0b, 0x43, 0xc2, 0x85,
-	0x6d, 0xa9, 0x2b, 0xbe, 0x69, 0x8e, 0x8a, 0xe2, 0x51, 0xd7, 0x2f, 0xe7, 0x47, 0xcf, 0x60, 0xe9,
-	0x92, 0x22, 0x99, 0x73, 0xee, 0x14, 0xda, 0x96, 0xa9, 0xe5, 0x2e, 0xca, 0x61, 0x35, 0x05, 0xac,
-	0x2b, 0x5b, 0x35, 0xf5, 0x08, 0x73, 0xa9, 0x72, 0x57, 0x7c, 0x8d, 0xd1, 0x71, 0x7e, 0x3b, 0x05,
-	0x1b, 0xe3, 0x4e, 0xd5, 0x1e, 0x3a, 0x87, 0x75, 0x5d, 0x5e, 0x7b, 0x03, 0x8e, 0x8f, 0xfb, 0x8c,
-	0xda, 0x6f, 0xf5, 0xc2, 0x23, 0xfb, 0xb8, 0xcf, 0x88, 0xc4, 0x01, 0x96, 0xd8, 0xad, 0xe5, 0xa0,
-	0x97, 0x8f, 0x4e, 0x8f, 0xec, 0x77, 0x53, 0xc6, 0x23, 0xa7, 0x5e, 0xef, 0xc8, 0x1c, 0xf4, 0xf2,
-	0x91, 0xce, 0x57, 0x16, 0xd4, 0x54, 0xe7, 0x74, 0x2c, 0xa9, 0x7f, 0xd6, 0xbb, 0xea, 0xcd, 0xf8,
-	0x9a, 0x9e, 0xf4, 0x75, 0x58, 0x33, 0x2a, 0xa3, 0xbb, 0x90, 0x55, 0x58, 0x7e, 0x4a, 0xe4, 0x41,
-	0x98, 0x08, 0xa9, 0x93, 0x32, 0x53, 0xd3, 0xf9, 0x8d, 0x05, 0x2b, 0xa3, 0x3b, 0x3a, 0x8c, 0x2d,
-	0xb8, 0x2d, 0x92, 0x38, 0x66, 0x5c, 0x92, 0xc0, 0xf3, 0x43, 0x9a, 0x36, 0xa7, 0x1d, 0xc2, 0x85,
-	0x0e, 0x61, 0xaa, 0xf0, 0xfb, 0xe6, 0x71, 0x23, 0x97, 0x3a, 0x50, 0x42, 0x3f, 0xd7, 0x32, 0xee,
-	0xaa, 0x30, 0x6f, 0x38, 0x5f, 0x95, 0xc0, 0x79, 0x6a, 0x68, 0x41, 0x3f, 0xcd, 0xbe, 0x7c, 0x7d,
-	0x43, 0x8f, 0xd3, 0x1a, 0xcc, 0xc7, 0xb8, 0x49, 0x3c, 0x41, 0xbf, 0xc8, 0x4a, 0xd0, 0x8c, 0x5b,
-	0x4e, 0x09, 0xc7, 0xf4, 0x0b, 0x82, 0xde, 0x85, 0x1b, 0x11, 0x79, 0x91, 0xa6, 0x58, 0x93, 0x78,
-	0x92, 0x9d, 0x91, 0x48, 0x0f, 0x33, 0x0b, 0x29, 0xf9, 0x08, 0x37, 0xc9, 0x49, 0x4a, 0x44, 0xef,
-	0x01, 0xea, 0x62, 0x2a, 0xbd, 0x06, 0xe3, 0x5e, 0x44, 0xba, 0x59, 0x8f, 0xaf, 0x5e, 0x90, 0xb2,
-	0x7b, 0x23, 0xdd, 0x79, 0xc2, 0xf8, 0xe7, 0xa4, 0xab, 0x9a, 0x7b, 0xe4, 0xc1, 0x6d, 0xfd, 0xb1,
-	0x4f, 0xcf, 0x02, 0x0d, 0x1a, 0x4a, 0xc2, 0xb3, 0x22, 0x38, 0xab, 0x8a, 0xe0, 0x3b, 0x46, 0x7b,
-	0x94, 0xf8, 0x13, 0xc5, 0xac, 0xea, 0xe0, 0x8a, 0x86, 0x19, 0xa1, 0xa3, 0x3b, 0xb0, 0xa0, 0x86,
-	0x03, 0xcc, 0xfd, 0x16, 0xed, 0xe0, 0x6c, 0x48, 0x2d, 0xbb, 0xd5, 0x94, 0xb8, 0xaf, 0x69, 0xce,
-	0x7f, 0x2c, 0xb8, 0x53, 0x18, 0x0d, 0x9d, 0x1f, 0x0f, 0x60, 0x4e, 0x1f, 0x53, 0xf8, 0x3c, 0xe5,
-	0x62, 0x39, 0x33, 0xfa, 0x09, 0x54, 0x38, 0xee, 0x7a, 0xb9, 0x6c, 0x76, 0x33, 0xcd, 0xf5, 0xe7,
-	0x31, 0x96, 0xf8, 0x51, 0xc8, 0x4e, 0x5d, 0xe0, 0xb8, 0xab, 0x81, 0x4c, 0xae, 0x2f, 0x99, 0x5c,
-	0x5f, 0x83, 0x72, 0x66, 0x27, 0x09, 0x74, 0xb9, 0xef, 0xaf, 0xf7, 0xfe, 0x56, 0x85, 0x4a, 0x6e,
-	0xe0, 0xfe, 0xd1, 0x21, 0xfa, 0xb5, 0x05, 0x2b, 0xe6, 0x81, 0x13, 0xbd, 0xc6, 0x48, 0x5d, 0xbb,
-	0x7f, 0x2d, 0x19, 0xed, 0xcf, 0x2f, 0x2d, 0x58, 0x1d, 0xf3, 0x89, 0x00, 0x8d, 0x01, 0x2c, 0xfc,
-	0x30, 0x53, 0xfb, 0xde, 0xf5, 0x84, 0xb4, 0x1a, 0x7f, 0xb2, 0x60, 0x6b, 0xd2, 0x14, 0x8e, 0x7e,
-	0x54, 0x04, 0x3d, 0xe9, 0xe3, 0x45, 0xed, 0xc7, 0xaf, 0x29, 0xad, 0x35, 0x4c, 0x83, 0x65, 0x9e,
-	0x59, 0xc7, 0x04, 0xab, 0xf0, 0x83, 0xc0, 0x98, 0x60, 0x4d, 0x18, 0x8a, 0x7f, 0x6f, 0x41, 0x6d,
-	0xfc, 0xf4, 0x87, 0x1e, 0x98, 0x1f, 0x9a, 0x49, 0xe3, 0x72, 0xed, 0xe1, 0xb5, 0xe5, 0xb4, 0x3e,
-	0xbf, 0xb3, 0xe0, 0xf6, 0xd8, 0x91, 0x0e, 0x7d, 0xdf, 0x7c, 0xbb, 0x26, 0x8c, 0xa5, 0xb5, 0x07,
-	0xd7, 0x15, 0xd3, 0xca, 0x34, 0x60, 0x61, 0xa8, 0xad, 0x45, 0x05, 0xdd, 0xf8, 0xc8, 0x04, 0x52,
-	0xbb, 0x7b, 0x15, 0x56, 0x7d, 0x0e, 0x83, 0xa5, 0xd1, 0x36, 0x0d, 0xbd, 0x5f, 0xa8, 0xf3, 0xc8,
-	0x2b, 0x5d, 0xfb, 0xe0, 0x8a, 0xdc, 0x03, 0x99, 0x67, 0x6e, 0x7e, 0xc6, 0x64, 0x5e, 0x61, 0x7f,
-	0x36, 0x26, 0xf3, 0x26, 0x74, 0x57, 0x2f, 0xe0, 0x96, 0xe1, 0xa5, 0x47, 0xbb, 0xe3, 0xb3, 0xd8,
-	0xd8, 0xa0, 0xd4, 0xbe, 0x7b, 0x75, 0x01, 0x7d, 0x32, 0x85, 0xc5, 0xe1, 0x56, 0x01, 0x99, 0x83,
-	0x65, 0xec, 0x34, 0x6a, 0xef, 0x5d, 0x89, 0x57, 0x1f, 0xf5, 0x07, 0x0b, 0xd6, 0x0a, 0xde, 0x20,
-	0xf4, 0x70, 0x1c, 0xd8, 0x84, 0x1e, 0xa2, 0xf6, 0xe1, 0xf5, 0x05, 0x33, 0x95, 0x1e, 0x9d, 0xfe,
-	0xe3, 0xe5, 0x86, 0xf5, 0xaf, 0x97, 0x1b, 0xd6, 0xbf, 0x5f, 0x6e, 0x58, 0xb0, 0xea, 0xb3, 0xb6,
-	0x09, 0xea, 0x51, 0x79, 0x3f, 0xa6, 0x47, 0x9c, 0x49, 0x76, 0x64, 0xfd, 0x72, 0xb7, 0x49, 0x65,
-	0x2b, 0x39, 0xad, 0xfb, 0xac, 0xbd, 0x3b, 0xf4, 0x8f, 0x5b, 0xbd, 0x49, 0xa2, 0xec, 0x6f, 0x42,
-	0xfd, 0xe7, 0xdb, 0x0f, 0x71, 0x4c, 0x3b, 0xf7, 0x4e, 0x67, 0x15, 0xed, 0xfe, 0xff, 0x02, 0x00,
-	0x00, 0xff, 0xff, 0x1d, 0x55, 0x6e, 0x8e, 0x8b, 0x1c, 0x00, 0x00,
+	// 2141 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x59, 0x4f, 0x73, 0xdc, 0x48,
+	0x15, 0x2f, 0x79, 0xfc, 0x67, 0xfc, 0xc6, 0x76, 0x9c, 0x4e, 0x6c, 0x2b, 0x93, 0xd8, 0x71, 0x94,
+	0xdd, 0x60, 0xb2, 0x9b, 0x31, 0x71, 0xd8, 0x24, 0x64, 0x81, 0x2d, 0x67, 0x12, 0x67, 0x4d, 0x6d,
+	0xb6, 0x8c, 0x6c, 0x48, 0xc1, 0x45, 0xd5, 0x96, 0x9e, 0xc7, 0x8d, 0x35, 0x92, 0xdc, 0x6a, 0xd9,
+	0x3b, 0xcb, 0x81, 0x82, 0xda, 0xe2, 0x00, 0x05, 0x05, 0x47, 0x4e, 0x1c, 0xe0, 0xcc, 0xc7, 0xa0,
+	0x28, 0x2e, 0xc0, 0x37, 0x80, 0x7c, 0x01, 0xbe, 0xc1, 0x16, 0xd5, 0xad, 0xd6, 0x8c, 0x67, 0x2c,
+	0x69, 0x6c, 0x53, 0x5b, 0x9b, 0xda, 0xdb, 0xe8, 0xf5, 0x7b, 0xbf, 0xf7, 0xb7, 0xbb, 0xdf, 0xeb,
+	0x81, 0xbb, 0xc9, 0x2e, 0xf2, 0x55, 0x97, 0x7a, 0x18, 0xb8, 0xb8, 0x4a, 0x23, 0xb6, 0x7a, 0x74,
+	0x7f, 0x35, 0x46, 0x7e, 0xc4, 0x5c, 0x74, 0x8e, 0x43, 0x7e, 0xb0, 0xe7, 0x87, 0xc7, 0x8d, 0x88,
+	0x87, 0x22, 0x24, 0x57, 0x24, 0x6f, 0x43, 0xf3, 0x36, 0x68, 0xc4, 0x1a, 0x47, 0xf7, 0xeb, 0x4b,
+	0xad, 0x30, 0x6c, 0xf9, 0xb8, 0xaa, 0x58, 0x76, 0x93, 0xbd, 0x55, 0x2f, 0xe1, 0x54, 0xb0, 0x30,
+	0x48, 0x85, 0xea, 0xcb, 0x79, 0x0a, 0xdc, 0xb0, 0xdd, 0xee, 0x72, 0xdc, 0xca, 0xe3, 0xd8, 0x67,
+	0xb1, 0x08, 0x79, 0x47, 0xb3, 0xdc, 0xcc, 0x63, 0x39, 0x4c, 0xb0, 0xcb, 0x60, 0xe5, 0x31, 0x08,
+	0x1a, 0x1f, 0xf8, 0x2c, 0x16, 0x65, 0x3c, 0xfd, 0x2e, 0x5a, 0x7f, 0x9f, 0x80, 0xc5, 0x6d, 0x41,
+	0xb9, 0x78, 0xa5, 0xe9, 0xcf, 0x3f, 0x41, 0x37, 0x91, 0xee, 0xd8, 0x78, 0x98, 0x60, 0x2c, 0xc8,
+	0x3c, 0x8c, 0x7b, 0x61, 0x9b, 0xb2, 0xc0, 0x34, 0x96, 0x8d, 0x95, 0x49, 0x5b, 0x7f, 0x91, 0x9b,
+	0x50, 0xcb, 0xb0, 0x1c, 0xe6, 0x99, 0x23, 0x6a, 0x11, 0x32, 0xd2, 0xa6, 0x47, 0x36, 0x60, 0xba,
+	0xcb, 0x20, 0x3a, 0x11, 0x9a, 0x95, 0x65, 0x63, 0xa5, 0xb6, 0x76, 0xab, 0x91, 0x13, 0xd5, 0x46,
+	0xa6, 0x7e, 0xa7, 0x13, 0xa1, 0x3d, 0x75, 0x7c, 0xe2, 0x8b, 0x3c, 0x81, 0x49, 0xe9, 0x98, 0x23,
+	0x3d, 0x33, 0x47, 0x15, 0xc6, 0x62, 0x2e, 0xc6, 0x0e, 0x8d, 0x0f, 0x3e, 0x62, 0xb1, 0xb0, 0xab,
+	0x42, 0xff, 0x22, 0x6b, 0x30, 0xc6, 0x82, 0x28, 0x11, 0xe6, 0x98, 0x92, 0xbb, 0x91, 0x2b, 0xb7,
+	0x45, 0x3b, 0x7e, 0x48, 0x3d, 0x3b, 0x65, 0x25, 0x14, 0x96, 0x31, 0x0b, 0x82, 0x13, 0xcb, 0xd8,
+	0x38, 0x22, 0x74, 0x5c, 0x3f, 0x8c, 0xd1, 0x11, 0xac, 0x8d, 0x61, 0x22, 0xcc, 0x71, 0x05, 0x77,
+	0xad, 0x91, 0xd6, 0x42, 0x23, 0xab, 0x85, 0xc6, 0x33, 0x5d, 0x0b, 0xf6, 0x8d, 0x2e, 0x84, 0x8a,
+	0xee, 0x4e, 0xd8, 0x94, 0xf2, 0x3b, 0xa9, 0x38, 0x79, 0x05, 0xd7, 0x95, 0x4b, 0x05, 0xe8, 0x13,
+	0xc3, 0xd0, 0x17, 0xa4, 0x74, 0x1e, 0x70, 0x1d, 0xaa, 0xcc, 0xc3, 0x40, 0x30, 0xd1, 0x31, 0xab,
+	0x2a, 0x23, 0xdd, 0x6f, 0xb2, 0x08, 0xc0, 0xd3, 0x9c, 0xca, 0x7c, 0x4d, 0xaa, 0xd5, 0x49, 0x4d,
+	0xd9, 0xf4, 0x88, 0x0b, 0xe6, 0x89, 0x7c, 0x3a, 0x1c, 0x93, 0x18, 0x9d, 0x28, 0xf4, 0x99, 0xdb,
+	0x31, 0x61, 0xd9, 0x58, 0x99, 0x59, 0xbb, 0x5b, 0x9a, 0xb9, 0x4d, 0xcf, 0x96, 0x22, 0x5b, 0x4a,
+	0xc2, 0x9e, 0x3b, 0xce, 0x23, 0x93, 0x26, 0x4c, 0x71, 0x14, 0xbc, 0x93, 0x01, 0xd7, 0x94, 0xa7,
+	0xcb, 0xb9, 0xc0, 0xb6, 0x64, 0xd4, 0x70, 0x35, 0xde, 0xfb, 0x20, 0xb7, 0x61, 0xda, 0xe5, 0x32,
+	0x37, 0xee, 0x3e, 0x7a, 0x89, 0x8f, 0xe6, 0x94, 0xf2, 0x65, 0x4a, 0x12, 0xb7, 0x35, 0x8d, 0xdc,
+	0x83, 0xd1, 0x36, 0xb6, 0x43, 0x73, 0x5a, 0xc7, 0x32, 0x4f, 0xc3, 0x4b, 0x6c, 0x87, 0xb6, 0x62,
+	0x23, 0x36, 0x5c, 0x8e, 0x91, 0x72, 0x77, 0xdf, 0xa1, 0x42, 0x70, 0xb6, 0x9b, 0x08, 0x8c, 0xcd,
+	0x19, 0x25, 0xfb, 0x76, 0xae, 0xec, 0xb6, 0xe2, 0x5e, 0xef, 0x32, 0xdb, 0xb3, 0xf1, 0x00, 0x85,
+	0x3c, 0x80, 0xf1, 0x7d, 0xa4, 0x1e, 0x72, 0xf3, 0x92, 0x02, 0xba, 0x9e, 0x0b, 0xf4, 0xa1, 0x62,
+	0xb1, 0x35, 0x2b, 0x79, 0x02, 0x35, 0x0f, 0x7d, 0xda, 0x49, 0x6b, 0xc3, 0x9c, 0x1d, 0x56, 0x0a,
+	0xa0, 0xb8, 0x55, 0x2d, 0x58, 0x8f, 0x60, 0xa9, 0x68, 0x2f, 0xc7, 0x51, 0x18, 0xc4, 0x48, 0xe6,
+	0x60, 0x9c, 0x27, 0x81, 0xcc, 0x7f, 0xba, 0x99, 0xc7, 0x78, 0x12, 0x6c, 0x7a, 0xd6, 0x5f, 0x47,
+	0x60, 0x69, 0x9b, 0xb5, 0x02, 0xea, 0x9f, 0xfb, 0x18, 0xf8, 0x01, 0x90, 0x6e, 0xd9, 0x74, 0x6b,
+	0x5e, 0x9d, 0x06, 0xb5, 0xb5, 0x3b, 0xa5, 0x05, 0xd3, 0x53, 0x71, 0xf9, 0x78, 0x90, 0xd4, 0x57,
+	0xc8, 0x95, 0xd2, 0x42, 0x1e, 0x1d, 0x2c, 0xe4, 0x9b, 0x50, 0x8b, 0x95, 0x2f, 0x4e, 0x40, 0xdb,
+	0xa8, 0x76, 0xfe, 0xa4, 0x0d, 0x29, 0xe9, 0x63, 0xda, 0x46, 0xf2, 0x01, 0x4c, 0x69, 0x86, 0xf4,
+	0x6c, 0x18, 0x3f, 0xc3, 0xd9, 0xa0, 0x21, 0x37, 0xd5, 0x09, 0x61, 0xc2, 0x84, 0x1b, 0x06, 0x82,
+	0x87, 0xbe, 0xda, 0xaa, 0x53, 0x76, 0xf6, 0x69, 0xdd, 0x82, 0x9b, 0x85, 0x71, 0x4c, 0x53, 0x60,
+	0x7d, 0x6e, 0xc0, 0xd7, 0x34, 0x0f, 0x13, 0xfb, 0xe5, 0x67, 0xef, 0x2b, 0x98, 0x4e, 0x8f, 0x08,
+	0xed, 0x9d, 0x8a, 0x7d, 0x6d, 0x6d, 0x2d, 0xbf, 0x22, 0xcb, 0xa0, 0xec, 0x29, 0x05, 0x94, 0x01,
+	0x0f, 0xc4, 0x68, 0x64, 0x68, 0x8c, 0x2a, 0xff, 0x47, 0x8c, 0x46, 0xfb, 0x63, 0xb4, 0x0e, 0x2b,
+	0xc3, 0xfd, 0x2f, 0xaf, 0xd7, 0xbf, 0x8c, 0xc0, 0xa2, 0x8d, 0x31, 0x8a, 0x37, 0xa5, 0x5c, 0xe7,
+	0x61, 0x9c, 0x23, 0x8d, 0xc3, 0x40, 0x17, 0xab, 0xfe, 0x22, 0x8f, 0xc0, 0xf4, 0xd0, 0x65, 0xb1,
+	0xbc, 0x4a, 0xf6, 0x58, 0xc0, 0xe2, 0x7d, 0x07, 0x8f, 0x30, 0xe8, 0x16, 0x6e, 0xc5, 0x9e, 0xcb,
+	0xd6, 0x37, 0xd4, 0xf2, 0x73, 0xb9, 0xba, 0xe9, 0x0d, 0xd4, 0xf8, 0xd8, 0x60, 0x8d, 0x37, 0xe0,
+	0x4a, 0x7c, 0xc0, 0x22, 0x47, 0xe7, 0x88, 0x23, 0x8d, 0x22, 0xbf, 0xa3, 0x2a, 0xb9, 0x6a, 0x5f,
+	0x96, 0x4b, 0x69, 0x88, 0xed, 0x74, 0x41, 0x9e, 0x0c, 0x45, 0xf1, 0x2a, 0x8f, 0xf4, 0xbf, 0x0c,
+	0x78, 0x5b, 0xc7, 0xb4, 0x49, 0x03, 0x17, 0xbf, 0x02, 0x07, 0x84, 0xb5, 0x02, 0x77, 0x86, 0xb9,
+	0xd4, 0xdb, 0xab, 0xb7, 0x76, 0x90, 0xb7, 0x59, 0x40, 0x05, 0xbe, 0xe9, 0xb5, 0xf6, 0x10, 0x26,
+	0x3c, 0x14, 0x94, 0xf9, 0xb1, 0xee, 0x92, 0xca, 0x77, 0x6b, 0xc6, 0xdc, 0x17, 0xc9, 0xb1, 0xfe,
+	0x48, 0x5a, 0x6f, 0x81, 0x55, 0xe6, 0xbf, 0x0e, 0xd3, 0xef, 0x0d, 0x58, 0x7e, 0x86, 0xb1, 0xcb,
+	0xd9, 0xee, 0x9b, 0x12, 0x25, 0xeb, 0xf3, 0x0a, 0xdc, 0x2a, 0xb1, 0x49, 0x57, 0xbd, 0x0f, 0x0b,
+	0xbd, 0x5e, 0xcf, 0x0d, 0x83, 0x3d, 0xd6, 0xd2, 0x17, 0xab, 0x3e, 0x6a, 0x1f, 0x9c, 0xcd, 0x82,
+	0xe6, 0x49, 0x51, 0x7b, 0x1e, 0x73, 0xe9, 0x64, 0x17, 0x16, 0x4e, 0xbb, 0xea, 0xb0, 0x60, 0x2f,
+	0xd4, 0xfe, 0xde, 0x3d, 0x9b, 0xb6, 0xcd, 0x60, 0x2f, 0xec, 0x75, 0x58, 0x7d, 0x64, 0xf2, 0x0a,
+	0x48, 0x84, 0x81, 0xc7, 0x82, 0x96, 0x43, 0x5d, 0xc1, 0x8e, 0x98, 0x60, 0x18, 0x9b, 0x95, 0xe5,
+	0xca, 0x4a, 0x6d, 0x6d, 0x25, 0xbf, 0x20, 0x52, 0xf6, 0xf5, 0x94, 0xbb, 0xa3, 0xc0, 0x2f, 0x47,
+	0x7d, 0x44, 0x86, 0x31, 0xf9, 0x11, 0xcc, 0x66, 0xc0, 0xee, 0x3e, 0xf3, 0x3d, 0x8e, 0x81, 0x39,
+	0xaa, 0x60, 0x1b, 0x65, 0xb0, 0x4d, 0xc9, 0xdb, 0x6f, 0xf9, 0xa5, 0xe8, 0xc4, 0x12, 0xc7, 0x80,
+	0x6c, 0xf7, 0xa0, 0xb3, 0xd3, 0x50, 0x37, 0xec, 0xa5, 0x16, 0x3f, 0xd3, 0xbc, 0x7d, 0xa0, 0x19,
+	0xd1, 0xfa, 0xac, 0x02, 0x57, 0xbf, 0x2f, 0x27, 0xa6, 0x2c, 0x7c, 0x5f, 0xd2, 0x76, 0x7d, 0x0c,
+	0x63, 0x6a, 0x70, 0xd3, 0x57, 0xa8, 0x55, 0x8a, 0xa4, 0x0c, 0xb6, 0x53, 0x01, 0xe2, 0xc0, 0xbc,
+	0xfa, 0xe1, 0x70, 0xfc, 0x09, 0xba, 0x42, 0xd6, 0xa7, 0xc7, 0x94, 0x51, 0xa3, 0xaa, 0x1f, 0xff,
+	0x7a, 0x2e, 0x54, 0x0a, 0xa1, 0x24, 0x9a, 0x99, 0x80, 0x7d, 0xf5, 0x30, 0x87, 0x2a, 0xeb, 0x31,
+	0x55, 0xe0, 0x86, 0x41, 0xcc, 0x62, 0x81, 0x81, 0xdb, 0x71, 0x7c, 0x3c, 0x42, 0x5f, 0x85, 0xbf,
+	0xa8, 0xe3, 0x57, 0x1a, 0x9a, 0x3d, 0x91, 0x8f, 0xa4, 0x84, 0x3d, 0x77, 0x98, 0x47, 0xb6, 0xfe,
+	0x64, 0xc0, 0xdc, 0x40, 0x1a, 0xf4, 0xde, 0xfb, 0x00, 0xa6, 0x32, 0xf7, 0xe2, 0xc4, 0xcf, 0x7a,
+	0x9b, 0x21, 0x2d, 0x86, 0xf6, 0x43, 0x0a, 0x90, 0x4d, 0x98, 0x39, 0x19, 0x1f, 0xf4, 0x74, 0xb2,
+	0xac, 0x61, 0x71, 0x41, 0xcf, 0x9e, 0x3e, 0x3c, 0xf9, 0x69, 0xfd, 0xd7, 0x80, 0x85, 0xec, 0xb4,
+	0xe8, 0x8e, 0x91, 0x43, 0xea, 0xa5, 0x6f, 0x2e, 0x1d, 0x39, 0xdf, 0x5c, 0xfa, 0x02, 0x66, 0xba,
+	0xb2, 0xbd, 0xe1, 0x78, 0xa6, 0x60, 0x38, 0xce, 0x00, 0xd2, 0xe1, 0x58, 0x9c, 0xf8, 0x92, 0x0d,
+	0x06, 0x0b, 0x5c, 0x3f, 0xf1, 0xd0, 0xe9, 0x01, 0xc6, 0x82, 0x8a, 0x24, 0xbd, 0x05, 0xaa, 0xf6,
+	0x9c, 0x5e, 0xcf, 0x40, 0xb6, 0xd5, 0xa2, 0xf5, 0x67, 0x03, 0xcc, 0xd3, 0x1e, 0xeb, 0xd4, 0x7c,
+	0x0b, 0x26, 0xa2, 0xd0, 0xf7, 0x91, 0xc7, 0xa6, 0xa1, 0xb6, 0xf8, 0xcd, 0xfc, 0xac, 0x28, 0x1e,
+	0xb5, 0xfd, 0x32, 0x7e, 0xf2, 0x12, 0x66, 0x4f, 0x19, 0x92, 0x06, 0xe7, 0x76, 0xa9, 0x6f, 0xa9,
+	0x59, 0xf6, 0x8c, 0xe8, 0x37, 0xf3, 0x3d, 0xb8, 0xfe, 0x02, 0x45, 0xc6, 0x14, 0x3f, 0xed, 0x3c,
+	0x53, 0xc1, 0x1f, 0x92, 0x1b, 0xeb, 0xb7, 0xa3, 0x70, 0x23, 0x5f, 0x4e, 0x7b, 0xf8, 0x33, 0x98,
+	0xef, 0x36, 0x66, 0x3d, 0x7b, 0xdb, 0x34, 0xd2, 0x0e, 0x7f, 0x2f, 0xd7, 0xd8, 0x32, 0xc8, 0x46,
+	0x76, 0xf2, 0x64, 0x1c, 0x2f, 0x69, 0xf4, 0x3c, 0x10, 0xbc, 0x63, 0x5f, 0xf1, 0x4e, 0xaf, 0x48,
+	0x03, 0xf4, 0xf9, 0xdc, 0x19, 0x30, 0x60, 0xe4, 0xa2, 0x06, 0x64, 0x27, 0xf8, 0x69, 0x03, 0xe8,
+	0xe9, 0x95, 0x7a, 0x22, 0xf3, 0x9f, 0x6f, 0x31, 0x99, 0x85, 0xca, 0x01, 0x76, 0x74, 0x4c, 0xe5,
+	0x4f, 0xd2, 0x84, 0xb1, 0x23, 0xea, 0x27, 0xa8, 0x73, 0x79, 0x2f, 0xd7, 0xba, 0xa2, 0x7a, 0xb2,
+	0x53, 0xd9, 0x27, 0x23, 0x8f, 0x0d, 0xa9, 0xb6, 0xc8, 0xce, 0x2f, 0x50, 0xad, 0x15, 0xc3, 0xa2,
+	0xda, 0x33, 0x9a, 0x65, 0x8b, 0x72, 0xa1, 0xce, 0xc0, 0xf8, 0x0b, 0xdc, 0xe5, 0xd6, 0x2f, 0x47,
+	0x60, 0xa9, 0x48, 0xab, 0xae, 0xc3, 0x43, 0x58, 0xcc, 0x29, 0x83, 0xa8, 0xcb, 0xa8, 0xcb, 0xb1,
+	0x51, 0xaa, 0xb2, 0x8b, 0xfb, 0x12, 0x05, 0xf5, 0xa8, 0xa0, 0x76, 0x7d, 0x30, 0xe3, 0x3d, 0xd5,
+	0x52, 0x65, 0x4e, 0xe9, 0x9f, 0x50, 0x39, 0x72, 0x31, 0x95, 0x83, 0x55, 0xde, 0x53, 0x69, 0x2d,
+	0xc0, 0xdc, 0x0b, 0x14, 0x4d, 0x3f, 0x89, 0x85, 0x3e, 0x2f, 0xd2, 0xa8, 0x5b, 0xbf, 0x30, 0x60,
+	0x7e, 0x70, 0x45, 0x47, 0x66, 0x1f, 0xae, 0xc5, 0x49, 0x14, 0x85, 0x5c, 0xa0, 0xe7, 0xb8, 0x3e,
+	0x93, 0x53, 0xd3, 0x11, 0xf2, 0x58, 0x47, 0x45, 0x26, 0xe2, 0xdd, 0xfc, 0x39, 0x38, 0x93, 0x6a,
+	0x2a, 0xa1, 0x1f, 0x6a, 0x19, 0x7b, 0x21, 0xce, 0x5f, 0xb0, 0x7e, 0x5d, 0x01, 0xeb, 0x45, 0xce,
+	0x6c, 0xf4, 0x61, 0xfa, 0x24, 0xfb, 0x25, 0xf5, 0x0d, 0xd7, 0x61, 0x32, 0xa2, 0x2d, 0x74, 0x62,
+	0xf6, 0x69, 0x7a, 0x3b, 0x8c, 0xd9, 0x55, 0x49, 0xd8, 0x66, 0x9f, 0x22, 0xb9, 0x03, 0x97, 0x02,
+	0xfc, 0x44, 0x66, 0xad, 0x85, 0x8e, 0x08, 0x0f, 0x30, 0xd0, 0x53, 0xf6, 0xb4, 0x24, 0x6f, 0xd1,
+	0x16, 0xee, 0x48, 0x22, 0x79, 0x07, 0xc8, 0x31, 0x65, 0xc2, 0xd9, 0x0b, 0xb9, 0x13, 0xe0, 0x71,
+	0x3a, 0x7c, 0xaa, 0xcb, 0xbd, 0x6a, 0x5f, 0x92, 0x2b, 0x1b, 0x21, 0xff, 0x18, 0x8f, 0xd5, 0xd4,
+	0x49, 0x1c, 0xb8, 0xa6, 0x5f, 0xa1, 0xf5, 0x90, 0xba, 0xc7, 0x7c, 0x81, 0x3c, 0xbd, 0x9f, 0xc6,
+	0xd5, 0xfd, 0xf4, 0x56, 0xae, 0x3f, 0x4a, 0x7c, 0x43, 0x31, 0xab, 0x2b, 0x6a, 0x5e, 0xc3, 0x0c,
+	0xd0, 0xc9, 0x6d, 0x98, 0x56, 0x53, 0x2b, 0xe5, 0xee, 0x3e, 0x3b, 0xa2, 0xe9, 0xeb, 0x49, 0xd5,
+	0x9e, 0x92, 0xc4, 0x75, 0x4d, 0xb3, 0xfe, 0x63, 0xc0, 0xed, 0xd2, 0x6c, 0xe8, 0xfa, 0x78, 0x08,
+	0x13, 0x5a, 0x4d, 0x69, 0xe7, 0x90, 0x89, 0x65, 0xcc, 0xe4, 0xbb, 0x50, 0xe3, 0xf4, 0xd8, 0xc9,
+	0x64, 0xd3, 0x62, 0xcf, 0xdf, 0xd2, 0xcf, 0xa8, 0xa0, 0x4f, 0xfd, 0x70, 0xd7, 0x06, 0x4e, 0x8f,
+	0x35, 0x50, 0x5e, 0xe8, 0x2b, 0x79, 0xa1, 0xaf, 0x43, 0x35, 0xf5, 0x13, 0x3d, 0x7d, 0x13, 0x77,
+	0xbf, 0xad, 0x0e, 0x4c, 0x6d, 0x20, 0x15, 0x09, 0xc7, 0x0d, 0x9f, 0xb6, 0x62, 0xc2, 0x60, 0x2d,
+	0x67, 0x30, 0xa0, 0x3e, 0x47, 0xea, 0xc9, 0xee, 0xac, 0x1d, 0xf9, 0x28, 0xb7, 0x01, 0x72, 0x1e,
+	0x72, 0x07, 0x03, 0xba, 0xeb, 0x63, 0x3a, 0xa8, 0x57, 0xed, 0x7b, 0xa7, 0x4a, 0x67, 0x3d, 0x95,
+	0x6b, 0x66, 0x62, 0xcf, 0xa5, 0xd4, 0xf3, 0x54, 0x68, 0xed, 0x1f, 0xd3, 0x50, 0xcb, 0x62, 0xbb,
+	0xbe, 0xb5, 0x49, 0x7e, 0x6e, 0xc0, 0x7c, 0xfe, 0x23, 0x0c, 0xb9, 0xc0, 0x33, 0x53, 0xfd, 0xc1,
+	0xb9, 0x64, 0x74, 0x2a, 0x3f, 0x33, 0x60, 0xa1, 0xe0, 0xd9, 0x8c, 0x14, 0x00, 0x96, 0x3e, 0x56,
+	0xd6, 0xbf, 0x79, 0x3e, 0x21, 0x6d, 0xc6, 0x1f, 0x0d, 0x58, 0x1e, 0xf6, 0x32, 0x45, 0xbe, 0x5d,
+	0x06, 0x3d, 0xec, 0x41, 0xaf, 0xfe, 0x9d, 0x0b, 0x4a, 0x6b, 0x0b, 0x65, 0xb2, 0xf2, 0xdf, 0x71,
+	0x0a, 0x92, 0x55, 0xfa, 0x48, 0x56, 0x90, 0xac, 0x21, 0x0f, 0x45, 0x7f, 0x30, 0x60, 0xa9, 0xfc,
+	0xf9, 0x84, 0x3c, 0x29, 0xc0, 0x3d, 0xc3, 0x33, 0x52, 0xfd, 0xfd, 0x0b, 0xc9, 0x6a, 0xdb, 0x7e,
+	0x63, 0x40, 0xbd, 0xf8, 0xbd, 0x82, 0x3c, 0xcc, 0xbf, 0xd2, 0x86, 0x3d, 0xf0, 0xd4, 0x1f, 0x9d,
+	0x5b, 0x4e, 0xdb, 0xf3, 0x2b, 0x03, 0xae, 0x15, 0x3e, 0x42, 0x90, 0xf7, 0x4a, 0xbb, 0x99, 0x42,
+	0x6b, 0x1e, 0x9e, 0x57, 0x4c, 0x1b, 0xb3, 0x07, 0xd3, 0x7d, 0x83, 0x18, 0x29, 0x99, 0x1f, 0x07,
+	0x66, 0xe6, 0xfa, 0xdd, 0xb3, 0xb0, 0x6a, 0x3d, 0x21, 0xcc, 0x0e, 0x76, 0x64, 0xe4, 0xdd, 0x33,
+	0x36, 0x6e, 0xa9, 0xb6, 0xf3, 0xb5, 0x79, 0xe4, 0xa7, 0x70, 0x35, 0xaf, 0x2f, 0x26, 0xdf, 0x38,
+	0x47, 0x0b, 0x9d, 0x2a, 0xbe, 0x7f, 0xee, 0xa6, 0x5b, 0x6d, 0xc9, 0xfc, 0x1e, 0xaf, 0x60, 0x4b,
+	0x96, 0xb6, 0xa1, 0x05, 0x5b, 0x72, 0x48, 0x13, 0xc9, 0x60, 0xa6, 0xbf, 0x89, 0x22, 0x77, 0x8b,
+	0x1c, 0x39, 0xdd, 0x83, 0xd5, 0xdf, 0x39, 0x13, 0xaf, 0x56, 0xf5, 0x3b, 0x43, 0x0d, 0x64, 0x45,
+	0xb7, 0x33, 0x79, 0x54, 0x04, 0x36, 0xa4, 0xbb, 0xaa, 0x3f, 0x3e, 0xbf, 0x60, 0x6a, 0xd2, 0xd3,
+	0xdd, 0xbf, 0xbd, 0x5e, 0x32, 0xfe, 0xf9, 0x7a, 0xc9, 0xf8, 0xf7, 0xeb, 0x25, 0x03, 0x16, 0xdc,
+	0xb0, 0x9d, 0x07, 0xf5, 0xb4, 0xba, 0x1e, 0xb1, 0x2d, 0x1e, 0x8a, 0x70, 0xcb, 0xf8, 0xf1, 0x6a,
+	0x8b, 0x89, 0xfd, 0x64, 0xb7, 0xe1, 0x86, 0xed, 0xd5, 0xbe, 0x3f, 0xc9, 0x1b, 0x2d, 0x0c, 0xd2,
+	0x7f, 0xf6, 0xf5, 0xff, 0xe5, 0xef, 0xd3, 0x88, 0x1d, 0xdd, 0xdf, 0x1d, 0x57, 0xb4, 0x07, 0xff,
+	0x0b, 0x00, 0x00, 0xff, 0xff, 0xe6, 0x4c, 0xc8, 0xf1, 0x3e, 0x20, 0x00, 0x00,
 }
 
 func (m *StartWorkflowExecutionRequest) Marshal() (dAtA []byte, err error) {
@@ -2319,6 +2503,93 @@ func (m *ResetWorkflowExecutionResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
+func (m *RequestCancelWorkflowExecutionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RequestCancelWorkflowExecutionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.RequestId) > 0 {
+		i -= len(m.RequestId)
+		copy(dAtA[i:], m.RequestId)
+		i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(m.RequestId)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Identity) > 0 {
+		i -= len(m.Identity)
+		copy(dAtA[i:], m.Identity)
+		i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(m.Identity)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.WorkflowExecution != nil {
+		{
+			size, err := m.WorkflowExecution.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintServiceWorkflow(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RequestCancelWorkflowExecutionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RequestCancelWorkflowExecutionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RequestCancelWorkflowExecutionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *TerminateWorkflowExecutionRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2788,6 +3059,119 @@ func (m *DescribeTaskListResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *GetTaskListsByDomainRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetTaskListsByDomainRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetTaskListsByDomainRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.Domain) > 0 {
+		i -= len(m.Domain)
+		copy(dAtA[i:], m.Domain)
+		i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(m.Domain)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GetTaskListsByDomainResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GetTaskListsByDomainResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GetTaskListsByDomainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if len(m.ActivityTaskListMap) > 0 {
+		for k := range m.ActivityTaskListMap {
+			v := m.ActivityTaskListMap[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintServiceWorkflow(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintServiceWorkflow(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.DecisionTaskListMap) > 0 {
+		for k := range m.DecisionTaskListMap {
+			v := m.DecisionTaskListMap[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintServiceWorkflow(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintServiceWorkflow(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *ListTaskListPartitionsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2885,79 +3269,6 @@ func (m *ListTaskListPartitionsResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 			i--
 			dAtA[i] = 0xa
 		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ResetStickyTaskListRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ResetStickyTaskListRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ResetStickyTaskListRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
-	}
-	if m.WorkflowExecution != nil {
-		{
-			size, err := m.WorkflowExecution.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintServiceWorkflow(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Domain) > 0 {
-		i -= len(m.Domain)
-		copy(dAtA[i:], m.Domain)
-		i = encodeVarintServiceWorkflow(dAtA, i, uint64(len(m.Domain)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ResetStickyTaskListResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ResetStickyTaskListResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ResetStickyTaskListResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.XXX_unrecognized != nil {
-		i -= len(m.XXX_unrecognized)
-		copy(dAtA[i:], m.XXX_unrecognized)
 	}
 	return len(dAtA) - i, nil
 }
@@ -3177,6 +3488,43 @@ func (m *GetWorkflowExecutionHistoryResponse) MarshalToSizedBuffer(dAtA []byte) 
 		}
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *FeatureFlags) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *FeatureFlags) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *FeatureFlags) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i -= len(m.XXX_unrecognized)
+		copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	if m.WorkflowExecutionAlreadyCompletedErrorEnabled {
+		i--
+		if m.WorkflowExecutionAlreadyCompletedErrorEnabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -3429,6 +3777,46 @@ func (m *ResetWorkflowExecutionResponse) Size() (n int) {
 	return n
 }
 
+func (m *RequestCancelWorkflowExecutionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovServiceWorkflow(uint64(l))
+	}
+	if m.WorkflowExecution != nil {
+		l = m.WorkflowExecution.Size()
+		n += 1 + l + sovServiceWorkflow(uint64(l))
+	}
+	l = len(m.Identity)
+	if l > 0 {
+		n += 1 + l + sovServiceWorkflow(uint64(l))
+	}
+	l = len(m.RequestId)
+	if l > 0 {
+		n += 1 + l + sovServiceWorkflow(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *RequestCancelWorkflowExecutionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *TerminateWorkflowExecutionRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3627,6 +4015,60 @@ func (m *DescribeTaskListResponse) Size() (n int) {
 	return n
 }
 
+func (m *GetTaskListsByDomainRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Domain)
+	if l > 0 {
+		n += 1 + l + sovServiceWorkflow(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *GetTaskListsByDomainResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.DecisionTaskListMap) > 0 {
+		for k, v := range m.DecisionTaskListMap {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovServiceWorkflow(uint64(l))
+			}
+			mapEntrySize := 1 + len(k) + sovServiceWorkflow(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovServiceWorkflow(uint64(mapEntrySize))
+		}
+	}
+	if len(m.ActivityTaskListMap) > 0 {
+		for k, v := range m.ActivityTaskListMap {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovServiceWorkflow(uint64(l))
+			}
+			mapEntrySize := 1 + len(k) + sovServiceWorkflow(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovServiceWorkflow(uint64(mapEntrySize))
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
 func (m *ListTaskListPartitionsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3665,38 +4107,6 @@ func (m *ListTaskListPartitionsResponse) Size() (n int) {
 			n += 1 + l + sovServiceWorkflow(uint64(l))
 		}
 	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ResetStickyTaskListRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Domain)
-	if l > 0 {
-		n += 1 + l + sovServiceWorkflow(uint64(l))
-	}
-	if m.WorkflowExecution != nil {
-		l = m.WorkflowExecution.Size()
-		n += 1 + l + sovServiceWorkflow(uint64(l))
-	}
-	if m.XXX_unrecognized != nil {
-		n += len(m.XXX_unrecognized)
-	}
-	return n
-}
-
-func (m *ResetStickyTaskListResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -3788,6 +4198,21 @@ func (m *GetWorkflowExecutionHistoryResponse) Size() (n int) {
 		n += 1 + l + sovServiceWorkflow(uint64(l))
 	}
 	if m.Archived {
+		n += 2
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *FeatureFlags) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.WorkflowExecutionAlreadyCompletedErrorEnabled {
 		n += 2
 	}
 	if m.XXX_unrecognized != nil {
@@ -4376,10 +4801,7 @@ func (m *StartWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -4462,10 +4884,7 @@ func (m *StartWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -4750,10 +5169,7 @@ func (m *SignalWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -4804,10 +5220,7 @@ func (m *SignalWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -4996,10 +5409,7 @@ func (m *SignalWithStartWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5082,10 +5492,7 @@ func (m *SignalWithStartWorkflowExecutionResponse) Unmarshal(dAtA []byte) error 
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5307,10 +5714,7 @@ func (m *ResetWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5393,10 +5797,241 @@ func (m *ResetWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
-			if (iNdEx + skippy) < 0 {
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RequestCancelWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServiceWorkflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RequestCancelWorkflowExecutionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RequestCancelWorkflowExecutionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WorkflowExecution", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.WorkflowExecution == nil {
+				m.WorkflowExecution = &WorkflowExecution{}
+			}
+			if err := m.WorkflowExecution.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Identity", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Identity = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequestId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RequestId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RequestCancelWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServiceWorkflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RequestCancelWorkflowExecutionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RequestCancelWorkflowExecutionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5615,10 +6250,7 @@ func (m *TerminateWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5669,10 +6301,7 @@ func (m *TerminateWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -5791,10 +6420,7 @@ func (m *DescribeWorkflowExecutionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6021,10 +6647,7 @@ func (m *DescribeWorkflowExecutionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6217,10 +6840,7 @@ func (m *QueryWorkflowRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6343,10 +6963,7 @@ func (m *QueryWorkflowResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6504,10 +7121,7 @@ func (m *DescribeTaskListRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6628,10 +7242,399 @@ func (m *DescribeTaskListResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
-			if (iNdEx + skippy) < 0 {
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetTaskListsByDomainRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServiceWorkflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetTaskListsByDomainRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetTaskListsByDomainRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Domain = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GetTaskListsByDomainResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServiceWorkflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GetTaskListsByDomainResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GetTaskListsByDomainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DecisionTaskListMap", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.DecisionTaskListMap == nil {
+				m.DecisionTaskListMap = make(map[string]*DescribeTaskListResponse)
+			}
+			var mapkey string
+			var mapvalue *DescribeTaskListResponse
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowServiceWorkflow
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowServiceWorkflow
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowServiceWorkflow
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &DescribeTaskListResponse{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.DecisionTaskListMap[mapkey] = mapvalue
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ActivityTaskListMap", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthServiceWorkflow
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ActivityTaskListMap == nil {
+				m.ActivityTaskListMap = make(map[string]*DescribeTaskListResponse)
+			}
+			var mapkey string
+			var mapvalue *DescribeTaskListResponse
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowServiceWorkflow
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowServiceWorkflow
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowServiceWorkflow
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &DescribeTaskListResponse{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthServiceWorkflow
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.ActivityTaskListMap[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6750,10 +7753,7 @@ func (m *ListTaskListPartitionsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -6872,186 +7872,7 @@ func (m *ListTaskListPartitionsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ResetStickyTaskListRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowServiceWorkflow
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ResetStickyTaskListRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ResetStickyTaskListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Domain", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowServiceWorkflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Domain = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WorkflowExecution", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowServiceWorkflow
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.WorkflowExecution == nil {
-				m.WorkflowExecution = &WorkflowExecution{}
-			}
-			if err := m.WorkflowExecution.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ResetStickyTaskListResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowServiceWorkflow
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ResetStickyTaskListResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ResetStickyTaskListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -7102,10 +7923,7 @@ func (m *GetClusterInfoRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -7192,10 +8010,7 @@ func (m *GetClusterInfoResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -7426,10 +8241,7 @@ func (m *GetWorkflowExecutionHistoryRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthServiceWorkflow
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {
@@ -7604,10 +8416,78 @@ func (m *GetWorkflowExecutionHistoryResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
-			if (iNdEx + skippy) < 0 {
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *FeatureFlags) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowServiceWorkflow
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: FeatureFlags: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: FeatureFlags: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WorkflowExecutionAlreadyCompletedErrorEnabled", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowServiceWorkflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.WorkflowExecutionAlreadyCompletedErrorEnabled = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipServiceWorkflow(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthServiceWorkflow
 			}
 			if (iNdEx + skippy) > l {

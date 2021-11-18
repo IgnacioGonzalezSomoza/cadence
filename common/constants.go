@@ -58,17 +58,6 @@ const (
 	EmptyUUID = "emptyUuid"
 )
 
-const (
-	// FrontendServiceName is the name of the frontend service
-	FrontendServiceName = "cadence-frontend"
-	// HistoryServiceName is the name of the history service
-	HistoryServiceName = "cadence-history"
-	// MatchingServiceName is the name of the matching service
-	MatchingServiceName = "cadence-matching"
-	// WorkerServiceName is the name of the worker service
-	WorkerServiceName = "cadence-worker"
-)
-
 // Data encoding types
 const (
 	EncodingTypeJSON     EncodingType = "json"
@@ -139,6 +128,13 @@ const (
 )
 
 const (
+	// DefaultIDLengthWarnLimit is the warning length for various ID types
+	DefaultIDLengthWarnLimit = 128
+	// DefaultIDLengthErrorLimit is the maximum length allowed for various ID types
+	DefaultIDLengthErrorLimit = 1000
+)
+
+const (
 	// ArchivalEnabled is the status for enabling archival
 	ArchivalEnabled = "enabled"
 	// ArchivalDisabled is the status for disabling archival
@@ -157,8 +153,16 @@ const (
 	AdvancedVisibilityWritingModeDual = "dual"
 )
 
-// DomainDataKeyForManagedFailover is key of DomainData for managed failover
-const DomainDataKeyForManagedFailover = "IsManagedByCadence"
+const (
+	// DomainDataKeyForManagedFailover is key of DomainData for managed failover
+	DomainDataKeyForManagedFailover = "IsManagedByCadence"
+	// DomainDataKeyForPreferredCluster is the key of DomainData for domain rebalance
+	DomainDataKeyForPreferredCluster = "PreferredCluster"
+	// DomainDataKeyForReadGroups stores which groups have read permission of the domain API
+	DomainDataKeyForReadGroups = "READ_GROUPS"
+	// DomainDataKeyForWriteGroups stores which groups have write permission of the domain API
+	DomainDataKeyForWriteGroups = "WRITE_GROUPS"
+)
 
 type (
 	// TaskType is the enum for representing different task types
@@ -167,11 +171,17 @@ type (
 
 const (
 	// TaskTypeTransfer is the task type for transfer task
-	TaskTypeTransfer TaskType = iota + 2 // starting from 2 here to be consistent with the row type define for cassandra
+	// starting from 2 here to be consistent with the row type define for cassandra
+	// TODO: we can remove +2 from the following definition
+	// we don't have to make them consistent with cassandra definition
+	// there's also no row type for sql or other nosql persistence implementation
+	TaskTypeTransfer TaskType = iota + 2
 	// TaskTypeTimer is the task type for timer task
 	TaskTypeTimer
 	// TaskTypeReplication is the task type for replication task
 	TaskTypeReplication
+	// TaskTypeCrossCluster is the task type for cross cluster task
+	TaskTypeCrossCluster TaskType = 6
 )
 
 // StickyTaskConditionFailedErrorMsg error msg for sticky task ConditionFailedError

@@ -24,16 +24,15 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/url"
 
 	"github.com/urfave/cli"
 
-	"github.com/uber/cadence/common/auth"
+	"github.com/uber/cadence/common/config"
 	mysql_db "github.com/uber/cadence/common/persistence/sql/sqlplugin/mysql"
 	postgres_db "github.com/uber/cadence/common/persistence/sql/sqlplugin/postgres"
-	"github.com/uber/cadence/common/service/config"
 	"github.com/uber/cadence/schema/mysql"
 	"github.com/uber/cadence/schema/postgres"
+	cliflag "github.com/uber/cadence/tools/common/flag"
 	"github.com/uber/cadence/tools/common/schema"
 )
 
@@ -164,26 +163,11 @@ func parseConnectConfig(cli *cli.Context) (*config.SQL, error) {
 	cfg.DatabaseName = cli.GlobalString(schema.CLIOptDatabase)
 	cfg.PluginName = cli.GlobalString(schema.CLIOptPluginName)
 
-	if cfg.ConnectAttributes == nil {
-		cfg.ConnectAttributes = map[string]string{}
-	}
-	connectAttributesQueryString := cli.GlobalString(schema.CLIOptConnectAttributes)
-	if connectAttributesQueryString != "" {
-		values, err := url.ParseQuery(connectAttributesQueryString)
-		if err != nil {
-			return nil, fmt.Errorf("invalid connect attributes: %v", err)
-		}
-		for key, vals := range values {
-			// check to ensure only one value is provider per key
-			if len(vals) > 1 {
-				return nil, fmt.Errorf("invalid connect attribute %v, only 1 value allowed: %v", key, vals)
-			}
-			cfg.ConnectAttributes[key] = vals[0]
-		}
-	}
+	connectAttributes := cli.GlobalGeneric(schema.CLIOptConnectAttributes).(*cliflag.StringMap)
+	cfg.ConnectAttributes = connectAttributes.Value()
 
 	if cli.GlobalBool(schema.CLIFlagEnableTLS) {
-		cfg.TLS = &auth.TLS{
+		cfg.TLS = &config.TLS{
 			Enabled:                true,
 			CertFile:               cli.GlobalString(schema.CLIFlagTLSCertFile),
 			KeyFile:                cli.GlobalString(schema.CLIFlagTLSKeyFile),

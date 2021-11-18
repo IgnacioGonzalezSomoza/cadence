@@ -53,7 +53,6 @@ func NewTransferStandbyTaskExecutor(
 	executionCache *execution.Cache,
 	historyResender ndc.HistoryResender,
 	logger log.Logger,
-	metricsClient metrics.Client,
 	clusterName string,
 	config *config.Config,
 ) Executor {
@@ -63,7 +62,6 @@ func NewTransferStandbyTaskExecutor(
 			archiverClient,
 			executionCache,
 			logger,
-			metricsClient,
 			config,
 		),
 		clusterName:     clusterName,
@@ -72,11 +70,11 @@ func NewTransferStandbyTaskExecutor(
 }
 
 func (t *transferStandbyTaskExecutor) Execute(
-	taskInfo Info,
+	task Task,
 	shouldProcessTask bool,
 ) error {
 
-	transferTask, ok := taskInfo.(*persistence.TransferTaskInfo)
+	transferTask, ok := task.GetInfo().(*persistence.TransferTaskInfo)
 	if !ok {
 		return errUnexpectedTask
 	}
@@ -239,6 +237,7 @@ func (t *transferStandbyTaskExecutor) processCloseExecution(
 		workflowExecutionTimestamp := getWorkflowExecutionTimestamp(mutableState, startEvent)
 		visibilityMemo := getWorkflowMemo(executionInfo.Memo)
 		searchAttr := executionInfo.SearchAttributes
+		isCron := len(executionInfo.CronSchedule) > 0
 
 		lastWriteVersion, err := mutableState.GetLastWriteVersion()
 		if err != nil {
@@ -265,6 +264,7 @@ func (t *transferStandbyTaskExecutor) processCloseExecution(
 			transferTask.GetTaskID(),
 			visibilityMemo,
 			executionInfo.TaskList,
+			isCron,
 			searchAttr,
 		)
 	}
@@ -458,6 +458,7 @@ func (t *transferStandbyTaskExecutor) processRecordWorkflowStartedOrUpsertHelper
 	executionTimestamp := getWorkflowExecutionTimestamp(mutableState, startEvent)
 	visibilityMemo := getWorkflowMemo(executionInfo.Memo)
 	searchAttr := copySearchAttributes(executionInfo.SearchAttributes)
+	isCron := len(executionInfo.CronSchedule) > 0
 
 	if isRecordStart {
 		return t.recordWorkflowStarted(
@@ -471,6 +472,7 @@ func (t *transferStandbyTaskExecutor) processRecordWorkflowStartedOrUpsertHelper
 			workflowTimeout,
 			transferTask.GetTaskID(),
 			executionInfo.TaskList,
+			isCron,
 			visibilityMemo,
 			searchAttr,
 		)
@@ -487,6 +489,7 @@ func (t *transferStandbyTaskExecutor) processRecordWorkflowStartedOrUpsertHelper
 		transferTask.GetTaskID(),
 		executionInfo.TaskList,
 		visibilityMemo,
+		isCron,
 		searchAttr,
 	)
 

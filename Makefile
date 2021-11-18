@@ -166,7 +166,7 @@ PROTOC_UNZIP_DIR = $(BIN)/protoc-$(PROTOC_VERSION)-zip
 # otherwise this must be a .PHONY rule, or the buf bin / symlink could become out of date.
 PROTOC_VERSION_BIN = protoc-$(PROTOC_VERSION)
 $(BIN)/$(PROTOC_VERSION_BIN): | $(BIN)
-	@echo "downloading protoc $(PROTOC_VERSION)"
+	@echo "downloading protoc $(PROTOC_VERSION): $(PROTOC_URL)"
 	@# recover from partial success
 	@rm -rf $(BIN)/protoc.zip $(PROTOC_UNZIP_DIR)
 	@# download, unzip, copy to a normal location
@@ -177,6 +177,15 @@ $(BIN)/$(PROTOC_VERSION_BIN): | $(BIN)
 # ====================================
 # Codegen targets
 # ====================================
+
+# IDL submodule must be populated, or files will not exist -> prerequisites will be wrong -> build will fail.
+# Because it must exist before the makefile is parsed, this cannot be done automatically as part of a build.
+# Instead: call this func in targets that require the submodule to exist, so that target will not be built.
+#
+# THRIFT_FILES is just an easy identifier for "the submodule has files", others would work fine as well.
+define ensure_idl_submodule
+$(if $(THRIFT_FILES),,$(error idls/ submodule must exist, or build will fail.  Run `git submodule update --init` and try again))
+endef
 
 # codegen is done when thrift and protoc are done
 $(BUILD)/codegen: $(BUILD)/thrift $(BUILD)/protoc | $(BUILD)
@@ -190,6 +199,7 @@ THRIFT_GEN := $(subst idls/thrift/,.build/,$(THRIFT_FILES))
 
 # thrift is done when all sub-thrifts are done
 $(BUILD)/thrift: $(THRIFT_GEN) | $(BUILD)
+	$(call ensure_idl_submodule)
 	@touch $@
 
 # how to generate each thrift book-keeping file.
@@ -209,7 +219,7 @@ $(THRIFT_GEN): $(THRIFT_FILES) $(BIN)/thriftrw $(BIN)/thriftrw-plugin-yarpc | $(
 PROTO_ROOT := proto
 # output location is defined by `option go_package` in the proto files, all must stay in sync with this
 PROTO_OUT := .gen/proto
-PROTO_FILES = $(shell find ./$(PROTO_ROOT) -name "*.proto" | grep -v "persistenceblobs")
+PROTO_FILES = $(shell find -L ./$(PROTO_ROOT) -name "*.proto" | grep -v "persistenceblobs")
 PROTO_DIRS = $(sort $(dir $(PROTO_FILES)))
 
 # protoc splits proto files into directories, otherwise protoc-gen-gogofast is complaining about inconsistent package
@@ -217,6 +227,7 @@ PROTO_DIRS = $(sort $(dir $(PROTO_FILES)))
 #
 # After compilation files are moved to final location, as plugins adds additional path based on proto package.
 $(BUILD)/protoc: $(PROTO_FILES) $(BIN)/$(PROTOC_VERSION_BIN) $(BIN)/protoc-gen-gogofast $(BIN)/protoc-gen-yarpc-go | $(BUILD)
+	$(call ensure_idl_submodule)
 	@mkdir -p $(PROTO_OUT)
 	@echo "protoc..."
 	@$(foreach PROTO_DIR,$(PROTO_DIRS),$(BIN)/$(PROTOC_VERSION_BIN) \
@@ -243,6 +254,9 @@ $(BUILD)/protoc: $(PROTO_FILES) $(BIN)/$(PROTOC_VERSION_BIN) $(BIN)/protoc-gen-g
 # this will ensure that committed code will be used rather than re-generating.
 # must be manually run before (nearly) any other targets.
 .fake-codegen: .fake-protoc .fake-thrift
+	$(warning build-tool binaries have been faked, you will need to delete the $(BIN) folder if you wish to build real ones)
+	@# touch a marker-file for a `make clean` warning.  this does not impact behavior.
+	touch $(BIN)/fake-codegen
 
 # "build" fake binaries, and touch the book-keeping files, so Make thinks codegen has been run.
 # order matters, as e.g. a $(BIN) newer than a $(BUILD) implies Make should run the $(BIN).
@@ -252,7 +266,10 @@ $(BUILD)/protoc: $(PROTO_FILES) $(BIN)/$(PROTOC_VERSION_BIN) $(BIN)/protoc-gen-g
 
 .fake-thrift: | $(BIN) $(BUILD)
 	touch $(BIN)/thriftrw $(BIN)/thriftrw-plugin-yarpc
-	$(if $(THRIFT_GEN),touch $(THRIFT_GEN),) # maybe ignoring empty idl folder
+	@# if the submodule exists, touch thrift_gen markers to fake their generation.
+	@# if it does not, do nothing - there are none.
+	$(if $(THRIFT_GEN),touch $(THRIFT_GEN),)
+	touch $(BUILD)/thrift
 
 # ====================================
 # other intermediates
@@ -349,7 +366,7 @@ BINS  += cadence
 TOOLS += cadence
 cadence: $(BUILD)/lint
 	@echo "compiling cadence with OS: $(GOOS), ARCH: $(GOARCH)"
-	@go build -o $@ cmd/tools/cli/main.go
+	@go build -ldflags '$(GO_BUILD_LDFLAGS)' -o $@ cmd/tools/cli/main.go
 
 BINS += cadence-server
 cadence-server: $(BUILD)/lint
@@ -385,7 +402,9 @@ release: ## Re-generate generated code and run tests
 clean: ## Clean binaries and build folder
 	rm -f $(BINS)
 	rm -Rf $(BUILD)
-	@echo '# rm -rf $(BIN) # not removing tools dir, it is rarely necessary'
+	$(if \
+		$(filter $(BIN)/fake-codegen, $(wildcard $(BIN)/*)), \
+		$(warning fake build tools may exist, delete the $(BIN) folder to get real ones if desired),)
 
 # v----- not yet cleaned up -----v
 
@@ -398,6 +417,7 @@ INTEG_TEST_XDC_ROOT=./host/xdc
 INTEG_TEST_XDC_DIR=hostxdc
 INTEG_TEST_NDC_ROOT=./host/ndc
 INTEG_TEST_NDC_DIR=hostndc
+OPT_OUT_TEST=./bench/% ./canary/%
 
 TEST_TIMEOUT ?= 20m
 TEST_ARG ?= -race $(if $(test_v),-v) -timeout $(TEST_TIMEOUT)
@@ -414,7 +434,7 @@ endif
 # all directories with *_test.go files in them (exclude host/xdc)
 TEST_DIRS := $(filter-out $(INTEG_TEST_XDC_ROOT)%, $(sort $(dir $(filter %_test.go,$(ALL_SRC)))))
 # all tests other than end-to-end integration test fall into the pkg_test category
-PKG_TEST_DIRS := $(filter-out $(INTEG_TEST_ROOT)%,$(TEST_DIRS))
+PKG_TEST_DIRS := $(filter-out $(INTEG_TEST_ROOT)% $(OPT_OUT_TEST), $(TEST_DIRS))
 
 # Code coverage output files
 COVER_ROOT                      := $(BUILD)/coverage
@@ -519,12 +539,26 @@ install-schema: cadence-cassandra-tool
 	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility update-schema -d ./schema/cassandra/visibility/versioned
 
 install-schema-mysql: cadence-sql-tool
-	./cadence-sql-tool --ep 127.0.0.1 create --db cadence
-	./cadence-sql-tool --ep 127.0.0.1 --db cadence setup-schema -v 0.0
-	./cadence-sql-tool --ep 127.0.0.1 --db cadence update-schema -d ./schema/mysql/v57/cadence/versioned
-	./cadence-sql-tool --ep 127.0.0.1 create --db cadence_visibility
-	./cadence-sql-tool --ep 127.0.0.1 --db cadence_visibility setup-schema -v 0.0
-	./cadence-sql-tool --ep 127.0.0.1 --db cadence_visibility update-schema -d ./schema/mysql/v57/visibility/versioned
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence update-schema -d ./schema/mysql/v57/cadence/versioned
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence_visibility
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence_visibility setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence_visibility update-schema -d ./schema/mysql/v57/visibility/versioned
+
+install-schema-multiple-mysql: cadence-sql-tool install-schema-es-v7
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence0 setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence0 update-schema -d ./schema/mysql/v57/cadence/versioned
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence1
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence1 setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence1 update-schema -d ./schema/mysql/v57/cadence/versioned
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence2
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence2 setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence2 update-schema -d ./schema/mysql/v57/cadence/versioned
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence create --db cadence3
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence3 setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 --user root --pw cadence --db cadence3 update-schema -d ./schema/mysql/v57/cadence/versioned
 
 install-schema-postgres: cadence-sql-tool
 	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl postgres create --db cadence
@@ -534,42 +568,57 @@ install-schema-postgres: cadence-sql-tool
 	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl postgres --db cadence_visibility setup-schema -v 0.0
 	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl postgres --db cadence_visibility update-schema -d ./schema/postgres/visibility/versioned
 
+install-schema-es-v7:
+	export ES_SCHEMA_FILE=./schema/elasticsearch/v7/visibility/index_template.json
+	curl -X PUT "http://127.0.0.1:9200/_template/cadence-visibility-template" -H 'Content-Type: application/json' --data-binary "@$(ES_SCHEMA_FILE)"
+	curl -X PUT "http://127.0.0.1:9200/cadence-visibility-dev"
+
+install-schema-es-v6:
+	export ES_SCHEMA_FILE=./schema/elasticsearch/v6/visibility/index_template.json
+	curl -X PUT "http://127.0.0.1:9200/_template/cadence-visibility-template" -H 'Content-Type: application/json' --data-binary "@$(ES_SCHEMA_FILE)"
+	curl -X PUT "http://127.0.0.1:9200/cadence-visibility-dev"
+
+install-schema-es-opensearch:
+	export ES_SCHEMA_FILE=./schema/elasticsearch/v7/visibility/index_template.json
+	curl -X PUT "https://127.0.0.1:9200/_template/cadence-visibility-template" -H 'Content-Type: application/json' --data-binary "@$(ES_SCHEMA_FILE)" -u admin:admin --insecure
+	curl -X PUT "https://127.0.0.1:9200/cadence-visibility-dev" -u admin:admin --insecure
+
 start: bins
 	./cadence-server start
 
-install-schema-cdc: cadence-cassandra-tool
-	@echo Setting up cadence_active key space
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_active --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_active setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_active update-schema -d ./schema/cassandra/cadence/versioned
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_active --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_active setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_active update-schema -d ./schema/cassandra/visibility/versioned
+install-schema-xdc: cadence-cassandra-tool
+	@echo Setting up cadence_cluster0 key space
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_cluster0 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster0 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster0 update-schema -d ./schema/cassandra/cadence/versioned
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_cluster0 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster0 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster0 update-schema -d ./schema/cassandra/visibility/versioned
 
-	@echo Setting up cadence_standby key space
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_standby --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_standby setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_standby update-schema -d ./schema/cassandra/cadence/versioned
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_standby --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_standby setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_standby update-schema -d ./schema/cassandra/visibility/versioned
+	@echo Setting up cadence_cluster1 key space
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_cluster1 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster1 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster1 update-schema -d ./schema/cassandra/cadence/versioned
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_cluster1 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster1 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster1 update-schema -d ./schema/cassandra/visibility/versioned
 
-	@echo Setting up cadence_other key space
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_other --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_other setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_other update-schema -d ./schema/cassandra/cadence/versioned
-	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_other --rf 1
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_other setup-schema -v 0.0
-	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_other update-schema -d ./schema/cassandra/visibility/versioned
+	@echo Setting up cadence_cluster2 key space
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_cluster2 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster2 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_cluster2 update-schema -d ./schema/cassandra/cadence/versioned
+	./cadence-cassandra-tool --ep 127.0.0.1 create -k cadence_visibility_cluster2 --rf 1
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster2 setup-schema -v 0.0
+	./cadence-cassandra-tool --ep 127.0.0.1 -k cadence_visibility_cluster2 update-schema -d ./schema/cassandra/visibility/versioned
 
-start-cdc-active: bins
-	./cadence-server --zone active start
+start-xdc-cluster0: bins
+	./cadence-server --zone xdc_cluster0 start
 
-start-cdc-standby: bins
-	./cadence-server --zone standby start
+start-xdc-cluster1: bins
+	./cadence-server --zone xdc_cluster1 start
 
-start-cdc-other: bins
-	./cadence-server --zone other start
+start-xdc-cluster2: bins
+	./cadence-server --zone xdc_cluster2 start
 
 start-canary: bins
 	./cadence-canary start

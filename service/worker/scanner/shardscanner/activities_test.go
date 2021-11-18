@@ -40,6 +40,7 @@ import (
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/blobstore"
 	"github.com/uber/cadence/common/cache"
+	"github.com/uber/cadence/common/dynamicconfig"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/pagination"
 	"github.com/uber/cadence/common/persistence"
@@ -47,7 +48,6 @@ import (
 	"github.com/uber/cadence/common/reconciliation/invariant"
 	"github.com/uber/cadence/common/reconciliation/store"
 	"github.com/uber/cadence/common/resource"
-	"github.com/uber/cadence/common/service/dynamicconfig"
 )
 
 const testWorkflowName = "default-test-workflow-type-name"
@@ -74,6 +74,9 @@ func (s *activitiesSuite) SetupSuite() {
 func (s *activitiesSuite) SetupTest() {
 	s.controller = gomock.NewController(s.T())
 	s.mockResource = resource.NewTest(s.controller, metrics.Worker)
+	domainCache := cache.NewMockDomainCache(s.controller)
+	domainCache.EXPECT().GetDomainName(gomock.Any()).Return("test-domain", nil).AnyTimes()
+	s.mockResource.DomainCache = domainCache
 }
 
 func (s *activitiesSuite) TearDownTest() {

@@ -22,7 +22,9 @@ package metrics
 
 import "context"
 
-const contextTagsKey = "metrics.Tags"
+type contextTag string
+
+const contextTagsKey = contextTag("metrics.Tags")
 
 func TagContext(ctx context.Context, tag Tag) context.Context {
 	tags, ok := ctx.Value(contextTagsKey).([]Tag)
@@ -30,6 +32,15 @@ func TagContext(ctx context.Context, tag Tag) context.Context {
 		tags = []Tag{}
 	}
 	tags = append(tags, tag)
+	return context.WithValue(ctx, contextTagsKey, tags)
+}
+
+func TagContexts(ctx context.Context, ctxTags ...Tag) context.Context {
+	tags, ok := ctx.Value(contextTagsKey).([]Tag)
+	if !ok {
+		tags = []Tag{}
+	}
+	tags = append(tags, ctxTags...)
 	return context.WithValue(ctx, contextTagsKey, tags)
 }
 

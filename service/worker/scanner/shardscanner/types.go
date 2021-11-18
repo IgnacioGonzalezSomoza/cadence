@@ -33,11 +33,13 @@ import (
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/workflow"
 
+	"github.com/uber/cadence/common/dynamicconfig"
+	"github.com/uber/cadence/common/log"
+	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/reconciliation/invariant"
 	"github.com/uber/cadence/common/reconciliation/store"
 	"github.com/uber/cadence/common/resource"
-	"github.com/uber/cadence/common/service/dynamicconfig"
 )
 
 const (
@@ -58,6 +60,7 @@ type (
 		Hooks    *ScannerHooks
 		Scope    metrics.Scope
 		Config   *ScannerConfig
+		Logger   log.Logger
 	}
 
 	// FixerContext is the resource that is available to activities under ShardFixer key
@@ -66,6 +69,7 @@ type (
 		Hooks    *FixerHooks
 		Scope    metrics.Scope
 		Config   *ScannerConfig
+		Logger   log.Logger
 	}
 
 	// ScannerEmitMetricsActivityParams is the parameter for ScannerEmitMetricsActivity
@@ -436,6 +440,7 @@ func NewShardScannerContext(
 		Resource: res,
 		Scope:    res.GetMetricsClient().Scope(metrics.ExecutionsScannerScope),
 		Config:   config,
+		Logger:   res.GetLogger().WithTags(tag.ComponentShardScanner),
 		Hooks:    config.ScannerHooks(),
 	}
 }
@@ -450,6 +455,7 @@ func NewShardFixerContext(
 		Scope:    res.GetMetricsClient().Scope(metrics.ExecutionsFixerScope),
 		Config:   config,
 		Hooks:    config.FixerHooks(),
+		Logger:   res.GetLogger().WithTags(tag.ComponentShardFixer),
 	}
 }
 

@@ -31,21 +31,24 @@ const (
 	buildVersionTag = "build_version"
 	goVersionTag    = "go_version"
 
-	instance       = "instance"
-	domain         = "domain"
-	targetCluster  = "target_cluster"
-	activeCluster  = "active_cluster"
-	taskList       = "tasklist"
-	taskListType   = "tasklistType"
-	workflowType   = "workflowType"
-	activityType   = "activityType"
-	decisionType   = "decisionType"
-	invariantType  = "invariantType"
-	kafkaPartition = "kafkaPartition"
-	transport      = "transport"
+	instance               = "instance"
+	domain                 = "domain"
+	targetCluster          = "target_cluster"
+	activeCluster          = "active_cluster"
+	taskList               = "tasklist"
+	taskListType           = "tasklistType"
+	workflowType           = "workflowType"
+	activityType           = "activityType"
+	decisionType           = "decisionType"
+	invariantType          = "invariantType"
+	shardScannerScanResult = "shardscanner_scan_result"
+	shardScannerFixResult  = "shardscanner_fix_result"
+	kafkaPartition         = "kafkaPartition"
+	transport              = "transport"
+	signalName             = "signalName"
 
-	domainAllValue = "all"
-	unknownValue   = "_unknown_"
+	allValue     = "all"
+	unknownValue = "_unknown_"
 
 	transportThrift = "thrift"
 	transportGRPC   = "grpc"
@@ -134,6 +137,16 @@ func DecisionTypeTag(value string) Tag {
 	return metricWithUnknown(decisionType, value)
 }
 
+// ShardScannerScanResult returns a new shardscanner scan result type tag.
+func ShardScannerScanResult(value string) Tag {
+	return metricWithUnknown(shardScannerScanResult, value)
+}
+
+// ShardScannerFixResult returns a new shardscanner fix result type tag.
+func ShardScannerFixResult(value string) Tag {
+	return metricWithUnknown(shardScannerFixResult, value)
+}
+
 // InvariantTypeTag returns a new invariant type tag.
 func InvariantTypeTag(value string) Tag {
 	return metricWithUnknown(invariantType, value)
@@ -152,4 +165,14 @@ func ThriftTransportTag() Tag {
 // GPRCTransportTag returns a new GRPC transport type tag.
 func GPRCTransportTag() Tag {
 	return simpleMetric{key: transport, value: transportGRPC}
+}
+
+// SignalNameTag returns a new SignalName tag
+func SignalNameTag(value string) Tag {
+	return metricWithUnknown(signalName, value)
+}
+
+// SignalNameAllTag returns a new SignalName tag with all value
+func SignalNameAllTag() Tag {
+	return metricWithUnknown(signalName, allValue)
 }

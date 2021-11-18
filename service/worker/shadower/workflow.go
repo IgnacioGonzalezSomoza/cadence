@@ -21,7 +21,6 @@
 package shadower
 
 import (
-	"context"
 	"errors"
 	"time"
 
@@ -35,14 +34,23 @@ import (
 )
 
 const (
-	defaultScanWorkflowPageSize = 2000
-
-	// NOTE: do not simply change following values as it may result in workflow non-deterministic errors
-	defaultReplayConcurrency    = 1
-	defaultMaxReplayConcurrency = 50
-	defaultMaxShadowCountPerRun = 100000
-
+	defaultScanWorkflowPageSize     = 1000
+	defaultSamplingRate             = 1.0
+	defaultReplayConcurrency        = 1
+	defaultMaxReplayConcurrency     = 50
+	defaultMaxShadowCountPerRun     = 20000
 	defaultWaitDurationPerIteration = 5 * time.Minute
+)
+
+type (
+	workflowConfig struct {
+		ScanWorkflowPageSize     int32
+		DefaultSamplingRate      float64
+		DefaultReplayConcurrency int32
+		MaxReplayConcurrency     int32
+		MaxShadowCountPerRun     int32
+		WaitDurationPerIteration time.Duration
+	}
 )
 
 func register(worker worker.Worker) {
@@ -50,7 +58,6 @@ func register(worker worker.Worker) {
 		shadowWorkflow,
 		workflow.RegisterOptions{Name: shadower.WorkflowName},
 	)
-	worker.RegisterActivity(verifyActiveDomainActivity)
 }
 
 func shadowWorkflow(
@@ -59,29 +66,14 @@ func shadowWorkflow(
 ) (shadower.WorkflowResult, error) {
 	profile := beginWorkflow(ctx, &params)
 
-	if err := validateAndFillWorkflowParams(&params); err != nil {
+	var config workflowConfig
+	config, err := getWorkflowConfig(ctx)
+	if err != nil {
 		return shadower.WorkflowResult{}, profile.endWorkflow(err)
 	}
 
-	lao := workflow.LocalActivityOptions{
-		ScheduleToCloseTimeout: time.Second * 5,
-		RetryPolicy: &cadence.RetryPolicy{
-			InitialInterval:    time.Second,
-			BackoffCoefficient: 1.0,
-			MaximumAttempts:    5,
-		},
-	}
-	ctx = workflow.WithLocalActivityOptions(ctx, lao)
-
-	var domainActive bool
-	if err := workflow.ExecuteLocalActivity(ctx, verifyActiveDomainActivity, params.GetDomain()).Get(ctx, &domainActive); err != nil {
+	if err := validateAndFillWorkflowParams(&params, &config); err != nil {
 		return shadower.WorkflowResult{}, profile.endWorkflow(err)
-	}
-
-	// TODO: we probably should make this configurable by user so that they can control is shadowing workflow
-	// should be run in active or passive side
-	if !domainActive {
-		return shadower.WorkflowResult{}, profile.endWorkflow(nil)
 	}
 
 	workflowTimeout := time.Duration(workflow.GetInfo(ctx).ExecutionStartToCloseTimeoutSeconds) * time.Second
@@ -106,9 +98,10 @@ func shadowWorkflow(
 	replayWorkflowCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskList:               params.GetTaskList(),
 		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Hour,
+		StartToCloseTimeout:    time.Duration(config.ScanWorkflowPageSize/params.GetConcurrency()+1) * time.Minute,
 		// do not use a short heartbeat timeout here,
-		// as replay may take some time if workflow history is large or retrying due to some transient error
+		// as replay may take some time if workflow history is large or retrying due to some transient errors
+		// this is mainly for java, go replay activity can enable auto heartbeating
 		HeartbeatTimeout: 2 * time.Minute,
 		RetryPolicy:      retryPolicy,
 	})
@@ -122,7 +115,7 @@ func shadowWorkflow(
 		Domain:        params.Domain,
 		WorkflowQuery: params.WorkflowQuery,
 		NextPageToken: params.NextPageToken,
-		PageSize:      common.Int32Ptr(defaultScanWorkflowPageSize),
+		PageSize:      common.Int32Ptr(config.ScanWorkflowPageSize),
 		SamplingRate:  params.SamplingRate,
 	}
 	for {
@@ -160,14 +153,14 @@ func shadowWorkflow(
 			break
 		}
 
-		if shouldContinueAsNew(shadowResult) {
+		if shouldContinueAsNew(shadowResult, &config) {
 			continueAsNewErr := getContinueAsNewError(ctx, params, profile.startTime, params.GetLastRunResult(), shadowResult, scanParams.NextPageToken)
 			return shadower.WorkflowResult{}, profile.endWorkflow(continueAsNewErr)
 		}
 	}
 
 	if params.GetShadowMode() == shadower.ModeContinuous {
-		if err := workflow.Sleep(ctx, defaultWaitDurationPerIteration); err != nil {
+		if err := workflow.Sleep(ctx, config.WaitDurationPerIteration); err != nil {
 			return shadower.WorkflowResult{}, profile.endWorkflow(err)
 		}
 		continueAsNewErr := getContinueAsNewError(ctx, params, profile.startTime, params.GetLastRunResult(), shadowResult, nil)
@@ -177,27 +170,47 @@ func shadowWorkflow(
 	return combineShadowResults(shadowResult, params.GetLastRunResult()), profile.endWorkflow(nil)
 }
 
+func getWorkflowConfig(
+	ctx workflow.Context,
+) (workflowConfig, error) {
+	var config workflowConfig
+	if err := workflow.SideEffect(ctx, func(ctx workflow.Context) interface{} {
+		return workflowConfig{
+			ScanWorkflowPageSize:     defaultScanWorkflowPageSize,
+			DefaultSamplingRate:      defaultSamplingRate,
+			DefaultReplayConcurrency: defaultReplayConcurrency,
+			MaxReplayConcurrency:     defaultMaxReplayConcurrency,
+			MaxShadowCountPerRun:     defaultMaxShadowCountPerRun,
+			WaitDurationPerIteration: defaultWaitDurationPerIteration,
+		}
+	}).Get(&config); err != nil {
+		return workflowConfig{}, err
+	}
+	return config, nil
+}
+
 func validateAndFillWorkflowParams(
 	params *shadower.WorkflowParams,
+	config *workflowConfig,
 ) error {
 	if len(params.GetDomain()) == 0 {
 		return errors.New("Domain is not set on shadower workflow params")
 	}
 
 	if len(params.GetTaskList()) == 0 {
-		return errors.New("TaskList is not set on shaoder workflow params")
+		return errors.New("TaskList is not set on shadower workflow params")
 	}
 
 	if params.GetSamplingRate() == 0 {
-		params.SamplingRate = common.Float64Ptr(1)
+		params.SamplingRate = common.Float64Ptr(config.DefaultSamplingRate)
 	}
 
 	if params.GetConcurrency() == 0 {
-		params.Concurrency = common.Int32Ptr(defaultReplayConcurrency)
+		params.Concurrency = common.Int32Ptr(config.DefaultReplayConcurrency)
 	}
 
-	if params.GetConcurrency() > defaultMaxReplayConcurrency {
-		params.Concurrency = common.Int32Ptr(defaultMaxReplayConcurrency)
+	if params.GetConcurrency() > config.MaxReplayConcurrency {
+		params.Concurrency = common.Int32Ptr(config.MaxReplayConcurrency)
 	}
 
 	return nil
@@ -246,8 +259,9 @@ func exitConditionMet(
 
 func shouldContinueAsNew(
 	currentResult shadower.WorkflowResult,
+	config *workflowConfig,
 ) bool {
-	return currentResult.GetSucceeded()+currentResult.GetSkipped()+currentResult.GetFailed() >= defaultMaxShadowCountPerRun
+	return currentResult.GetSucceeded()+currentResult.GetSkipped()+currentResult.GetFailed() >= config.MaxShadowCountPerRun
 }
 
 func getContinueAsNewError(
@@ -291,19 +305,4 @@ func combineShadowResults(
 	*currentResult.Skipped += lastRunResult.GetSkipped()
 	*currentResult.Failed += lastRunResult.GetFailed()
 	return currentResult
-}
-
-func verifyActiveDomainActivity(
-	ctx context.Context,
-	domain string,
-) (bool, error) {
-	worker := ctx.Value(workerContextKey).(*Worker)
-	domainCache := worker.domainCache
-	domainEntry, err := domainCache.GetDomain(domain)
-	if err != nil {
-		return false, err
-	}
-
-	domainActive := domainEntry.IsDomainActive() || domainEntry.IsDomainPendingActive()
-	return domainActive, nil
 }

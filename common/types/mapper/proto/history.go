@@ -249,6 +249,44 @@ func ToHistoryGetDLQReplicationMessagesResponse(t *historyv1.GetDLQReplicationMe
 	}
 }
 
+func FromHistoryGetFailoverInfoRequest(t *types.GetFailoverInfoRequest) *historyv1.GetFailoverInfoRequest {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.GetFailoverInfoRequest{
+		DomainId: t.GetDomainID(),
+	}
+}
+
+func ToHistoryGetFailoverInfoRequest(t *historyv1.GetFailoverInfoRequest) *types.GetFailoverInfoRequest {
+	if t == nil {
+		return nil
+	}
+	return &types.GetFailoverInfoRequest{
+		DomainID: t.GetDomainId(),
+	}
+}
+
+func FromHistoryGetFailoverInfoResponse(t *types.GetFailoverInfoResponse) *historyv1.GetFailoverInfoResponse {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.GetFailoverInfoResponse{
+		CompletedShardCount: t.GetCompletedShardCount(),
+		PendingShards:       t.GetPendingShards(),
+	}
+}
+
+func ToHistoryGetFailoverInfoResponse(t *historyv1.GetFailoverInfoResponse) *types.GetFailoverInfoResponse {
+	if t == nil {
+		return nil
+	}
+	return &types.GetFailoverInfoResponse{
+		CompletedShardCount: t.GetCompletedShardCount(),
+		PendingShards:       t.GetPendingShards(),
+	}
+}
+
 func FromHistoryGetMutableStateRequest(t *types.GetMutableStateRequest) *historyv1.GetMutableStateRequest {
 	if t == nil {
 		return nil
@@ -899,6 +937,7 @@ func FromHistoryRemoveTaskRequest(t *types.RemoveTaskRequest) *historyv1.RemoveT
 		TaskType:       FromTaskType(t.Type),
 		TaskId:         t.TaskID,
 		VisibilityTime: unixNanoToTime(t.VisibilityTimestamp),
+		ClusterName:    t.ClusterName,
 	}
 }
 
@@ -911,6 +950,7 @@ func ToHistoryRemoveTaskRequest(t *historyv1.RemoveTaskRequest) *types.RemoveTas
 		Type:                ToTaskType(t.TaskType),
 		TaskID:              t.TaskId,
 		VisibilityTimestamp: timeToUnixNano(t.VisibilityTime),
+		ClusterName:         t.ClusterName,
 	}
 }
 
@@ -1388,5 +1428,95 @@ func ToHistoryTerminateWorkflowExecutionRequest(t *historyv1.TerminateWorkflowEx
 	return &types.HistoryTerminateWorkflowExecutionRequest{
 		TerminateRequest: ToTerminateWorkflowExecutionRequest(t.Request),
 		DomainUUID:       t.DomainId,
+	}
+}
+
+// FromHistoryGetCrossClusterTasksRequest converts internal GetCrossClusterTasksRequest type to proto
+func FromHistoryGetCrossClusterTasksRequest(t *types.GetCrossClusterTasksRequest) *historyv1.GetCrossClusterTasksRequest {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.GetCrossClusterTasksRequest{
+		ShardIds:      t.ShardIDs,
+		TargetCluster: t.TargetCluster,
+	}
+}
+
+// ToHistoryGetCrossClusterTasksRequest converts proto GetCrossClusterTasksRequest type to internal
+func ToHistoryGetCrossClusterTasksRequest(t *historyv1.GetCrossClusterTasksRequest) *types.GetCrossClusterTasksRequest {
+	if t == nil {
+		return nil
+	}
+	return &types.GetCrossClusterTasksRequest{
+		ShardIDs:      t.ShardIds,
+		TargetCluster: t.TargetCluster,
+	}
+}
+
+// FromHistoryGetCrossClusterTasksResponse converts internal GetCrossClusterTasksResponse type to proto
+func FromHistoryGetCrossClusterTasksResponse(t *types.GetCrossClusterTasksResponse) *historyv1.GetCrossClusterTasksResponse {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.GetCrossClusterTasksResponse{
+		TasksByShard:       FromCrossClusterTaskRequestMap(t.TasksByShard),
+		FailedCauseByShard: FromGetTaskFailedCauseMap(t.FailedCauseByShard),
+	}
+}
+
+// ToHistoryGetCrossClusterTasksResponse converts proto GetCrossClusterTasksResponse type to internal
+func ToHistoryGetCrossClusterTasksResponse(t *historyv1.GetCrossClusterTasksResponse) *types.GetCrossClusterTasksResponse {
+	if t == nil {
+		return nil
+	}
+	return &types.GetCrossClusterTasksResponse{
+		TasksByShard:       ToCrossClusterTaskRequestMap(t.TasksByShard),
+		FailedCauseByShard: ToGetTaskFailedCauseMap(t.FailedCauseByShard),
+	}
+}
+
+// FromHistoryRespondCrossClusterTasksCompletedRequest converts internal RespondCrossClusterTasksCompletedRequest type to thrift
+func FromHistoryRespondCrossClusterTasksCompletedRequest(t *types.RespondCrossClusterTasksCompletedRequest) *historyv1.RespondCrossClusterTasksCompletedRequest {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.RespondCrossClusterTasksCompletedRequest{
+		ShardId:       t.ShardID,
+		TargetCluster: t.TargetCluster,
+		TaskResponses: FromCrossClusterTaskResponseArray(t.TaskResponses),
+		FetchNewTasks: t.FetchNewTasks,
+	}
+}
+
+// ToHistoryRespondCrossClusterTasksCompletedRequest converts thrift RespondCrossClusterTasksCompletedRequest type to internal
+func ToHistoryRespondCrossClusterTasksCompletedRequest(t *historyv1.RespondCrossClusterTasksCompletedRequest) *types.RespondCrossClusterTasksCompletedRequest {
+	if t == nil {
+		return nil
+	}
+	return &types.RespondCrossClusterTasksCompletedRequest{
+		ShardID:       t.ShardId,
+		TargetCluster: t.TargetCluster,
+		TaskResponses: ToCrossClusterTaskResponseArray(t.TaskResponses),
+		FetchNewTasks: t.FetchNewTasks,
+	}
+}
+
+// FromHistoryRespondCrossClusterTasksCompletedResponse converts internal RespondCrossClusterTasksCompletedResponse type to thrift
+func FromHistoryRespondCrossClusterTasksCompletedResponse(t *types.RespondCrossClusterTasksCompletedResponse) *historyv1.RespondCrossClusterTasksCompletedResponse {
+	if t == nil {
+		return nil
+	}
+	return &historyv1.RespondCrossClusterTasksCompletedResponse{
+		Tasks: FromCrossClusterTaskRequestArray(t.Tasks),
+	}
+}
+
+// ToHistoryRespondCrossClusterTasksCompletedResponse converts thrift RespondCrossClusterTasksCompletedResponse type to internal
+func ToHistoryRespondCrossClusterTasksCompletedResponse(t *historyv1.RespondCrossClusterTasksCompletedResponse) *types.RespondCrossClusterTasksCompletedResponse {
+	if t == nil {
+		return nil
+	}
+	return &types.RespondCrossClusterTasksCompletedResponse{
+		Tasks: ToCrossClusterTaskRequestArray(t.Tasks),
 	}
 }

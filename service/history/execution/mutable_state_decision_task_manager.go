@@ -407,7 +407,6 @@ func (m *mutableStateDecisionTaskManagerImpl) AddDecisionTaskScheduledEventAsHea
 	// TODO merge active & passive task generation
 	if !bypassTaskGeneration {
 		if err := m.msb.taskGenerator.GenerateDecisionScheduleTasks(
-			m.msb.unixNanoToTime(scheduleTime), // schedule time is now
 			scheduleID,
 		); err != nil {
 			return nil, err
@@ -445,7 +444,6 @@ func (m *mutableStateDecisionTaskManagerImpl) AddFirstDecisionTaskScheduled(
 	var err error
 	if decisionBackoffDuration != 0 {
 		if err = m.msb.taskGenerator.GenerateDelayedDecisionTasks(
-			m.msb.unixNanoToTime(startEvent.GetTimestamp()),
 			startEvent,
 		); err != nil {
 			return err
@@ -502,7 +500,6 @@ func (m *mutableStateDecisionTaskManagerImpl) AddDecisionTaskStartedEvent(
 	decision, err := m.ReplicateDecisionTaskStartedEvent(decision, m.msb.GetCurrentVersion(), scheduleID, startedID, requestID, startTime)
 	// TODO merge active & passive task generation
 	if err := m.msb.taskGenerator.GenerateDecisionStartTasks(
-		m.msb.unixNanoToTime(startTime), // start time is now
 		scheduleID,
 	); err != nil {
 		return nil, nil, err
